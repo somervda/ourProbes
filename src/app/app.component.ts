@@ -10,7 +10,7 @@ import { Observable, fromEvent, Subscription } from "rxjs";
   styleUrls: ["./app.component.scss"]
 })
 export class AppComponent implements OnInit, OnDestroy {
-  title = "fbmStarter";
+  title = "ourProbes";
   isConnected = true;
   onlineEvent$: Observable<Event>;
   offlineEvent$: Observable<Event>;

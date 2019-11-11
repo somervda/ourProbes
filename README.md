@@ -1,48 +1,48 @@
-# FbmStarter
+# ourProbes
 
-This project aims to provide a starting point for angular applications. Intent is for designer of a new application to take a copy of this project, perform a set of standard replace operations to rename the project to the required new name and then start adding application specific code. The fbmStarter application provides the following capabilities that can be extended by the application designer. See application at https://fbmstarter.firebaseapp.com/
+This project aims to provide a starting point for angular applications. Intent is for designer of a new application to take a copy of this project, perform a set of standard replace operations to rename the project to the required new name and then start adding application specific code. The ourProbes application provides the following capabilities that can be extended by the application designer. See application at https://ourProbes.firebaseapp.com/
 
-**fbmStarter Capabilities**
+**ourProbes Capabilities**
 
 - Angular 7+ (Version updated as new major releases of Angular occurs)
-- Firebase - fbmStarter includes firestore, authentication, hosting, firestore rules and firebase functions
+- Firebase - ourProbes includes firestore, authentication, hosting, firestore rules and firebase functions
 - Material Design - implements material design interface using @angular/material library. Custom material theme included to use as an example of extending base material design themes (Using SCSS and angular CDK features)
 - Authentication - Set up to use firebase authentication and firebaseui library to provide the authentication UI elements. Authentication is enterprise oriented, examples are provided of using google, email and microsoft as authentication providers. The microsoft provider should allow enterprises to use office365 accounts (as long as account access is allowed.) Some basic authorization capabilities are included (administrator role and functions). Route Guards are set up to restrict access (CacActivate) to components/functions based on users privileges (isActivated, isAdmin)
 - Home page with carousel - Example of a home splash page as a launching point for new users. Uses bootstrap carousel component and material cards in a fairly typical home page layout (main features as images and detail cards)
 - PWA - Progressive web application, includes a service worker, desktop images, starter page etc that is required for a well behaved PWA. Caching defined for application and data to support offline operation.
-- E2E test suite - Cypress test suite included to test fbmStarter capabilities and can be extended for applications based on fbmStarter (See section below for more details on e2e functionality)
-- Built/tested/optimized - Base fbmStarter capabilities are built in, tested, and optimized to ensure new applications start at a consistent and well architected starting point.
+- E2E test suite - Cypress test suite included to test ourProbes capabilities and can be extended for applications based on ourProbes (See section below for more details on e2e functionality)
+- Built/tested/optimized - Base ourProbes capabilities are built in, tested, and optimized to ensure new applications start at a consistent and well architected starting point.
 
-## Creating a new new project based on fbmStarter
+## Creating a new new project based on ourProbes
 
-**Getting a copy of fbmStarter Project**
+**Getting a copy of ourProbes Project**
 
-A new project can be created based on the fbmStarter code. To do this will require a new firebase instance (See instructions below "Create Initial Firebase Project"). Note: these instructions do not include detailed instructions for firebase administration or how to manage your new project in github (You are on your own for that).
+A new project can be created based on the ourProbes code. To do this will require a new firebase instance (See instructions below "Create Initial Firebase Project"). Note: these instructions do not include detailed instructions for firebase administration or how to manage your new project in github (You are on your own for that).
 
 Create copy from the github template (GitHub repository created)
 
-- Go to https://github.com/somervda/fbmStarter/generate and create a new github project based on the fbmStarter project.
+- Go to https://github.com/somervda/ourProbes/generate and create a new github project based on the ourProbes project.
 - Get a copy of the clone link from the new project and use this in VsCode to create a local copy of your project.
 
 _Or_ create copy as new local project (No GitHub repository created)
 
 - Create a new folder for the new project. Name the folder after the new project name. This folder is the "New Project folder"
-- Get a zip copy of the fbmStarter code from github https://github.com/somervda/fbmStarter/archive/master.zip
-- Open the zip file and copy the content of the top level fbmStarter-master folder in the zip to the new project folder.
+- Get a zip copy of the ourProbes code from github https://github.com/somervda/ourProbes/archive/master.zip
+- Open the zip file and copy the content of the top level ourProbes-master folder in the zip to the new project folder.
 - Using VSCode open the new project folder.
 - When initially opened a git repository will not be set up. In VSCode click on the "Source Control" icon on the left side. This will open with a message that "No source control providers are registered". Click on the "Initialize Repository" icon to create a new git repository (Normally select the first/default option for the location of this repository).
 
 Update project name in the local copy
 
-1. Perform a File->Replace in Files in VSCode. Replace "fbmStarter" to "[New Project Name]" and "fbm-starter" to "[New Project Name without capitals format]" e.g. in the case of creating a new project called ourDars , fbmStarter->ourDars , fbm-starter->our-dars .
+1. Perform a File->Replace in Files in VSCode. Replace "ourProbes" to "[New Project Name]" and "ourProbes" to "[New Project Name without capitals format]" e.g. in the case of creating a new project called ourDars , ourProbes->ourDars , ourProbes->our-dars .
 2. In the VSCode terminal type "npm i" to install the node libraries defined in package.json (may take a while)
 3. Perform a "ng build --prod" to check no errors exist
 
 **Application specific changes**
 
-The previous instructions will set up a direct copy of the fbmStarter code with your new project name, application specific changes will still be needed before adding your own code.
+The previous instructions will set up a direct copy of the ourProbes code with your new project name, application specific changes will still be needed before adding your own code.
 
-1. Use your own firebase project information(Please don't use the fbmStarter defaults, I will be periodically refreshing this firebase project to make sure it stays fresh. ). The firebase config information is stored in the src/environments folder files (environment.prod.ts and environment.ts).
+1. Use your own firebase project information(Please don't use the ourProbes defaults, I will be periodically refreshing this firebase project to make sure it stays fresh. ). The firebase config information is stored in the src/environments folder files (environment.prod.ts and environment.ts).
 2. Set the default firebase project to be used "firebase use [project-id]", check the firebase project in use using "firebase list"
 3. In the VSCode terminal - cd to the functions folder. Perform a "npm i", then a "npm run deploy"
 4. Start the application "ng serve" and perform an eMail based login. After the first user is created go to your firebase console, go to firestore and the first user , just created, should be present. Add the following fields to that user - isAdmin, boolean, true and isActivated, boolean , true. These two attributes will set up this first user as a valid administrator.
@@ -57,7 +57,7 @@ The previous instructions will set up a direct copy of the fbmStarter code with 
 
 ## E2E Testing with Cypress
 
-The Cypress tooling (https://www.cypress.io/) is used to provide end to end testing for the fbmStarter application and any applications based on fbmStarter.
+The Cypress tooling (https://www.cypress.io/) is used to provide end to end testing for the ourProbes application and any applications based on ourProbes.
 
 **Note: cypress tests did not work well with a PWA service worker**
 The server worker option in the angular.json file should be set to false before running cypress tests, or in the chrome developer tools unregister the service worker and cached data (this will apply until the next time the client is refreshed). The enablePersistance() option in the app.module.ts file should also be disabled for testing (Only server data is used) .
