@@ -1,0 +1,32 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import "~firebaseui/dist/firebaseui.css";
+
+@import "~bootstrap/scss/bootstrap";
+
+/* You can add global styles to this file, and also import other style files */
+
+@import "~@angular/material/theming";
+
+// Include non-theme styles for core.
+@include mat-core();
+
+// $primary: mat-palette($mat-indigo);
+// $accent: mat-palette($mat-pink);
+
+// Define a theme.
+$primary: mat-palette($mat-teal, 800);
+$accent: mat-palette($mat-deep-orange);
+
+$theme: mat-light-theme($primary, $accent);
+
+// Include all theme styles for the components.
+@include angular-material-theme($theme);
+
+body {
+  background-color: rgb(166, 185, 181);
+}
+
+.page-container {
+  margin: 10px;
+}

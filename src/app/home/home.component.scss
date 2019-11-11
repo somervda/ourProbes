@@ -1,0 +1,28 @@
+.home-card {
+  margin: auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  flex-basis: 500px;
+}
+
+.card-header {
+  background-color: rgb(235, 235, 235);
+}
+
+.card-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.card-1-image {
+  background-image: url("../../assets/images/card-1.png");
+  background-size: cover;
+}
+
+.card-2-image {
+  background-image: url("../../assets/images/card-2.png");
+  background-size: cover;
+}
