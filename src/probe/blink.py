@@ -1,0 +1,15 @@
+#Result: Blink
+# The info below shows that blink is available for the current version.
+# IO0  IO4  IO10 IO12~19  IO21~23 IO25~27
+# cept the connection between IO2 and onboard LED, other pins need to connect to external LEDs.
+
+import time
+from machine import Pin
+
+led = Pin(2, Pin.OUT)  # Define led pin as output
+
+while True:
+    led.value(1)  # light on led
+    time.sleep(0.5)
+    led.value(0)  # light off led
+    time.sleep(0.5)print
