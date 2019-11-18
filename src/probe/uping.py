@@ -19,6 +19,11 @@ def checksum(data):
     cs = ~cs & 0xffff
     return cs
 
+def getRandomString(size=64):
+    import urandom
+    printableCharacters = 'abcdefghijklmnopqrstuvwxyz1234567890ABCBEFHIJKLMNOPQRSTUVWXYZ'
+    return ''.join(urandom.choice(printableCharacters) for x in range(size))
+
 def ping(host, count=4, timeout=5000, interval=10, quiet=False, size=64):
     import utime
     import uselect
@@ -29,7 +34,9 @@ def ping(host, count=4, timeout=5000, interval=10, quiet=False, size=64):
 
     # prepare packet
     assert size >= 16, "pkt size too small"
-    pkt = b'Q'*size
+    # change pkt string to be randomized characters so that
+    # network data compression does not impact ping times
+    pkt = getRandomString(size).encode()
     pkt_desc = {
         "type": uctypes.UINT8 | 0,
         "code": uctypes.UINT8 | 1,
