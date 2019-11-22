@@ -28,7 +28,7 @@ def getRandomString(size=64):
     return ''.join(urandom.choice(printableCharacters) for x in range(size))
 
 
-def ping(host, count=4, timeout=5000, interval=10, quiet=False, size=64):
+def ping(host,  timeout=5000, quiet=False, size=16):
     import utime
     import uselect
     import uctypes
