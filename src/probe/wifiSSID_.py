@@ -1,0 +1,2 @@
+guestSSId = "guest"
+guestPassword = "******"
