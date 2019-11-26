@@ -22,13 +22,13 @@ def checksum(data):
     return cs
 
 
-def getRandomString(size=64):
+def getRandomString(size=16):
     import urandom
     printableCharacters = 'abcdefghijklmnopqrstuvwxyz1234567890ABCBEFHIJKLMNOPQRSTUVWXYZ'
     return ''.join(urandom.choice(printableCharacters) for x in range(size))
 
 
-def ping(host, timeout=5000, size=64):
+def ping(host, size=16, timeout=5000):
     import utime
     import uselect
     import uctypes
@@ -64,14 +64,10 @@ def ping(host, timeout=5000, size=64):
     sock.settimeout(timeout/1000)
     addr = usocket.getaddrinfo(host, 1)[0][-1][0]  # ip address
     sock.connect((addr, 1))
-    print("PING %s (%s): %u data bytes" % (host, addr, len(pkt)))
-    t = 0
-    n_recv = 0
     t_elasped = -1
     finish = False
 
     # send packet
-    print("sending seq %u", 1)
     h.checksum = 0
     h.seq = 1
     h.timestamp = utime.ticks_us()
@@ -79,11 +75,12 @@ def ping(host, timeout=5000, size=64):
     if sock.send(pkt) == size:
         t = 0  # reset timeout
     else:
-        # could not send packet
-        finish = True
+        # Failed : no result
+        return None
 
-    while t < timeout and not finish:
-        # recv packet, while trys for reciept of packet or timeout
+    t_end = utime.ticks_us() + (timeout * 1000)
+    while t_end > utime.ticks_us() and not finish:
+        # recv packet, while trys to receive icmp packet until timeout
         while 1:
             socks, _, _ = uselect.select([sock], [], [], 0)
             if socks:
@@ -92,23 +89,21 @@ def ping(host, timeout=5000, size=64):
                 h2 = uctypes.struct(uctypes.addressof(
                     resp_mv[20:]), pkt_desc, uctypes.BIG_ENDIAN)
                 # TODO: validate checksum (optional)
-                seq = h2.seq
-                print("recieving seq %u", seq)
+                print("recieving")
                 if h2.type == 0 and h2.id == h.id:  # 0: ICMP_ECHO_REPLY
                     t_elasped = (utime.ticks_us()-h2.timestamp) / 1000
                     ttl = ustruct.unpack('!B', resp_mv[8:9])[0]  # time-to-live
-                    n_recv += 1
-                    not quiet and print("%u bytes from %s: icmp_seq=%u, ttl=%u, time=%f ms" % (
-                        len(resp), addr, seq, ttl, t_elasped))
+                    print("%u bytes from %s: ttl=%u, time=%f ms" %
+                          (len(resp), addr, ttl, t_elasped))
                     finish = True
                     break
             else:
                 break
 
-        # Add 1 ms to timeout counter
-        utime.sleep_ms(1)
-        t += 1
-
     # close
     sock.close()
-    return (t_elasped, ttl)
+    if t_elasped == -1:
+        # Timed out
+        return None
+    else:
+        return t_elasped, ttl
