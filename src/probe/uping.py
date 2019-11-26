@@ -28,7 +28,7 @@ def getRandomString(size=64):
     return ''.join(urandom.choice(printableCharacters) for x in range(size))
 
 
-def ping(host, count=4, timeout=5000, interval=10, quiet=False, size=64):
+def ping(host, timeout=5000, size=64):
     import utime
     import uselect
     import uctypes
@@ -64,7 +64,7 @@ def ping(host, count=4, timeout=5000, interval=10, quiet=False, size=64):
     sock.settimeout(timeout/1000)
     addr = usocket.getaddrinfo(host, 1)[0][-1][0]  # ip address
     sock.connect((addr, 1))
-    not quiet and print("PING %s (%s): %u data bytes" % (host, addr, len(pkt)))
+    print("PING %s (%s): %u data bytes" % (host, addr, len(pkt)))
     t = 0
     n_recv = 0
     t_elasped = -1
@@ -79,10 +79,11 @@ def ping(host, count=4, timeout=5000, interval=10, quiet=False, size=64):
     if sock.send(pkt) == size:
         t = 0  # reset timeout
     else:
+        # could not send packet
         finish = True
 
-    while t < timeout and finish == False:
-        # recv packet
+    while t < timeout and not finish:
+        # recv packet, while trys for reciept of packet or timeout
         while 1:
             socks, _, _ = uselect.select([sock], [], [], 0)
             if socks:
@@ -110,4 +111,4 @@ def ping(host, count=4, timeout=5000, interval=10, quiet=False, size=64):
 
     # close
     sock.close()
-    return (t_elasped)
+    return (t_elasped, ttl)

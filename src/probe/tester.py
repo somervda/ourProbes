@@ -14,8 +14,8 @@ if not sta_if.isconnected():
 print('network config:', sta_if.ifconfig())
 
 
-t = uping.ping("ourDars.com", 1, 5000, 10, False, 16)
-print("time %f" % (t))
+pingInfo = uping.ping("ourDars.com", 1, 5000, 10, False, 16)
+print("time %f" % (pingInfo.values(0)))
 #uping.ping("somerville.noip.me", 1, 5000, 10, False, 16)
 #uping.ping("127.0.0.1", 1, 5000, 10, False, 16)
 #uping.ping("127.0.0.1", 1, 5000, 10, False, 16)
