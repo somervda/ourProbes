@@ -65,12 +65,9 @@ def ping(host, count=4, timeout=5000, interval=10, quiet=False, size=64):
     addr = usocket.getaddrinfo(host, 1)[0][-1][0]  # ip address
     sock.connect((addr, 1))
     not quiet and print("PING %s (%s): %u data bytes" % (host, addr, len(pkt)))
-
-    seqs = list(range(1, count+1))  # [1,2,...,count]
-    c = 1
     t = 0
-
     n_recv = 0
+    t_elasped = -1
     finish = False
 
     # send packet
@@ -84,7 +81,7 @@ def ping(host, count=4, timeout=5000, interval=10, quiet=False, size=64):
     else:
         finish = True
 
-    while t < timeout:
+    while t < timeout and finish == False:
         # recv packet
         while 1:
             socks, _, _ = uselect.select([sock], [], [], 0)
@@ -107,16 +104,10 @@ def ping(host, count=4, timeout=5000, interval=10, quiet=False, size=64):
             else:
                 break
 
-        if finish:
-            break
-
         # Add 1 ms to timeout counter
         utime.sleep_ms(1)
         t += 1
 
     # close
     sock.close()
-    ret = (n_recv)
-    not quiet and print(
-        "%u packets received" % (n_recv))
-    return (n_recv)
+    return (t_elasped)

@@ -14,10 +14,11 @@ if not sta_if.isconnected():
 print('network config:', sta_if.ifconfig())
 
 
-uping.ping("ourDars.com", 1, 5000, 10, False, 16)
-uping.ping("somerville.noip.me", 1, 5000, 10, False, 16)
-uping.ping("127.0.0.1", 1, 5000, 10, False, 16)
-uping.ping("127.0.0.1", 1, 5000, 10, False, 16)
+t = uping.ping("ourDars.com", 1, 5000, 10, False, 16)
+print("time %f" % (t))
+#uping.ping("somerville.noip.me", 1, 5000, 10, False, 16)
+#uping.ping("127.0.0.1", 1, 5000, 10, False, 16)
+#uping.ping("127.0.0.1", 1, 5000, 10, False, 16)
 
 print('disconnecting from network...')
 sta_if.active(False)
