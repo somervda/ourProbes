@@ -2,6 +2,7 @@
     "cSpell.words": [
         "Datepicker",
         "Firestore",
+        "INET",
         "Paginator",
         "Realtime",
         "Snackbar",
@@ -26,7 +27,9 @@
         "testuser",
         "theming",
         "tslib",
-        "userservice"
+        "urandom",
+        "userservice",
+        "usocket"
     ],
     "cSpell.ignoreWords": [
         "actioned"

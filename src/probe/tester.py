@@ -18,13 +18,13 @@ print('network config:', sta_if.ifconfig())
 print("2 second sleep...")
 utime.sleep_ms(2000)
 
-for x in range(10):
-    pingInfo = uping.ping("192.168.1.1", 16)
+for x in range(6):
+    pingInfo = uping.ping("127.0.0.1")
     if pingInfo == None:
         print("bad ping")
     else:
-        print("time %f Hops %u TTL %u" %
-              (pingInfo[0], (64 - pingInfo[1]), pingInfo[1]))
+        print("time %f TTL %u size_on_wire %u" %
+              (pingInfo[0], pingInfo[1],  pingInfo[2]))
 #uping.ping("somerville.noip.me", 1, 5000, 10, False, 16)
 #uping.ping("127.0.0.1", 1, 5000, 10, False, 16)
 #uping.ping("127.0.0.1", 1, 5000, 10, False, 16)

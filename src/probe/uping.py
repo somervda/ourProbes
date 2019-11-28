@@ -22,7 +22,7 @@ def checksum(data):
     return cs
 
 
-def getRandomString(size=16):
+def getRandomString(size):
     import urandom
     printableCharacters = 'abcdefghijklmnopqrstuvwxyz1234567890ABCBEFHIJKLMNOPQRSTUVWXYZ'
     return ''.join(urandom.choice(printableCharacters) for x in range(size))
@@ -36,13 +36,21 @@ def ping(host, size=16, timeout=5000):
     import ustruct
     import urandom
 
+    # Under 26 bytes, the echo responses may be a different size
+    # from the echo request so best to do all two way
+    # measurements based on at least 26 byte payloads.
+
+    # 16 bytes seem to be the minimum for relable timings from experimenting
+    assert size >= 16, "pkt size too small, must be > 16"
+
     # prepare packet
-    assert size >= 16, "pkt size too small"
-    # change pkt string to be randomized characters so that
+
+    # Use a randomized string so that
     # network data compression does not impact ping times
     pkt = getRandomString(size).encode()
 
     # Build the packet header
+    # See TCP Illustrated by W. Richard Stevens for good reference on packet headers
     pkt_desc = {
         "type": uctypes.UINT8 | 0,
         "code": uctypes.UINT8 | 1,
@@ -64,23 +72,22 @@ def ping(host, size=16, timeout=5000):
     sock.settimeout(timeout/1000)
     addr = usocket.getaddrinfo(host, 1)[0][-1][0]  # ip address
     sock.connect((addr, 1))
-    t_elasped = -1
+    t_elapsed = -1
     finish = False
+    size_on_wire = 0
 
     # send packet
     h.checksum = 0
     h.seq = 1
     h.timestamp = utime.ticks_us()
     h.checksum = checksum(pkt)
-    if sock.send(pkt) == size:
-        t = 0  # reset timeout
-    else:
-        # Failed : no result
+    if sock.send(pkt) != size:
+        # Failed : exit with no result
         return None
 
-    t_end = utime.ticks_us() + (timeout * 1000)
-    while t_end > utime.ticks_us() and not finish:
-        # recv packet, while trys to receive icmp packet until timeout
+    t_timeout = utime.ticks_us() + (timeout * 1000)
+    while t_timeout > utime.ticks_us() and not finish:
+        # recv packet, try to receive the icmp packet until timeout
         while 1:
             socks, _, _ = uselect.select([sock], [], [], 0)
             if socks:
@@ -88,13 +95,13 @@ def ping(host, size=16, timeout=5000):
                 resp_mv = memoryview(resp)
                 h2 = uctypes.struct(uctypes.addressof(
                     resp_mv[20:]), pkt_desc, uctypes.BIG_ENDIAN)
+                size_on_wire = len(resp)
                 # TODO: validate checksum (optional)
-                print("recieving")
                 if h2.type == 0 and h2.id == h.id:  # 0: ICMP_ECHO_REPLY
-                    t_elasped = (utime.ticks_us()-h2.timestamp) / 1000
+                    t_elapsed = (utime.ticks_us()-h2.timestamp) / 1000
                     ttl = ustruct.unpack('!B', resp_mv[8:9])[0]  # time-to-live
-                    print("%u bytes from %s: ttl=%u, time=%f ms" %
-                          (len(resp), addr, ttl, t_elasped))
+                    # print("%u bytes from %s: ttl=%u, time=%f ms" %
+                    #       (len(resp), addr, ttl, t_elapsed))
                     finish = True
                     break
             else:
@@ -102,8 +109,9 @@ def ping(host, size=16, timeout=5000):
 
     # close
     sock.close()
-    if t_elasped == -1:
+    if t_elapsed == -1:
         # Timed out
         return None
     else:
-        return t_elasped, ttl
+        # Note: From wireshark actual size of datagram on wire is 14 bytes larger than recv length (Ethernet Frame header)
+        return t_elapsed, ttl, (size_on_wire + 14)
