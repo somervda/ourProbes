@@ -19,11 +19,11 @@ print("2 second sleep...")
 utime.sleep_ms(2000)
 
 # When using clumsy as a network emulator see http://jagt.github.io/clumsy/index.html
-# this filter (ip.DstAddr == 192.168.1.171 or ip.SrcAddr == 192.168.1.171) and ip.Length > 600
-# will manage getting different ping times for different packets (to test bing)
+# this filter (ip.DstAddr == 192.168.1.171 or ip.SrcAddr == 192.168.1.171) and ip.Length > 600 and icmp
+# will support getting different ping times for different packets (to test bing) - 50 results in about 100kbps bing
 
 for x in range(5):
-    pingInfo = uping.ping("192.168.1.117", 26)
+    pingInfo = uping.ping("192.168.1.117", 800)
     if pingInfo == None:
         print("bad ping")
     else:
