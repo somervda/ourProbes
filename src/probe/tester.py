@@ -18,8 +18,12 @@ print('network config:', sta_if.ifconfig())
 print("2 second sleep...")
 utime.sleep_ms(2000)
 
-for x in range(6):
-    pingInfo = uping.ping("127.0.0.1")
+# When using clumsy as a network emulator see http://jagt.github.io/clumsy/index.html
+# this filter (ip.DstAddr == 192.168.1.171 or ip.SrcAddr == 192.168.1.171) and ip.Length > 600
+# will manage getting different ping times for different packets (to test bing)
+
+for x in range(5):
+    pingInfo = uping.ping("192.168.1.117", 26)
     if pingInfo == None:
         print("bad ping")
     else:
