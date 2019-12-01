@@ -22,16 +22,13 @@ utime.sleep_ms(2000)
 # this filter (ip.DstAddr == 192.168.1.171 or ip.SrcAddr == 192.168.1.171) and ip.Length > 600 and icmp
 # will support getting different ping times for different packets (to test bing) - 50 results in about 100kbps bing
 
-for x in range(5):
-    pingInfo = uping.ping("192.168.1.117", 800)
+for x in range(2):
+    pingInfo = uping.ping("192.168.1.117", 16)
     if pingInfo == None:
         print("bad ping")
     else:
         print("time %f TTL %u size_on_wire %u" %
               (pingInfo[0], pingInfo[1],  pingInfo[2]))
-#uping.ping("somerville.noip.me", 1, 5000, 10, False, 16)
-#uping.ping("127.0.0.1", 1, 5000, 10, False, 16)
-#uping.ping("127.0.0.1", 1, 5000, 10, False, 16)
 
 print('disconnecting from network...')
 sta_if.active(False)

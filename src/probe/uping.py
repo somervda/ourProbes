@@ -50,7 +50,7 @@ def ping(host, size=16, timeout=5000):
     pkt = getRandomString(size).encode()
 
     # Build the packet header
-    # See TCP Illustrated by W. Richard Stevens for good reference on packet headers
+    # See http://www.networksorcery.com/enp/protocol/icmp/msg8.htm for details
     pkt_desc = {
         "type": uctypes.UINT8 | 0,
         "code": uctypes.UINT8 | 1,
