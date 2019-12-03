@@ -44,26 +44,42 @@ def bing(host, samples=3, timeout=5000, quiet=False):
 
     # Check Results before calculating
 
-    if (loopback26 == None or loopback1480 == None or target26 == None or target1480 == None or latency == None):
-        not quiet and print("getLowestPing failed")
+    if (loopback26 == None):
+        not quiet and print("getlowestPing failed: loopback26 == None")
+        return None
+    if (loopback1480 == None):
+        not quiet and print("getlowestPing failed: loopback1480 == None")
+        return None
+    if (target26 == None):
+        not quiet and print("getlowestPing failed: target26 == None")
+        return None
+    if (target1480 == None):
+        not quiet and print("getlowestPing failed: target1480 == None")
+        return None
+    if (latency == None):
+        not quiet and print("getlowestPing failed: latency == None")
         return None
     if (loopback26 > loopback1480):
-        not quiet and print("loopback26 > loopback1480")
+        not quiet and print(
+            "bing calculation not possable: loopback26 > loopback1480")
         return None
     if (target26 > target1480):
-        not quiet and print("target26 > target1480")
+        not quiet and print(
+            "bing calculation not possable: target26 > target1480")
         return None
     if (loopback26 > target26):
-        not quiet and print("loopback26 > target26")
+        not quiet and print(
+            "bing calculation not possable: loopback26 > target26")
         return None
     if (loopback1480 > target1480):
-        not quiet and print("loopback1480 > target1480")
-        return None
-    if (((target1480 - loopback1480) - (target1480 - loopback26)) >= 0):
         not quiet and print(
-            "((target1480 - loopback1480) - (target1480 - loopback26)) >= 0")
+            "bing calculation not possable: loopback1480 > target1480")
         return None
     deltaLatency = ((target1480 - loopback1480) - (target26 - loopback26))
+    if (deltaLatency <= 0):
+        not quiet and print(
+            "bing calculation not possable: deltaLatency <= 0")
+        return None
     not quiet and print("deltaLatency:", deltaLatency)
     deltaPayloadBits = (1480-26) * 8
     not quiet and print("deltaPayloadBits:", deltaPayloadBits)
