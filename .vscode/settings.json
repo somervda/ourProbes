@@ -6,6 +6,7 @@
         "INET",
         "Paginator",
         "Realtime",
+        "Shawwwn",
         "Snackbar",
         "Somerville",
         "appspot",
@@ -16,6 +17,7 @@
         "devkit",
         "firebaseapp",
         "firebaseui",
+        "gmail",
         "jasminewd",
         "kvps",
         "navbutton",
@@ -29,6 +31,7 @@
         "theming",
         "tslib",
         "ubing",
+        "uping",
         "urandom",
         "userservice",
         "usocket"
