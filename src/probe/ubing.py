@@ -2,20 +2,23 @@
 # copyright (c) 2019 David Somerville <david.a.somerville@outlook.com>
 # License: MIT
 
-import uping_ as uping
+import uping as uping
+import utime
 
 
 def getLowestPing(host, samples, size, timeout=5000, quiet=False):
-    # Make a list of ping results
+    # Make a list containing the ping results for each of the ping samples
     pings = []
     for x in range(samples):
-        pings.append(uping.ping(host, size, timeout))
+        ping = uping.ping(host, size, timeout)
+        pings.append(ping)
+        not quiet and print(
+            "getLowestPing host %s size %u sample# %u result: " % (host, size, x), ping)
+        utime.sleep_ms(25)
     # Review results for number of successful pings and get the lowest latency
     minPing = 9999
     failCnt = 0
     for ping in pings:
-        not quiet and print(
-            "getLowestPing host %s size %u result" % (host, size), ping)
 
         if (ping == None):
             failCnt += 1
