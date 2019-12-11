@@ -35,12 +35,13 @@ def bing(host, samples=3, maxSize=1460, timeout=5000, quiet=False):
     # also get esp32 overhead time for the same pings to localhost (no network times)
     # calculate and return bandwidth (bps) and latency (ms) based on the ping samples
     # use a modified version of the uping library from Shawwwn <shawwwn1@gmail.com>
+    loopback = "127.0.0.1"
 
     # Get latency
     latency = getLowestPing(host, samples, 16, timeout)
     # Get Lowest loopback latencies
-    loopback26 = getLowestPing("127.0.0.1", samples, 26, timeout)
-    loopbackMax = getLowestPing("127.0.0.1", samples, maxSize, timeout)
+    loopback26 = getLowestPing(loopback, samples, 26, timeout)
+    loopbackMax = getLowestPing(loopback, samples, maxSize, timeout)
     # Get Lowest target latencies
     target26 = getLowestPing(host, samples, 26, timeout)
     targetMax = getLowestPing(host, samples, maxSize, timeout)

@@ -1,7 +1,9 @@
 import machine
+import ubing
 import uping
 import utime
 import network
+
 
 print("Connecting to lan")
 l = network.LAN(mdc=machine.Pin(23), mdio=machine.Pin(18), power=machine.Pin(
@@ -9,22 +11,34 @@ l = network.LAN(mdc=machine.Pin(23), mdio=machine.Pin(18), power=machine.Pin(
 l.ifconfig()
 l.active(1)
 while not l.isconnected():
-    print(l.isconnected())
+    print("Connected: ", l.isconnected())
     utime.sleep_ms(500)
-# There seems to be a delay between when the board reports it is connected and
-# the connection being able to be used, added a sleep to compensate
-utime.sleep_ms(2000)
-print("Lan connection info", l.ifconfig())
 
+# Need to wait until the network address gets set on th device so
+# loop until a valid addess is registered (check first  ifConfig value, it will be the assigned IP)
+
+ip = l.ifconfig()[0]
+while ip == '0.0.0.0':
+    print("Getting IP", ip)
+    utime.sleep_ms(1000)
+    ip = l.ifconfig()[0]
+
+print("Address Details: ", l.ifconfig())
 print("Start pings")
 for x in range(5):
-    pingInfo = uping.ping("192.168.1.117", 26)
+    pingInfo = uping.ping("192.168.1.251", 1480)
     if pingInfo == None:
         print("bad ping")
     else:
         print("time %f TTL %u size_on_wire %u" %
               (pingInfo[0], pingInfo[1],  pingInfo[2]))
 
+print("bing 192.168.1.251: ", ubing.bing("192.168.1.251", 5))
+
+
 print("End pings")
-l.active(0)
-print("End")
+print('disconnecting from network...')
+l.active(False)
+while l.isconnected():
+    pass
+print('Disconnected from network')
