@@ -30,9 +30,9 @@ def getLowestPing(host, samples, size, timeout=5000, quiet=False):
         return minPing
 
 
-def bing(host, samples=3, maxSize=1460, timeout=5000, quiet=False):
+def bing(host, samples=3, maxSize=1460, timeout=5000, quiet=False, loopBackAdjustment=True):
     # perform required number of ping samples to the host using 16byte and maxsize packets
-    # also get esp32 overhead time for the same pings to localhost (no network times)
+    # also get esp32 overhead time for the same pings to loopback (no network times)
     # calculate and return bandwidth (bps) and latency (ms) based on the ping samples
     # use a modified version of the uping library from Shawwwn <shawwwn1@gmail.com>
     loopback = "127.0.0.1"
@@ -40,20 +40,26 @@ def bing(host, samples=3, maxSize=1460, timeout=5000, quiet=False):
     # Get latency
     latency = getLowestPing(host, samples, 16, timeout)
     # Get Lowest loopback latencies
-    loopback26 = getLowestPing(loopback, samples, 26, timeout)
-    loopbackMax = getLowestPing(loopback, samples, maxSize, timeout)
+    if(loopBackAdjustment):
+        loopback26 = getLowestPing(loopback, samples, 26, timeout)
+        loopbackMax = getLowestPing(loopback, samples, maxSize, timeout)
     # Get Lowest target latencies
     target26 = getLowestPing(host, samples, 26, timeout)
     targetMax = getLowestPing(host, samples, maxSize, timeout)
 
     # Check Results before calculating
 
-    if (loopback26 == None):
-        not quiet and print("getlowestPing failed: loopback26 == None")
-        return None
-    if (loopbackMax == None):
-        not quiet and print("getlowestPing failed: loopbackMax == None")
-        return None
+    if(loopBackAdjustment):
+        if (loopback26 == None):
+            not quiet and print("getlowestPing failed: loopback26 == None")
+            return None
+        if (loopbackMax == None):
+            not quiet and print("getlowestPing failed: loopbackMax == None")
+            return None
+        if (loopback26 > loopbackMax):
+            not quiet and print(
+                "bing calculation not possable: loopback26 > loopbackMax")
+            return None
     if (target26 == None):
         not quiet and print("getlowestPing failed: target26 == None")
         return None
@@ -63,23 +69,19 @@ def bing(host, samples=3, maxSize=1460, timeout=5000, quiet=False):
     if (latency == None):
         not quiet and print("getlowestPing failed: latency == None")
         return None
-    if (loopback26 > loopbackMax):
-        not quiet and print(
-            "bing calculation not possable: loopback26 > loopbackMax")
-        return None
     if (target26 > targetMax):
         not quiet and print(
             "bing calculation not possable: target26 > targetMax")
         return None
-    if (loopback26 > target26):
-        not quiet and print(
-            "bing calculation not possable: loopback26 > target26")
-        return None
-    if (loopbackMax > targetMax):
-        not quiet and print(
-            "bing calculation not possable: loopbackMax > targetMax")
-        return None
-    deltaLatency = ((targetMax - loopbackMax) - (target26 - loopback26))
+    targetDelta = (targetMax - target26)
+    loopbackDelta = loopbackMax - loopback26
+    not quiet and print("targetDelta:", targetDelta,
+                        " loopbackDelta:", loopbackDelta)
+
+    if(loopBackAdjustment):
+        deltaLatency = targetDelta - loopbackDelta
+    else:
+        deltaLatency = targetMax - target26
     if (deltaLatency <= 0):
         not quiet and print(
             "bing calculation not possable: deltaLatency <= 0")

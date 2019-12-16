@@ -12,11 +12,20 @@ if not sta_if.isconnected():
     sta_if.connect(wifiSSID.guestSSId, wifiSSID.guestPassword)
     while not sta_if.isconnected():
         pass
-print('network config:', sta_if.ifconfig())
+
 
 # 2 seconds to wait for network to settle down
+# ip = sta_if.ifconfig()[0]
+# while ip == '0.0.0.0':
+#     print("Getting IP", ip)
+#     utime.sleep_ms(500)
+#     ip = sta_if.ifconfig()[0]
+
+# print("Address Details: ", sta_if.ifconfig())
+
 print("2 second sleep...")
 utime.sleep_ms(2000)
+print('network config:', sta_if.ifconfig())
 
 # When using clumsy as a network emulator see http://jagt.github.io/clumsy/index.html
 # this filter (ip.DstAddr == 192.168.1.171 or ip.SrcAddr == 192.168.1.171) and ip.Length > 600 and icmp
@@ -30,7 +39,9 @@ utime.sleep_ms(2000)
 #         print("time %f TTL %u size_on_wire %u" %
 #               (pingInfo[0], pingInfo[1],  pingInfo[2]))
 
-print("bing ourDars: ", ubing.bing("192.168.1.68", 5))
+host = "spark.ape.nzix.net"
+
+print("bing ", host, ": ", ubing.bing(host, 5, loopBackAdjustment=True))
 
 
 print('disconnecting from network...')
