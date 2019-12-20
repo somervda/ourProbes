@@ -11,29 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-# Configuration File
-device_config = {
-  'led_pin': 1
-}
-
-wifi_config = {
-    'ssid':'',
-    'password':''
-}
-
-google_cloud_config = {
-    'project_id':'',
-    'cloud_region':'',
-    'registry_id':'',
-    'device_id':'',
-    'mqtt_bridge_hostname':'mqtt.googleapis.com',
-    'mqtt_bridge_port':8883
-}
-
-jwt_config = {
-    'algorithm':'RS256',
-    'token_ttl': 43200, #12 hours
-    # Use utiles/decode_rsa.py to decode private pem to pkcs1.
-    'private_key':()
-}
+import rsa
+with open('rsa_private.pem', 'rb') as file:
+    private_key = file.read()
+pk = rsa.PrivateKey.load_pkcs1(private_key)
+print(str(pk)[10:])
