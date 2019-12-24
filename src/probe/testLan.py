@@ -26,9 +26,12 @@ while ip == '0.0.0.0':
 
 print("Address Details: ", l.ifconfig())
 
-print("Start pings")
+# utime.sleep_ms(10000)
+
+host = "192.168.1.117"
+print("Start pings: ", host)
 for x in range(5):
-    pingInfo = uping.ping("192.168.1.251", 26)
+    pingInfo = uping.ping(host, 26)
     if pingInfo == None:
         print("bad ping")
     else:
@@ -36,8 +39,7 @@ for x in range(5):
               (pingInfo[0], pingInfo[1],  pingInfo[2]))
 print("End pings")
 
-host = "192.168.1.251"
-print("bing ", host, ": ", ubing.bing(host, 5, loopbackBaseline=True))
+print("bing ", host, ": ", ubing.bing(host, 5, loopBackAdjustment=True))
 
 print('disconnecting from network...')
 

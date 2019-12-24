@@ -39,7 +39,7 @@ print('network config:', sta_if.ifconfig())
 #         print("time %f TTL %u size_on_wire %u" %
 #               (pingInfo[0], pingInfo[1],  pingInfo[2]))
 
-host = "spark.ape.nzix.net"
+host = "192.168.1.109"
 
 print("bing ", host, ": ", ubing.bing(host, 5, loopBackAdjustment=True))
 

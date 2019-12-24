@@ -6,7 +6,7 @@
 import time
 from machine import Pin
 
-led = Pin(33, Pin.OUT)  # Define led pin as output
+led = Pin(2, Pin.OUT)  # Define led pin as output
 
 for x in range(5):
     led.value(1)  # light on led
