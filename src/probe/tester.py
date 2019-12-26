@@ -1,4 +1,4 @@
-from config_ import config
+import config
 import ubing
 import utime
 
@@ -9,7 +9,7 @@ sta_if = network.WLAN(network.STA_IF)
 if not sta_if.isconnected():
     print('connecting to network...')
     sta_if.active(True)
-    sta_if.connect(config.ssid, config.password)
+    sta_if.connect(config.wifi_config["ssid"], config.wifi_config["password"])
     while not sta_if.isconnected():
         pass
 
@@ -39,7 +39,7 @@ print('network config:', sta_if.ifconfig())
 #         print("time %f TTL %u size_on_wire %u" %
 #               (pingInfo[0], pingInfo[1],  pingInfo[2]))
 
-host = "192.168.1.109"
+host = "ourDars.com"
 
 print("bing ", host, ": ", ubing.bing(host, 5, loopBackAdjustment=True))
 

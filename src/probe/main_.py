@@ -25,7 +25,7 @@ from ubinascii import b2a_base64
 from machine import RTC, Pin
 import ntptime
 import ujson
-from config_ import config
+import config
 
 print("Starting Main")
 
