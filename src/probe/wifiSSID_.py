@@ -1,2 +1,0 @@
-guestSSId = "guest"
-guestPassword = "******"
