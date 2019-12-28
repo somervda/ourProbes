@@ -36,15 +36,20 @@ def add(fname, objProbe):
     print("end of add, characters in file: ", l)
 
 
-def get(fname):
+def get():
+    # return all the probe as objects in a list
     print("start of get")
     os.chdir('/')
-    f = open('/probes/' + fname + '.json', 'rt')
-    v = f.read()
-    objJson = ujson.loads(v)
-    f.close
+    probeList = []
+    if ('probes' in os.listdir()):
+        for i in os.listdir('probes'):
+            f = open('/probes/' + i, 'rt')
+            v = f.read()
+            objJson = ujson.loads(v)
+            f.close
+            probeList.append(objJson)
     print("end of get")
-    return objJson
+    return probeList
 
 
 def remove(fname):
@@ -64,8 +69,8 @@ myprobe = {
 }
 
 reset()
+add('probe1', myprobe)
 add('probe2', myprobe)
-obj = get('probe2')
-print(obj)
-print("obj[id]", obj['id'])
+plist = get()
+print(plist)
 remove("probe2")
