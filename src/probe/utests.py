@@ -4,10 +4,16 @@
 # add(name, testObject)
 # get()
 # remove(name)
+import os
+import json
+
+cwd = os.getcwd()
+print('starting cwd:', cwd)
 
 
 def reset():
     print("start of reset")
+    os.chdir('/')
     if ('tests' in os.listdir()):
         print("tests dir found, deleting any files")
         for i in os.listdir('tests'):
@@ -16,14 +22,22 @@ def reset():
     else:
         print("tests dir not found, creating one")
         os.mkdir('tests')
+    os.chdir('/')
 
 
 def add(name, testObject):
     print("start of add")
-    f = open('/tests/' + name + '.tst', 'w')
-    f.write('hi')
+    os.chdir('/')
+    os.chdir('tests')
+    f = open(name + '.tst', 'w')
+    f.write(repr(testObject))
     f.close()
+    os.chdir('/')
     print("end of add")
+
+
+def get(name):
+    f = open(name, 'r')
 
 
 test = {
@@ -32,5 +46,5 @@ test = {
     'target': 'ourDars.com'
 }
 
-add('test1', test)
-# reset()
+reset()
+# add('test1', test)
