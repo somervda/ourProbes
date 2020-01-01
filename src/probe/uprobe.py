@@ -68,9 +68,25 @@ myprobe = {
     'target': 'ourDars.com'
 }
 
+p2 = {
+    "loopGovenorSeconds": " 300",
+    "probeOperations": [
+        {
+            "id": "8484hf84f8hfh84bhflwld9h",
+            "type": 'bing',
+            'target': 'ourDars.com'
+        },
+        {
+            "id": "73622929273737jhdhw828",
+            "type": 'bing',
+            'target': 'lupincorp.com'
+        }
+    ]
+}
+
 reset()
-add('probe1', myprobe)
-add('probe2', myprobe)
+# add('probe1', myprobe)
+add('probe2', p2)
 plist = get()
 print(plist)
-remove("probe2")
+# remove("probe2")

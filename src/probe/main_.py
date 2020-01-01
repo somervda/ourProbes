@@ -26,6 +26,7 @@ from machine import RTC, Pin
 import ntptime
 import ujson
 import config
+import uoperations
 
 print("Starting Main")
 
@@ -35,7 +36,14 @@ led = Pin(config.device_config['led_pin'], Pin.OUT)  # Define led pin as output
 
 
 def on_message(topic, message):
-    print((topic, message))
+    # callback for messages received from Google IOT
+    # check for a config message and save to operations.json
+
+    # print((topic, message))
+    deviceConfigTopic = '/devices/{}/config'.format(
+        config.google_cloud_config['device_id'])
+    if topic.decode("utf-8") == deviceConfigTopic:
+        uoperations.save(message.decode("utf-8"))
 
 
 def connect():
@@ -107,10 +115,11 @@ set_time()
 
 jwt = create_jwt(config.google_cloud_config['project_id'], config.jwt_config['private_key'],
                  config.jwt_config['algorithm'], config.jwt_config['token_ttl'])
+
 client = get_mqtt_client(config.google_cloud_config['project_id'], config.google_cloud_config['cloud_region'],
                          config.google_cloud_config['registry_id'], config.google_cloud_config['device_id'], jwt)
 
-for x in range(2):
+for x in range(1):
     message = {
         "device_id": config.google_cloud_config['device_id'],
         "temp": esp32.raw_temperature()
@@ -122,8 +131,8 @@ for x in range(2):
     client.publish(mqtt_topic.encode('utf-8'),
                    ujson.dumps(message).encode('utf-8'))
     led.value(0)
-
     client.check_msg()  # Check for new messages on subscription
+    print("operations.json : ", uoperations.get())
     utime.sleep(1)  # Delay for 10 seconds.
 
 print('disconnecting MQTT client...')
