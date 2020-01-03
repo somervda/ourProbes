@@ -27,6 +27,8 @@ import ntptime
 import ujson
 import config
 import uoperations
+import uresults
+import ubing
 
 print("Starting Main")
 
@@ -108,35 +110,65 @@ def get_mqtt_client(project_id, cloud_region, registry_id, device_id, jwt):
     return client
 
 
-connect()
-led.value(0)
-# # Need to be connected to the internet before setting the local RTC.
-set_time()
-
-jwt = create_jwt(config.google_cloud_config['project_id'], config.jwt_config['private_key'],
-                 config.jwt_config['algorithm'], config.jwt_config['token_ttl'])
-
-client = get_mqtt_client(config.google_cloud_config['project_id'], config.google_cloud_config['cloud_region'],
-                         config.google_cloud_config['registry_id'], config.google_cloud_config['device_id'], jwt)
+uresults.reset()
+testResult = {
+    "operationId": "8484hf84f8hfh84bhflwld9h",
+    "operationTime": 38383812010,
+    "bps": 1000000,
+    'target': 'ourDars.com',
+    'rtl': 230
+}
+uresults.add(testResult)
 
 for x in range(1):
-    message = {
-        "device_id": config.google_cloud_config['device_id'],
-        "temp": esp32.raw_temperature()
-    }
-    print("Publishing message "+str(ujson.dumps(message)))
-    led.value(1)
-    mqtt_topic = '/devices/{}/{}'.format(
-        config.google_cloud_config['device_id'], 'events')
-    client.publish(mqtt_topic.encode('utf-8'),
-                   ujson.dumps(message).encode('utf-8'))
-    led.value(0)
-    client.check_msg()  # Check for new messages on subscription
-    print("operations.json : ", uoperations.get())
-    utime.sleep(1)  # Delay for 10 seconds.
+    gc.collect()
+    # main loop
+    # 1. connect to Google IOT, get new operations(from config topic) and send results of network tests (operations)
+    # 2. Perform operations, build up next set of results
+    # 3. Loop Governance : delay next loop for required time so loop isn't too fast
 
-print('disconnecting MQTT client...')
-client.disconnect()
+    connect()
+    led.value(0)
+    # # Need to be connected to the internet before setting the local RTC.
+    set_time()
+
+    jwt = create_jwt(config.google_cloud_config['project_id'], config.jwt_config['private_key'],
+                     config.jwt_config['algorithm'], config.jwt_config['token_ttl'])
+
+    client = get_mqtt_client(config.google_cloud_config['project_id'], config.google_cloud_config['cloud_region'],
+                             config.google_cloud_config['registry_id'], config.google_cloud_config['device_id'], jwt)
+
+    client.check_msg()  # Check for new messages on subscription
+    operations = uoperations.get()
+    print("operations : ", str(operations))
+
+    resultFileList = uresults.list()
+    for fName in resultFileList:
+        result = uresults.get(fName)
+        print("Publishing result ", fName, " : ",
+              str(ujson.dumps(result)))
+        led.value(1)
+        mqtt_topic = '/devices/{}/{}'.format(
+            config.google_cloud_config['device_id'], 'events')
+        client.publish(mqtt_topic.encode('utf-8'),
+                       ujson.dumps(result).encode('utf-8'))
+        led.value(0)
+        uresults.remove(fName)
+        utime.sleep(1)  # Delay for 1 seconds.
+
+    print('disconnecting MQTT client...')
+    client.disconnect()
+    # add network capability tests to create next set of results
+    #  TBD......
+    for operation in operations['probeOperations']:
+        host = operation['target']
+        # print("bing ", host)
+        print("bing ", host, ": ", ubing.bing(
+            host, 5, loopBackAdjustment=True))
+    # Sleep based on (loopGovernorSeconds - loop elapsed seconds)
+    print("loopGovernorSeconds: ", str(operations['loopGovernorSeconds']))
+
+# Clean up network connection (Not needed when used in a real main.py that never ends)
 print('disconnecting from network...')
 sta_if.active(False)
 while sta_if.isconnected():

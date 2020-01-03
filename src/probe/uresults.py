@@ -5,8 +5,8 @@
 # list() : returns a list of result files
 # get(fname) : returns object with contents of the fname results file
 # remove(fname)
-# Note: do a os.chdir('/') before all operations to make sure we are in correct dir
-#  even if earlier operation fails
+# Note: do a os.chdir('/') before all operations to make sure we are in top level folder
+#  even if an earlier operation fails
 import os
 import ujson
 import utime
@@ -16,12 +16,12 @@ def reset():
     print("start of reset")
     os.chdir('/')
     if ('results' in os.listdir()):
-        print("results dir found, deleting any files")
+        print("results folder found, deleting any files")
         for i in os.listdir('results'):
             print("removing", i)
             os.remove('results/' + i)
     else:
-        print("results dir not found, creating one")
+        print("results folder not found, creating one")
         os.mkdir('results')
     os.chdir('/')
 
@@ -77,18 +77,19 @@ def remove(fname):
     print("end of remove")
 
 
-result = {
-    "operationId": "8484hf84f8hfh84bhflwld9h",
-    "operationTime": 38383812010,
-    "bps": 1000000,
-    'target': 'ourDars.com',
-    'rtl': 230
-}
+# result = {
+#     "operationId": "8484hf84f8hfh84bhflwld9h",
+#     "operationTime": 38383812010,
+#     "bps": 1000000,
+#     'target': 'ourDars.com',
+#     'rtl': 230
+# }
 
 
 # reset()
 # add('probe1', myprobe)
-add(result)
-plist = list()
-print(plist)
+# add(result)
+# plist = list()
+# for i in plist:
+#     print(i, get(i))
 # remove("probe2")

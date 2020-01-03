@@ -35,6 +35,7 @@
         "ujson",
         "uping",
         "urandom",
+        "uresults",
         "userservice",
         "usocket"
     ],
