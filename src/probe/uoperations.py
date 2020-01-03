@@ -25,3 +25,16 @@ def get():
         objOperations = ujson.loads(o)
         f.close
     return objOperations
+
+
+# ******************* Test **********************
+# objOperations = {"loopGovernorSeconds":  300,
+#                  "probeOperations": [
+#                      {"id": "8484hf84f8hfh84bhflwld9h",
+#                          "type": "bing", "target": "ourDars.com"},
+#                      {"id": "73622929273737jhdhw828",
+#                          "type": "bing", "target": "lupincorp.com"}
+#                  ]}
+
+# save(ujson.dumps(objOperations))
+# print(get())
