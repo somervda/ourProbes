@@ -11,41 +11,46 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import machine
-import esp32
-from third_party import string
-import network
-import socket
-import os
-import utime
-import ssl
-from third_party import rsa
-from umqtt.simple import MQTTClient
-from ubinascii import b2a_base64
-from machine import RTC, Pin
-import ntptime
-import ujson
-import config
-import uoperations
-import uresults
+
 import ubing
+import uresults
+import uprobeConfig
+import config
+import ujson
+import ntptime
+from machine import RTC, Pin
+from ubinascii import b2a_base64
+from umqtt.simple import MQTTClient
+from third_party import rsa
+import ssl
+import utime
+import os
+import socket
+import network
+from third_party import string
+import esp32
+import machine
+
+
 
 print("Starting Main")
-
+gc.collect()
 sta_if = network.WLAN(network.STA_IF)
 print("sta_if", sta_if)
+gc.collect()
+
 led = Pin(config.device_config['led_pin'], Pin.OUT)  # Define led pin as output
 
 
 def on_message(topic, message):
     # callback for messages received from Google IOT
-    # check for a config message and save to operations.json
+    # check for a config message and save to probeConfig.json
 
     # print((topic, message))
     deviceConfigTopic = '/devices/{}/config'.format(
         config.google_cloud_config['device_id'])
     if topic.decode("utf-8") == deviceConfigTopic:
-        uoperations.save(message.decode("utf-8"))
+        uprobeConfig.save(message.decode("utf-8"))
 
 
 def connect():
@@ -112,8 +117,8 @@ def get_mqtt_client(project_id, cloud_region, registry_id, device_id, jwt):
 
 uresults.reset()
 testResult = {
-    "operationId": "8484hf84f8hfh84bhflwld9h",
-    "operationTime": 38383812010,
+    "instructionId": "8484hf84f8hfh84bhflwld9h",
+    "instructionTime": 38383812010,
     "bps": 1000000,
     'target': 'ourDars.com',
     'rtl': 230
@@ -123,8 +128,8 @@ uresults.add(testResult)
 for x in range(1):
     gc.collect()
     # main loop
-    # 1. connect to Google IOT, get new operations(from config topic) and send results of network tests (operations)
-    # 2. Perform operations, build up next set of results
+    # 1. connect to Google IOT, get new probeConfig(from config topic) and send results of network tests (probeConfig)
+    # 2. Perform probeConfig, build up next set of results
     # 3. Loop Governance : delay next loop for required time so loop isn't too fast
 
     connect()
@@ -139,8 +144,8 @@ for x in range(1):
                              config.google_cloud_config['registry_id'], config.google_cloud_config['device_id'], jwt)
 
     client.check_msg()  # Check for new messages on subscription
-    operations = uoperations.get()
-    print("operations : ", str(operations))
+    probeConfig = uprobeConfig.get()
+    print("probeConfig : ", str(probeConfig))
 
     resultFileList = uresults.list()
     for fName in resultFileList:
@@ -160,13 +165,13 @@ for x in range(1):
     client.disconnect()
     # add network capability tests to create next set of results
     #  TBD......
-    for operation in operations['probeOperations']:
-        host = operation['target']
+    for instruction in probeConfig['probeList']:
+        host = instruction['target']
         # print("bing ", host)
         print("bing ", host, ": ", ubing.bing(
-            host, 5, loopBackAdjustment=True))
+            host, 5, loopBackAdjustment=False))
     # Sleep based on (loopGovernorSeconds - loop elapsed seconds)
-    print("loopGovernorSeconds: ", str(operations['loopGovernorSeconds']))
+    print("governorSeconds: ", str(probeConfig['governorSeconds']))
 
 # Clean up network connection (Not needed when used in a real main.py that never ends)
 print('disconnecting from network...')

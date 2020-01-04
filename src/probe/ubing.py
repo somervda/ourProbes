@@ -74,9 +74,10 @@ def bing(host, samples=3, maxSize=1460, timeout=5000, quiet=False, loopBackAdjus
             "bing calculation not possable: target26 > targetMax")
         return None
     targetDelta = (targetMax - target26)
-    loopbackDelta = loopbackMax - loopback26
-    not quiet and print("targetDelta:", targetDelta,
-                        " loopbackDelta:", loopbackDelta)
+    not quiet and print("targetDelta:", targetDelta)
+    if(loopBackAdjustment):
+        loopbackDelta = loopbackMax - loopback26
+        not quiet and print(" loopbackDelta:", loopbackDelta)
 
     if(loopBackAdjustment):
         deltaLatency = targetDelta - loopbackDelta

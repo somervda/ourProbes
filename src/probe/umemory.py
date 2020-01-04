@@ -19,5 +19,5 @@ def free(full=False):
         return ('Total:{0} Free:{1} ({2})'.format(T, F, P))
 
 
-print(micropython.mem_info(1))
-print(free())
+# print(micropython.mem_info(1))
+# print(free())
