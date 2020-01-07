@@ -120,9 +120,10 @@ for x in range(2):
     # 1. connect to Google IOT, get new probeConfig(from config topic) and send results of network tests (probeConfig)
     # 2. Perform probeConfig, build up next set of results
     # 3. Loop Governance : delay next loop for required time so loop isn't too fast
+
+    # 1 **************************   MQTT  *********************************
     connect()
     led.value(1)
-    # # Need to be connected to the internet before setting the local RTC.
     set_time()
     loopStartTime = utime.time()
     jwt = create_jwt(config.google_cloud_config['project_id'], config.jwt_config['private_key'],
@@ -134,9 +135,8 @@ for x in range(2):
     probeConfig = uprobeConfig.get()
     print("probeConfig : ", str(probeConfig))
 
-    resultFileList = uresults.list()
     # Turn of led while sending probe results to IOT core
-    for fName in resultFileList:
+    for fName in uresults.list():
         led.value(0)
         result = uresults.get(fName)
         print("Publishing result ", fName, " : ",
@@ -146,13 +146,14 @@ for x in range(2):
         client.publish(mqtt_topic.encode('utf-8'),
                        ujson.dumps(result).encode('utf-8'))
         uresults.remove(fName)
-        utime.sleep(1)  # Delay for 1 seconds.
+        utime.sleep_ms(500)  
         led.value(1)
 
     print('disconnecting MQTT client...')
     client.disconnect()
-    # add network capability tests to create next set of results
-    #  TBD......
+
+    # 2 *******************  Probes - network capability tests *****************************
+
     for probe in probeConfig['probeList']:
         # print('current time: {}'.format(utime.localtime()))
         # print('utime.time(): ', utime.time() + 946684800)
@@ -173,14 +174,17 @@ for x in range(2):
         # print("bing ", host)
         # print("bing ", host, ": ", ubing.bing(
         #     host, 5, loopBackAdjustment=False))
+
+    # 3 **************** Governor ***************************
+
     led.value(0)
-    # Sleep based on (loopGovernorSeconds - loop elapsed seconds)
     print("governorSeconds: ", str(probeConfig['governorSeconds']))
     print("loop time so far:", utime.time() - loopStartTime)
     sleeper = probeConfig['governorSeconds'] - (utime.time() - loopStartTime)
     if sleeper > 0:
         print("sleeping: ", sleeper)
-        utime.sleep(sleeper)
+        # utime.sleep(sleeper)
+        utime.sleep(5)
 
 # Clean up network connection (Not needed when used in a real main.py that never ends)
 print('disconnecting from network...')
