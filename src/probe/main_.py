@@ -146,7 +146,7 @@ for x in range(2):
         client.publish(mqtt_topic.encode('utf-8'),
                        ujson.dumps(result).encode('utf-8'))
         uresults.remove(fName)
-        utime.sleep_ms(500)  
+        utime.sleep_ms(500)
         led.value(1)
 
     print('disconnecting MQTT client...')
