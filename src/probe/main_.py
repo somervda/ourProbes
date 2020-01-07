@@ -32,12 +32,9 @@ import esp32
 import machine
 
 
-
 print("Starting Main")
-gc.collect()
 sta_if = network.WLAN(network.STA_IF)
 print("sta_if", sta_if)
-gc.collect()
 
 led = Pin(config.device_config['led_pin'], Pin.OUT)  # Define led pin as output
 
@@ -116,30 +113,20 @@ def get_mqtt_client(project_id, cloud_region, registry_id, device_id, jwt):
 
 
 uresults.reset()
-testResult = {
-    "instructionId": "8484hf84f8hfh84bhflwld9h",
-    "instructionTime": 38383812010,
-    "bps": 1000000,
-    'target': 'ourDars.com',
-    'rtl': 230
-}
-uresults.add(testResult)
 
-for x in range(1):
-    gc.collect()
+
+for x in range(2):
     # main loop
     # 1. connect to Google IOT, get new probeConfig(from config topic) and send results of network tests (probeConfig)
     # 2. Perform probeConfig, build up next set of results
     # 3. Loop Governance : delay next loop for required time so loop isn't too fast
-
     connect()
-    led.value(0)
+    led.value(1)
     # # Need to be connected to the internet before setting the local RTC.
     set_time()
-
+    loopStartTime = utime.time()
     jwt = create_jwt(config.google_cloud_config['project_id'], config.jwt_config['private_key'],
                      config.jwt_config['algorithm'], config.jwt_config['token_ttl'])
-
     client = get_mqtt_client(config.google_cloud_config['project_id'], config.google_cloud_config['cloud_region'],
                              config.google_cloud_config['registry_id'], config.google_cloud_config['device_id'], jwt)
 
@@ -148,30 +135,52 @@ for x in range(1):
     print("probeConfig : ", str(probeConfig))
 
     resultFileList = uresults.list()
+    # Turn of led while sending probe results to IOT core
     for fName in resultFileList:
+        led.value(0)
         result = uresults.get(fName)
         print("Publishing result ", fName, " : ",
               str(ujson.dumps(result)))
-        led.value(1)
         mqtt_topic = '/devices/{}/{}'.format(
             config.google_cloud_config['device_id'], 'events')
         client.publish(mqtt_topic.encode('utf-8'),
                        ujson.dumps(result).encode('utf-8'))
-        led.value(0)
         uresults.remove(fName)
         utime.sleep(1)  # Delay for 1 seconds.
+        led.value(1)
 
     print('disconnecting MQTT client...')
     client.disconnect()
     # add network capability tests to create next set of results
     #  TBD......
-    for instruction in probeConfig['probeList']:
-        host = instruction['target']
+    for probe in probeConfig['probeList']:
+        # print('current time: {}'.format(utime.localtime()))
+        # print('utime.time(): ', utime.time() + 946684800)
+        host = probe['target']
+        bingResult = ubing.bing(host, 3, loopBackAdjustment=False)
+        if bingResult == None:
+            print("bing failed")
+        else:
+            result = {
+                "probeId": probe['id'],
+                "probeUMT": utime.time() + 946684800,
+                "bps": bingResult[0],
+                'target': probe['target'],
+                'rtl': bingResult[1]
+            }
+            uresults.add(result)
+            print("result", result)
         # print("bing ", host)
-        print("bing ", host, ": ", ubing.bing(
-            host, 5, loopBackAdjustment=False))
+        # print("bing ", host, ": ", ubing.bing(
+        #     host, 5, loopBackAdjustment=False))
+    led.value(0)
     # Sleep based on (loopGovernorSeconds - loop elapsed seconds)
     print("governorSeconds: ", str(probeConfig['governorSeconds']))
+    print("loop time so far:", utime.time() - loopStartTime)
+    sleeper = probeConfig['governorSeconds'] - (utime.time() - loopStartTime)
+    if sleeper > 0:
+        print("sleeping: ", sleeper)
+        utime.sleep(sleeper)
 
 # Clean up network connection (Not needed when used in a real main.py that never ends)
 print('disconnecting from network...')

@@ -35,7 +35,6 @@ def ping(host, size=16, timeout=5000):
     import usocket
     import ustruct
     import urandom
-    import gc
 
     # Under 26 bytes, the echo responses may be a different size
     # from the echo request so best to do all two way
@@ -110,7 +109,6 @@ def ping(host, size=16, timeout=5000):
 
     # close
     sock.close()
-    gc.collect()
     if t_elapsed == -1:
         # Timed out
         return None

@@ -23,7 +23,6 @@ def reset():
     else:
         print("results folder not found, creating one")
         os.mkdir('results')
-    os.chdir('/')
 
 
 def add(objResults):
@@ -87,9 +86,8 @@ def remove(fname):
 
 
 # reset()
-# add('probe1', myprobe)
 # add(result)
 # plist = list()
 # for i in plist:
 #     print(i, get(i))
-# remove("probe2")
+#     remove(i)
