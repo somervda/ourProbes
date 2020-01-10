@@ -189,8 +189,8 @@ while jwtExpiry > utime.time():
     sleeper = probeConfig['governorSeconds'] - (utime.time() - loopStartTime)
     if sleeper > 0:
         print("sleeping: ", sleeper)
-        # utime.sleep(sleeper)
-        utime.sleep(1)
+        utime.sleep(sleeper)
+        # utime.sleep(1)
 
 # Clean up network connection (Not needed when used in a real main.py that never ends)
 print('disconnecting from network...')
