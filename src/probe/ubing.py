@@ -38,14 +38,14 @@ def bing(host, samples=3, maxSize=1460, timeout=5000, quiet=False, loopBackAdjus
     loopback = "127.0.0.1"
 
     # Get latency
-    latency = getLowestPing(host, samples, 16, timeout)
+    latency = getLowestPing(host, samples, 16, timeout, quiet)
     # Get Lowest loopback latencies
     if(loopBackAdjustment):
-        loopback26 = getLowestPing(loopback, samples, 26, timeout)
-        loopbackMax = getLowestPing(loopback, samples, maxSize, timeout)
+        loopback26 = getLowestPing(loopback, samples, 26, timeout, quiet)
+        loopbackMax = getLowestPing(loopback, samples, maxSize, timeout, quiet)
     # Get Lowest target latencies
-    target26 = getLowestPing(host, samples, 26, timeout)
-    targetMax = getLowestPing(host, samples, maxSize, timeout)
+    target26 = getLowestPing(host, samples, 26, timeout, quiet)
+    targetMax = getLowestPing(host, samples, maxSize, timeout, quiet)
 
     # Check Results before calculating
 

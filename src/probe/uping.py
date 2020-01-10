@@ -35,6 +35,9 @@ def ping(host, size=16, timeout=5000):
     import usocket
     import ustruct
     import urandom
+    import gc
+
+    gc.collect()
 
     # Under 26 bytes, the echo responses may be a different size
     # from the echo request so best to do all two way
@@ -47,7 +50,8 @@ def ping(host, size=16, timeout=5000):
 
     # Use a randomized string so that
     # network data compression does not impact ping times
-    pkt = getRandomString(size).encode()
+    # pkt = getRandomString(size).encode()
+    pkt = b'Q'*size
 
     # Build the packet header
     # See http://www.networksorcery.com/enp/protocol/icmp/msg8.htm for details
@@ -91,7 +95,8 @@ def ping(host, size=16, timeout=5000):
         while 1:
             socks, _, _ = uselect.select([sock], [], [], 0)
             if socks:
-                resp = socks[0].recv(4096)
+                # resp = socks[0].recv(4096)
+                resp = socks[0].recv(2048)
                 resp_mv = memoryview(resp)
                 h2 = uctypes.struct(uctypes.addressof(
                     resp_mv[20:]), pkt_desc, uctypes.BIG_ENDIAN)
