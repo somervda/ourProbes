@@ -159,27 +159,21 @@ while jwtExpiry > utime.time():
     client.disconnect()
 
     # 2 *******************  Probes - network capability tests *****************************
-
-    for probe in probeConfig['probeList']:
-        # print('current time: {}'.format(utime.localtime()))
-        # print('utime.time(): ', utime.time() + 946684800)
-        host = probe['target']
-        bingResult = ubing.bing(host, 5, loopBackAdjustment=False, quiet=True)
-        if bingResult == None:
-            print("bing failed")
-        else:
-            result = {
-                "probeId": probe['id'],
-                "probeUMT": utime.time() + 946684800,
-                "bps": bingResult[0],
-                'target': probe['target'],
-                'rtl': bingResult[1]
-            }
-            uresults.add(result)
-            # print("result", result)
-        # print("bing ", host)
-        # print("bing ", host, ": ", ubing.bing(
-        #     host, 5, loopBackAdjustment=False))
+    if probeConfig['runProbes'] == True:
+        for probe in probeConfig['probeList']:
+            host = probe['target']
+            bingResult = ubing.bing(host, 5, loopBackAdjustment=False, quiet=True)
+            if bingResult == None:
+                print("bing failed")
+            else:
+                result = {
+                    "probeId": probe['id'],
+                    "probeUMT": utime.time() + 946684800,
+                    "bps": bingResult[0],
+                    'target': probe['target'],
+                    'rtl': bingResult[1]
+                }
+                uresults.add(result)
 
     # 3 **************** Governor ***************************
 
