@@ -36,7 +36,6 @@ import {
   // MatGridListModule
 } from "@angular/material";
 
-import { NgbCarouselModule } from "@ng-bootstrap/ng-bootstrap";
 import "hammerjs";
 
 import { HomeComponent } from "./home/home.component";
@@ -91,7 +90,6 @@ import { NotauthorizedComponent } from "./notauthorized/notauthorized.component"
     // MatDatepickerModule,
     // MatMomentDateModule,
     AppRoutingModule,
-    NgbCarouselModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirePerformanceModule,
     AngularFireAuthModule,
