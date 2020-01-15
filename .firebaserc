@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "ourProbes"
+    "default": "ourProbes",
+    "ourprobes": "ourprobes"
   }
 }

@@ -5,13 +5,14 @@
 export const environment = {
   production: false,
   firebase: {
-    apiKey: "AIzaSyA_A9y_kFKKa6SS6M1Bdo1q1L-ciGXT0rA",
-    authDomain: "ourProbes.firebaseapp.com",
-    databaseURL: "https://ourProbes.firebaseio.com",
-    projectId: "ourProbes",
-    storageBucket: "ourProbes.appspot.com",
-    messagingSenderId: "290245947507",
-    appId: "1:290245947507:web:4fad90fd477134cf"
+    apiKey: "AIzaSyBTXGNP8fuSxj8aZTz7VbQ4LduAZ20Jd3o",
+    authDomain: "ourprobes-258320.firebaseapp.com",
+    databaseURL: "https://ourprobes-258320.firebaseio.com",
+    projectId: "ourprobes-258320",
+    storageBucket: "ourprobes-258320.appspot.com",
+    messagingSenderId: "159351003399",
+    appId: "1:159351003399:web:44f1fdcb0fa525fed94da2",
+    measurementId: "G-CDZ4QQ81HY"
   }
 };
 
