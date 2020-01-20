@@ -161,19 +161,25 @@ while jwtExpiry > utime.time():
     # 2 *******************  Probes - network capability tests *****************************
     if probeConfig['runProbes'] == True:
         for probe in probeConfig['probeList']:
-            host = probe['target']
-            bingResult = ubing.bing(host, 5, loopBackAdjustment=False, quiet=True)
-            if bingResult == None:
-                print("bing failed")
-            else:
-                result = {
-                    "probeId": probe['id'],
-                    "probeUMT": utime.time() + 946684800,
-                    "bps": bingResult[0],
-                    'target': probe['target'],
-                    'rtl': bingResult[1]
-                }
-                uresults.add(result)
+            if probe['type'] == 'bing':
+                host = probe['target']
+                bingResult = ubing.bing(
+                    host, 5, loopBackAdjustment=False, quiet=False)
+                if bingResult == None:
+                    # Note: Bing failures not reported back to IOT
+                    print("bing failed")
+                else:
+                    result = {
+                        "probeId": probe['id'],
+                        "probeUMT": utime.time() + 946684800,
+                        "bps": bingResult[0],
+                        'target': probe['target'],
+                        'rtl': bingResult[1],
+                        'type': 'bing',
+                        'available': True,
+                        'responseMs': 0
+                    }
+                    uresults.add(result)
 
     # 3 **************** Governor ***************************
 
