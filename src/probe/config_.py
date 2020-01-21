@@ -14,7 +14,8 @@
 #
 # Configuration File
 device_config = {
-    'led_pin': 1
+    'led_pin': 1,
+    'useWiFi': True
 }
 
 wifi_config = {

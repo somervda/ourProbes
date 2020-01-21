@@ -34,8 +34,13 @@ import umemory
 
 
 print("Starting Main")
-sta_if = network.WLAN(network.STA_IF)
-print("sta_if", sta_if)
+if config.device_config['useWiFi']:
+    net_if = network.WLAN(network.STA_IF)
+else: 
+    # Connection details for a ESP32-Gateway board from Olimex (Ethernet connection)
+    net_if = network.LAN(mdc=machine.Pin(23), mdio=machine.Pin(18), power=machine.Pin(
+    12), phy_type=network.PHY_LAN8720, phy_addr=0, clock_mode=network.ETH_CLOCK_GPIO17_OUT)
+print("net_if", net_if)
 
 led = Pin(config.device_config['led_pin'], Pin.OUT)  # Define led pin as output
 
@@ -52,14 +57,23 @@ def on_message(topic, message):
 
 
 def connect():
-    if not sta_if.isconnected():
+    if not net_if.isconnected():
         print('connecting to network...')
-        sta_if.active(True)
-        sta_if.connect(config.wifi_config['ssid'],
-                       config.wifi_config['password'])
-        while not sta_if.isconnected():
-            pass
-        print('network config: {}'.format(sta_if.ifconfig()))
+        net_if.active(True)
+        if config.device_config['useWiFi']:
+            net_if.connect(config.wifi_config['ssid'],
+                        config.wifi_config['password'])
+        while not net_if.isconnected():
+            utime.sleep_ms(500)
+        if config.device_config['useWiFi'] == False:
+            # Wait for DHCP to supply IP
+            ip = l.ifconfig()[0]
+            while ip == '0.0.0.0':
+                print("Getting IP", ip)
+                utime.sleep_ms(1000)
+                ip = l.ifconfig()[0]
+
+        print('network config: {}'.format(net_if.ifconfig()))
 
 
 def set_time():
@@ -205,8 +219,8 @@ while jwtExpiry > utime.time():
 
 # Clean up network connection (Not needed when used in a real main.py that never ends)
 print('disconnecting from network...')
-sta_if.active(False)
-while sta_if.isconnected():
+net_if.active(False)
+while net_if.isconnected():
     pass
 print('Disconnected from network')
 
