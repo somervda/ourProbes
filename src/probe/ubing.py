@@ -9,25 +9,25 @@ import utime
 def getLowestPing(host, samples, size, timeout=5000, quiet=False):
     # Make a list containing the ping results for each of the ping samples
     pings = []
+    failCnt = 0
     for x in range(samples):
         ping = uping.ping(host, size, timeout)
-        pings.append(ping)
+        if (ping == None):
+            failCnt += 1
+            if (failCnt >= 2):
+                return None
+        if (ping != None):
+            pings.append(ping)
         not quiet and print(
             "getLowestPing host %s size %u sample# %u result: " % (host, size, x), ping)
         utime.sleep_ms(25)
     # Review results for number of successful pings and get the lowest latency
     minPing = 9999
-    failCnt = 0
-    for ping in pings:
 
-        if (ping == None):
-            failCnt += 1
-        elif (minPing > ping[0]):
+    for ping in pings:
+        if (minPing > ping[0]):
             minPing = ping[0]
-    if (failCnt >= 2):
-        return None
-    else:
-        return minPing
+    return minPing
 
 
 def bing(host, samples=3, maxSize=1460, timeout=5000, quiet=False, loopBackAdjustment=True):
@@ -37,38 +37,50 @@ def bing(host, samples=3, maxSize=1460, timeout=5000, quiet=False, loopBackAdjus
     # use a modified version of the uping library from Shawwwn <shawwwn1@gmail.com>
     loopback = "127.0.0.1"
 
+    # Drop out straight away if any getLowestPings fail, no point calculating
+    # Saves buffer allocations
+
     # Get latency
     latency = getLowestPing(host, samples, 16, timeout, quiet)
+    if (latency == None):
+        not quiet and print("getlowestPing failed: latency == None")
+        return None
+    if(loopBackAdjustment):
+        loopback16 = getLowestPing(loopback, samples, 16, timeout, quiet)
+        if (loopback16 == None):
+            not quiet and print("getlowestPing failed: loopback16 == None")
+            return None
+        if (loopback16 > latency):
+            latency = 0
+        else:
+            latency -= loopback16
+
     # Get Lowest loopback latencies
     if(loopBackAdjustment):
         loopback26 = getLowestPing(loopback, samples, 26, timeout, quiet)
-        loopbackMax = getLowestPing(loopback, samples, maxSize, timeout, quiet)
-    # Get Lowest target latencies
-    target26 = getLowestPing(host, samples, 26, timeout, quiet)
-    targetMax = getLowestPing(host, samples, maxSize, timeout, quiet)
-
-    # Check Results before calculating
-
-    if(loopBackAdjustment):
         if (loopback26 == None):
             not quiet and print("getlowestPing failed: loopback26 == None")
             return None
+        loopbackMax = getLowestPing(loopback, samples, maxSize, timeout, quiet)
         if (loopbackMax == None):
             not quiet and print("getlowestPing failed: loopbackMax == None")
             return None
+    # Get Lowest target latencies
+    target26 = getLowestPing(host, samples, 26, timeout, quiet)
+    if (target26 == None):
+        not quiet and print("getlowestPing failed: target26 == None")
+        return None
+    targetMax = getLowestPing(host, samples, maxSize, timeout, quiet)
+    if (targetMax == None):
+        not quiet and print("getlowestPing failed: targetMax == None")
+        return None
+
+    # Check Results before calculating
+    if(loopBackAdjustment):
         if (loopback26 > loopbackMax):
             not quiet and print(
                 "bing calculation not possable: loopback26 > loopbackMax")
             return None
-    if (target26 == None):
-        not quiet and print("getlowestPing failed: target26 == None")
-        return None
-    if (targetMax == None):
-        not quiet and print("getlowestPing failed: targetMax == None")
-        return None
-    if (latency == None):
-        not quiet and print("getlowestPing failed: latency == None")
-        return None
     if (target26 > targetMax):
         not quiet and print(
             "bing calculation not possable: target26 > targetMax")

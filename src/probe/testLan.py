@@ -28,7 +28,7 @@ print("Address Details: ", l.ifconfig())
 
 # utime.sleep_ms(10000)
 
-host = "192.168.1.117"
+host = "192.168.1.29"
 print("Start pings: ", host)
 for x in range(5):
     pingInfo = uping.ping(host, 26)

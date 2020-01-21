@@ -164,10 +164,20 @@ while jwtExpiry > utime.time():
             if probe['type'] == 'bing':
                 host = probe['target']
                 bingResult = ubing.bing(
-                    host, 5, loopBackAdjustment=False, quiet=False)
+                    host, 5, loopBackAdjustment=True, quiet=False, timeout=1000)
                 if bingResult == None:
-                    # Note: Bing failures not reported back to IOT
-                    print("bing failed")
+                    result = {
+                        "probeId": probe['id'],
+                        "probeUMT": utime.time() + 946684800,
+                        "bps": -1,
+                        'target': probe['target'],
+                        'rtl': -1,
+                        'type': 'bing',
+                        'available': False,
+                        'responseMs': -1
+                    }
+                    uresults.add(result)
+                    print("bing failed:", result)
                 else:
                     result = {
                         "probeId": probe['id'],
@@ -180,6 +190,7 @@ while jwtExpiry > utime.time():
                         'responseMs': 0
                     }
                     uresults.add(result)
+                    print("bing successful:", result)
 
     # 3 **************** Governor ***************************
 

@@ -48,11 +48,11 @@ exports.probeEventsOnPublish = functions.pubsub
     };
 
     try {
-      if (message.json.bps) {
+      if (message.json.hasOwnProperty("bps")) {
         probeEvent.bps = message.json.bps;
       }
 
-      if (message.json.rtl) {
+      if (message.json.hasOwnProperty("rtl")) {
         probeEvent.rtl = message.json.rtl;
       }
 
@@ -85,7 +85,7 @@ exports.probeEventsOnPublish = functions.pubsub
         probeEvent.available = message.json.available;
       }
 
-      if (message.json.responseMs) {
+      if (message.json.hasOwnProperty("responseMs")) {
         probeEvent.responseMs = message.json.responseMs;
       }
 
