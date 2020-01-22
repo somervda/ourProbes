@@ -28,9 +28,8 @@ def getRandomString(size):
     return ''.join(urandom.choice(printableCharacters) for x in range(size))
 
 
-def ping(host, size=16, timeout=5000):
+def ping(host, size=16, timeout=5000, quiet=True):
     import utime
-    import uselect
     import uctypes
     import usocket
     import ustruct
@@ -85,36 +84,25 @@ def ping(host, size=16, timeout=5000):
     h.seq = 1
     h.timestamp = utime.ticks_us()
     h.checksum = checksum(pkt)
-    if sock.send(pkt) != size:
-        # Failed : exit with no result
-        return None
-
-    # t_timeout = utime.ticks_us() + (timeout * 1000)
-    
-    while  not finish:
-        # socks, _, _ = uselect.select([sock], [], [], 0)
-
-        # resp = socks[0].recv(4096)
-        # resp = socks[0].recv(2048)
-        # only need to see first 48 bytes of icmp packet to get info needed
-        try:
-            resp = sock.recv(4096)
-        except Exception as err:
-            print("uping recv error", err)
-            sock.close()
-            return None
-        resp_mv = memoryview(resp)
-        h2 = uctypes.struct(uctypes.addressof(
-            resp_mv[20:]), pkt_desc, uctypes.BIG_ENDIAN)
-        size_on_wire = len(resp)
-        # TODO: validate checksum (optional)
-        if h2.type == 0 and h2.id == h.id:  # 0: ICMP_ECHO_REPLY
-            t_elapsed = (utime.ticks_us()-h2.timestamp) / 1000
-            ttl = ustruct.unpack('!B', resp_mv[8:9])[0]  # time-to-live
-            print("%u bytes from %s: ttl=%u, time=%f ms" %
-                  (len(resp), addr, ttl, t_elapsed))
-            finish = True
-            break
+    if sock.send(pkt) == size:
+        # Successful packet send, Wait for ping to respond
+        while True:
+            try:
+                resp = sock.recv(48)
+            except Exception as err:
+                not quiet and print("uping recv error", err)
+                break
+            resp_mv = memoryview(resp)
+            h2 = uctypes.struct(uctypes.addressof(
+                resp_mv[20:]), pkt_desc, uctypes.BIG_ENDIAN)
+            size_on_wire = len(resp)
+            # TODO: validate checksum (optional)
+            if h2.type == 0 and h2.id == h.id:  # 0: ICMP_ECHO_REPLY
+                t_elapsed = (utime.ticks_us()-h2.timestamp) / 1000
+                ttl = ustruct.unpack('!B', resp_mv[8:9])[0]  # time-to-live
+                not quiet and print("%u bytes from %s: ttl=%u, time=%f ms" %
+                                    (len(resp), addr, ttl, t_elapsed))
+                break
 
     # close
     sock.close()

@@ -11,7 +11,7 @@ def getLowestPing(host, samples, size, timeout=5000, quiet=False):
     pings = []
     failCnt = 0
     for x in range(samples):
-        ping = uping.ping(host, size, timeout)
+        ping = uping.ping(host, size, timeout, quiet=quiet)
         if (ping == None):
             failCnt += 1
             if (failCnt >= 2):

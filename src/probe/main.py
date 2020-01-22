@@ -36,10 +36,10 @@ import umemory
 print("Starting Main")
 if config.device_config['useWiFi']:
     net_if = network.WLAN(network.STA_IF)
-else: 
+else:
     # Connection details for a ESP32-Gateway board from Olimex (Ethernet connection)
     net_if = network.LAN(mdc=machine.Pin(23), mdio=machine.Pin(18), power=machine.Pin(
-    12), phy_type=network.PHY_LAN8720, phy_addr=0, clock_mode=network.ETH_CLOCK_GPIO17_OUT)
+        12), phy_type=network.PHY_LAN8720, phy_addr=0, clock_mode=network.ETH_CLOCK_GPIO17_OUT)
 print("net_if", net_if)
 
 led = Pin(config.device_config['led_pin'], Pin.OUT)  # Define led pin as output
@@ -62,16 +62,16 @@ def connect():
         net_if.active(True)
         if config.device_config['useWiFi']:
             net_if.connect(config.wifi_config['ssid'],
-                        config.wifi_config['password'])
+                           config.wifi_config['password'])
         while not net_if.isconnected():
             utime.sleep_ms(500)
         if config.device_config['useWiFi'] == False:
             # Wait for DHCP to supply IP
-            ip = l.ifconfig()[0]
+            ip = net_if.ifconfig()[0]
             while ip == '0.0.0.0':
                 print("Getting IP", ip)
                 utime.sleep_ms(1000)
-                ip = l.ifconfig()[0]
+                ip = net_if.ifconfig()[0]
 
         print('network config: {}'.format(net_if.ifconfig()))
 
@@ -178,7 +178,7 @@ while jwtExpiry > utime.time():
             if probe['type'] == 'bing':
                 host = probe['target']
                 bingResult = ubing.bing(
-                    host, 5, loopBackAdjustment=True, quiet=False, timeout=1000)
+                    host, 5, loopBackAdjustment=True, quiet=True, timeout=3000)
                 if bingResult == None:
                     result = {
                         "probeId": probe['id'],
