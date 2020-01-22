@@ -10,10 +10,11 @@ import { UserResolver } from "./services/user-resolver";
 import { AdministrationComponent } from "./administration/administration.component";
 import { IsAdminGuard } from "./guards/isAdmin.guard";
 import { IsActivatedGuard } from "./guards/isActivated.guard";
+import { IsLoggedInGuard } from "./guards/isLoggedIn.guard";
 import { NotauthorizedComponent } from "./notauthorized/notauthorized.component";
 
 const routes: Routes = [
-  { path: "", component: HomeComponent },
+  { path: "", component: HomeComponent, canActivate: [IsLoggedInGuard] },
   { path: "about", component: AboutComponent },
   { path: "login", component: LoginComponent },
   { path: "notAuthorized", component: NotauthorizedComponent },
