@@ -37,6 +37,9 @@ def ping(host, size=16, timeout=5000, quiet=True):
     import gc
 
     gc.collect()
+    utime.sleep_ms(100)
+    gc.collect()
+    utime.sleep_ms(300)
 
     # Under 26 bytes, the echo responses may be a different size
     # from the echo request so best to do all two way
