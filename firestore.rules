@@ -45,5 +45,10 @@ service cloud.firestore {
     // match /{document=**} {
     //   allow read, write: if request.auth.uid != null;
     // }
+        // for the subcollection index
+        
+    match /{path=**}/devices/{did} {
+      allow read:  if isActivated();
+    }
   }
 }

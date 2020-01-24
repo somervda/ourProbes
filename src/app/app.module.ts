@@ -47,6 +47,8 @@ import { AdministrationComponent } from "./administration/administration.compone
 import { UsersComponent } from "./users/users.component";
 import { UserComponent } from "./user/user.component";
 import { NotauthorizedComponent } from "./notauthorized/notauthorized.component";
+import { DevicesComponent } from "./devices/devices.component";
+import { SubheadingComponent } from "./subheading/subheading.component";
 
 @NgModule({
   declarations: [
@@ -58,7 +60,9 @@ import { NotauthorizedComponent } from "./notauthorized/notauthorized.component"
     AdministrationComponent,
     UsersComponent,
     UserComponent,
-    NotauthorizedComponent
+    NotauthorizedComponent,
+    DevicesComponent,
+    SubheadingComponent
   ],
   imports: [
     BrowserModule,

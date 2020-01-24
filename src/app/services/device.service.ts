@@ -12,7 +12,7 @@ import OrderByDirection = firebase.firestore.OrderByDirection;
 export class DeviceService {
   constructor(private afs: AngularFirestore) {}
 
-  findUserByUid(uid: string): Observable<Device> {
+  findDevicesByDid(did: string): Observable<Device> {
     return this.afs
       .collection("devices", ref => ref.where("did", "==", did))
       .snapshotChanges()
@@ -25,20 +25,14 @@ export class DeviceService {
       );
   }
 
-  findUsers(
-    filter = "",
-    sortField,
-    sortOrder: OrderByDirection,
-    pageSize
-  ): Observable<Device[]> {
+  findDevices(pageSize): Observable<Device[]> {
     // console.log( "findDevices",  sortField, sortOrder  ,pageSize  );
     return this.afs
-      .collection("devices", ref =>
-        ref.orderBy(sortField, sortOrder).limit(pageSize)
-      )
+      .collection("devices", ref => ref.limit(pageSize))
       .snapshotChanges()
       .pipe(
         map(snaps => {
+          console.log("findDevices", convertSnaps<Device>(snaps));
           return convertSnaps<Device>(snaps);
         }),
         // Not sure why this is needed but 2 sets of results are emitted with this query

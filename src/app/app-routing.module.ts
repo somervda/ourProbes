@@ -1,3 +1,4 @@
+import { DevicesComponent } from "./devices/devices.component";
 import { NgModule } from "@angular/core";
 import { Routes, RouterModule } from "@angular/router";
 import { HomeComponent } from "./home/home.component";
@@ -24,6 +25,11 @@ const routes: Routes = [
     canActivate: [IsAdminGuard]
   },
   { path: "users", component: UsersComponent, canActivate: [IsAdminGuard] },
+  {
+    path: "devices",
+    component: DevicesComponent,
+    canActivate: [IsActivatedGuard]
+  },
   {
     path: "user/:uid",
     component: UserComponent,

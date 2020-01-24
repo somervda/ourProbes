@@ -1,0 +1,27 @@
+table {
+  width: 100%;
+}
+
+.table-container {
+  position: relative;
+  max-height: 300px;
+  overflow: auto;
+  border-style: outset;
+  border-width: 2px;
+  border-width: 1px;
+  border-radius: 5px;
+}
+
+td.mat-cell,
+th.mat-header-cell {
+  padding-right: 8px;
+  padding-left: 8px;
+}
+
+td.mat-cell {
+  vertical-align: text-top;
+}
+
+.deleteIcon {
+  vertical-align: middle;
+}
