@@ -49,6 +49,7 @@ import { UserComponent } from "./user/user.component";
 import { NotauthorizedComponent } from "./notauthorized/notauthorized.component";
 import { DevicesComponent } from "./devices/devices.component";
 import { SubheadingComponent } from "./subheading/subheading.component";
+import { DeviceComponent } from './device/device.component';
 
 @NgModule({
   declarations: [
@@ -62,7 +63,8 @@ import { SubheadingComponent } from "./subheading/subheading.component";
     UserComponent,
     NotauthorizedComponent,
     DevicesComponent,
-    SubheadingComponent
+    SubheadingComponent,
+    DeviceComponent
   ],
   imports: [
     BrowserModule,

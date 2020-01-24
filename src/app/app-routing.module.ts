@@ -13,6 +13,7 @@ import { IsAdminGuard } from "./guards/isAdmin.guard";
 import { IsActivatedGuard } from "./guards/isActivated.guard";
 import { IsLoggedInGuard } from "./guards/isLoggedIn.guard";
 import { NotauthorizedComponent } from "./notauthorized/notauthorized.component";
+import { DeviceComponent } from "./device/device.component";
 
 const routes: Routes = [
   { path: "", component: HomeComponent, canActivate: [IsLoggedInGuard] },
@@ -28,6 +29,21 @@ const routes: Routes = [
   {
     path: "devices",
     component: DevicesComponent,
+    canActivate: [IsActivatedGuard]
+  },
+  {
+    path: "device/create",
+    component: DeviceComponent,
+    canActivate: [IsActivatedGuard]
+  },
+  {
+    path: "device/delete/:did",
+    component: DeviceComponent,
+    canActivate: [IsActivatedGuard]
+  },
+  {
+    path: "device/:did",
+    component: DeviceComponent,
     canActivate: [IsActivatedGuard]
   },
   {
