@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
-import { AngularFirestore } from "@angular/fire/firestore";
+import { AngularFirestore, DocumentReference } from "@angular/fire/firestore";
 import { Observable } from "rxjs";
 import { map, first, take } from "rxjs/operators";
-import { convertSnaps } from "./db-utils";
+import { convertSnaps, dbFieldUpdate, convertSnap } from "./db-utils";
 import { Device } from "../models/device.model";
 import OrderByDirection = firebase.firestore.OrderByDirection;
 
@@ -14,14 +14,12 @@ export class DeviceService {
 
   findById(id: string): Observable<Device> {
     return this.afs
-      .collection("devices", ref => ref.where("id", "==", id))
+      .doc("/devices/" + id)
       .snapshotChanges()
       .pipe(
-        map(snaps => {
-          const device = convertSnaps<Device>(snaps);
-          return device.length == 1 ? device[0] : undefined;
-        }),
-        first()
+        map(snap => {
+          return convertSnap<Device>(snap);
+        })
       );
   }
 
@@ -39,5 +37,29 @@ export class DeviceService {
         // take(2)
         first()
       );
+  }
+
+  fieldUpdate(docId: string, fieldName: string, newValue: any) {
+    if (docId && fieldName) {
+      const updateObject = {};
+      dbFieldUpdate("/devices/" + docId, fieldName, newValue, this.afs);
+    }
+  }
+
+  create(device: Device): Promise<void> {
+    // Todo - check for id existence and fail if it already exists
+    const id = device.id;
+    delete device.id;
+    return this.afs
+      .collection("devices")
+      .doc(id)
+      .set(device);
+  }
+
+  delete(id: string): Promise<void> {
+    return this.afs
+      .collection("devices")
+      .doc(id)
+      .delete();
   }
 }

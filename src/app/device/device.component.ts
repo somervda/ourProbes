@@ -1,5 +1,5 @@
 import { DeviceType } from "./../models/device.model";
-import { Component, OnInit, NgZone } from "@angular/core";
+import { Component, OnInit, NgZone, OnDestroy } from "@angular/core";
 import { Device } from "../models/device.model";
 import { Crud } from "../models/global.model";
 import { FormGroup, FormBuilder, Validators } from "@angular/forms";
@@ -7,13 +7,14 @@ import { Subscription } from "rxjs";
 import { DeviceService } from "../services/device.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { MatSnackBar } from "@angular/material";
+import { firestore } from "firebase";
 
 @Component({
   selector: "app-device",
   templateUrl: "./device.component.html",
   styleUrls: ["./device.component.scss"]
 })
-export class DeviceComponent implements OnInit {
+export class DeviceComponent implements OnInit, OnDestroy {
   device: Device;
   crudAction: Crud;
   // Declare an instance of crud enum to use for checking crudAction value
@@ -48,6 +49,7 @@ export class DeviceComponent implements OnInit {
       };
     } else {
       this.device = this.route.snapshot.data["device"];
+      console.log("Device from resolver:", this.device);
       // Subscribe to team to keep getting live updates
       this.deviceSubscription$$ = this.deviceService
         .findById(this.device.id)
@@ -58,7 +60,7 @@ export class DeviceComponent implements OnInit {
         });
     }
 
-    // Create form group and initalize with device values
+    // Create form group and initialize with device values
     this.deviceForm = this.fb.group({
       id: [
         this.device.id,
@@ -71,7 +73,9 @@ export class DeviceComponent implements OnInit {
           Validators.minLength(20),
           Validators.maxLength(200)
         ]
-      ]
+      ],
+      communication: [this.device.communication],
+      type: [this.device.type]
     });
 
     // Mark all fields as touched to trigger validation on initial entry to the fields
@@ -88,19 +92,16 @@ export class DeviceComponent implements OnInit {
     }
     console.log("create device", this.device);
     this.deviceService
-      .createDevice(this.device)
-      .then(docRef => {
-        //console.log("Document written with ID: ", docRef.id);
-        this.device.id = docRef.id;
+      .create(this.device)
+      .then(() => {
         this.crudAction = Crud.Update;
-        this.snackBar.open("DEvice '" + this.device.id + "' created.", "", {
+        this.snackBar.open("Device '" + this.device.id + "' created.", "", {
           duration: 2000
         });
       })
       .catch(function(error) {
         console.error("Error adding document: ", error);
       });
-    // console.log("create team", this.team);
   }
 
   onDelete() {
@@ -108,9 +109,9 @@ export class DeviceComponent implements OnInit {
     const deviceId = this.device.id;
 
     this.deviceService
-      .deleteDevice(this.device.id)
+      .delete(this.device.id)
       .then(() => {
-        this.snackBar.open("Device '" + device.id + "' deleted!", "", {
+        this.snackBar.open("Device '" + deviceId + "' deleted!", "", {
           duration: 2000
         });
         this.ngZone.run(() => this.router.navigateByUrl("/devices"));
@@ -122,21 +123,21 @@ export class DeviceComponent implements OnInit {
 
   onFieldUpdate(fieldName: string, toType?: string) {
     if (
-      this.teamForm.get(fieldName).valid &&
-      this.team.id != "" &&
+      this.deviceForm.get(fieldName).valid &&
+      this.device.id != "" &&
       this.crudAction != Crud.Delete
     ) {
-      let newValue = this.teamForm.get(fieldName).value;
+      let newValue = this.deviceForm.get(fieldName).value;
       // Do any type conversions before storing value
       if (toType && toType == "Timestamp")
         newValue = firestore.Timestamp.fromDate(
-          this.teamForm.get(fieldName).value
+          this.deviceForm.get(fieldName).value
         );
-      this.teamService.fieldUpdate(this.team.id, fieldName, newValue);
+      this.deviceService.fieldUpdate(this.device.id, fieldName, newValue);
     }
   }
 
   ngOnDestroy() {
-    if (this.teamSubscription$$) this.teamSubscription$$.unsubscribe();
+    if (this.deviceSubscription$$) this.deviceSubscription$$.unsubscribe();
   }
 }

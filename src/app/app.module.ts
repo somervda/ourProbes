@@ -1,7 +1,7 @@
 import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { FormsModule } from "@angular/forms";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 
 import { AngularFireModule } from "@angular/fire";
 import { AngularFirePerformanceModule } from "@angular/fire/performance";
@@ -28,10 +28,11 @@ import {
   MatSortModule,
   MatPaginatorModule,
   MatProgressSpinnerModule,
-  MatDividerModule
+  MatDividerModule,
+  MatFormFieldModule,
   // MatDatepickerModule,
   // MatDialogModule,
-  // MatInputModule,
+  MatInputModule
   // MatSelectModule,
   // MatGridListModule
 } from "@angular/material";
@@ -49,7 +50,7 @@ import { UserComponent } from "./user/user.component";
 import { NotauthorizedComponent } from "./notauthorized/notauthorized.component";
 import { DevicesComponent } from "./devices/devices.component";
 import { SubheadingComponent } from "./subheading/subheading.component";
-import { DeviceComponent } from './device/device.component';
+import { DeviceComponent } from "./device/device.component";
 
 @NgModule({
   declarations: [
@@ -70,6 +71,7 @@ import { DeviceComponent } from './device/device.component';
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,
+    ReactiveFormsModule,
     AppRoutingModule,
     MatCheckboxModule,
     MatButtonModule,
@@ -89,7 +91,8 @@ import { DeviceComponent } from './device/device.component';
     // MatMenuModule,
     // MatDividerModule,
     // MatTabsModule,
-    // MatInputModule,
+    MatInputModule,
+    MatFormFieldModule,
     // MatTableModule,
     // MatDialogModule,
     // MatSelectModule,

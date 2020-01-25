@@ -49,6 +49,7 @@ service cloud.firestore {
         
     match /{path=**}/devices/{did} {
       allow read:  if isActivated();
+      allow write:  if isActivated();
     }
   }
 }

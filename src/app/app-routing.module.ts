@@ -14,6 +14,7 @@ import { IsActivatedGuard } from "./guards/isActivated.guard";
 import { IsLoggedInGuard } from "./guards/isLoggedIn.guard";
 import { NotauthorizedComponent } from "./notauthorized/notauthorized.component";
 import { DeviceComponent } from "./device/device.component";
+import { DeviceResolver } from "./services/device-resolver";
 
 const routes: Routes = [
   { path: "", component: HomeComponent, canActivate: [IsLoggedInGuard] },
@@ -37,13 +38,15 @@ const routes: Routes = [
     canActivate: [IsActivatedGuard]
   },
   {
-    path: "device/delete/:did",
+    path: "device/delete/:id",
     component: DeviceComponent,
+    resolve: { device: DeviceResolver },
     canActivate: [IsActivatedGuard]
   },
   {
-    path: "device/:did",
+    path: "device/:id",
     component: DeviceComponent,
+    resolve: { device: DeviceResolver },
     canActivate: [IsActivatedGuard]
   },
   {

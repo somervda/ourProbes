@@ -1,1 +1,83 @@
-<p>device works!</p>
+<app-subheading
+  [title]="device.id"
+  *ngIf="crudAction == Crud.Update"
+></app-subheading>
+<app-subheading
+  title="Create New Device"
+  *ngIf="crudAction == Crud.Create"
+></app-subheading>
+<app-subheading
+  [title]="'Delete: ' + device.id"
+  *ngIf="crudAction == Crud.Delete"
+></app-subheading>
+<div class="page-container">
+  <form class="standard-form" [formGroup]="deviceForm">
+    <mat-form-field class="full-width">
+      <input
+        matInput
+        formControlName="id"
+        (change)="onFieldUpdate('id')"
+        placeholder="Device Id"
+        required
+      />
+      <mat-error *ngIf="deviceForm.controls['id'].hasError('required')">
+        Device id is required.
+      </mat-error>
+      <mat-error *ngIf="deviceForm.controls['id'].hasError('minlength')">
+        Device id must be at least 3 characters long.
+      </mat-error>
+      <mat-error *ngIf="deviceForm.controls['id'].hasError('maxlength')">
+        Device id must be no more than 12 characters long.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="full-width">
+      <textarea
+        matInput
+        formControlName="description"
+        (change)="onFieldUpdate('description')"
+        matAutosizeMinRows="7"
+        matAutosizeMaxRows="20"
+        matTextareaAutosize
+        placeholder="Device Description"
+        required
+      ></textarea>
+      <mat-error
+        *ngIf="deviceForm.controls['description'].hasError('required')"
+      >
+        Description is required.
+      </mat-error>
+      <mat-error
+        *ngIf="deviceForm.controls['description'].hasError('minlength')"
+      >
+        Description must be at least 20 characters long.
+      </mat-error>
+      <mat-error
+        *ngIf="deviceForm.controls['description'].hasError('maxlength')"
+      >
+        Description must be no more than 200 characters long.
+      </mat-error>
+    </mat-form-field>
+    <button
+      mat-raised-button
+      color="primary"
+      *ngIf="crudAction == Crud.Create"
+      [disabled]="!deviceForm.valid"
+      (click)="onCreate()"
+      id="btnCreate"
+    >
+      <mat-icon>add</mat-icon>
+      Create
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      *ngIf="crudAction == Crud.Delete"
+      (click)="onDelete()"
+      id="btnDelete"
+    >
+      <mat-icon>clear</mat-icon>
+      Delete
+    </button>
+  </form>
+</div>
