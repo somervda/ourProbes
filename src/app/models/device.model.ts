@@ -1,6 +1,6 @@
 export interface Device {
   // did = deviceId value in IOT device definition
-  did: string;
+  id: string;
   description: string;
   // Where to find the device - i.e. address + where is located at the address
   location?: string;

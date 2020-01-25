@@ -12,9 +12,9 @@ import OrderByDirection = firebase.firestore.OrderByDirection;
 export class DeviceService {
   constructor(private afs: AngularFirestore) {}
 
-  findDevicesByDid(did: string): Observable<Device> {
+  findById(id: string): Observable<Device> {
     return this.afs
-      .collection("devices", ref => ref.where("did", "==", did))
+      .collection("devices", ref => ref.where("id", "==", id))
       .snapshotChanges()
       .pipe(
         map(snaps => {

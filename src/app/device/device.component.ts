@@ -1,5 +1,12 @@
-import { Component, OnInit } from "@angular/core";
+import { DeviceType } from "./../models/device.model";
+import { Component, OnInit, NgZone } from "@angular/core";
 import { Device } from "../models/device.model";
+import { Crud } from "../models/global.model";
+import { FormGroup, FormBuilder, Validators } from "@angular/forms";
+import { Subscription } from "rxjs";
+import { DeviceService } from "../services/device.service";
+import { ActivatedRoute, Router } from "@angular/router";
+import { MatSnackBar } from "@angular/material";
 
 @Component({
   selector: "app-device",
@@ -12,11 +19,11 @@ export class DeviceComponent implements OnInit {
   // Declare an instance of crud enum to use for checking crudAction value
   Crud = Crud;
 
-  teamForm: FormGroup;
-  teamSubscription$$: Subscription;
+  deviceForm: FormGroup;
+  deviceSubscription$$: Subscription;
 
   constructor(
-    private teamService: TeamService,
+    private deviceService: DeviceService,
     private route: ActivatedRoute,
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
@@ -26,62 +33,67 @@ export class DeviceComponent implements OnInit {
 
   ngOnInit() {
     this.crudAction = Crud.Update;
-    if (this.route.routeConfig.path == "team/delete/:id")
+    if (this.route.routeConfig.path == "device/delete/:id")
       this.crudAction = Crud.Delete;
-    if (this.route.routeConfig.path == "team/create")
+    if (this.route.routeConfig.path == "device/create")
       this.crudAction = Crud.Create;
 
     // console.log("team onInit", this.crudAction);
     if (this.crudAction == Crud.Create) {
-      this.team = { name: "", description: "" };
+      this.device = {
+        communication: true,
+        description: "",
+        type: DeviceType.esp32GatewayOlimex,
+        id: ""
+      };
     } else {
-      this.team = this.route.snapshot.data["team"];
+      this.device = this.route.snapshot.data["device"];
       // Subscribe to team to keep getting live updates
-      this.teamSubscription$$ = this.teamService
-        .findById(this.team.id)
-        .subscribe(team => {
-          this.team = team;
-          console.log("subscribed team", this.team);
-          this.teamForm.patchValue(this.team);
+      this.deviceSubscription$$ = this.deviceService
+        .findById(this.device.id)
+        .subscribe(device => {
+          this.device = device;
+          console.log("subscribed device", this.device);
+          this.deviceForm.patchValue(this.device);
         });
     }
 
-    // Create form group and initalize with team values
-    this.teamForm = this.fb.group({
-      name: [
-        this.team.name,
-        [Validators.required, Validators.minLength(3), Validators.maxLength(30)]
+    // Create form group and initalize with device values
+    this.deviceForm = this.fb.group({
+      id: [
+        this.device.id,
+        [Validators.required, Validators.minLength(3), Validators.maxLength(12)]
       ],
       description: [
-        this.team.description,
+        this.device.description,
         [
           Validators.required,
           Validators.minLength(20),
-          Validators.maxLength(500)
+          Validators.maxLength(200)
         ]
       ]
     });
 
     // Mark all fields as touched to trigger validation on initial entry to the fields
     if (this.crudAction != Crud.Create) {
-      for (const field in this.teamForm.controls) {
-        this.teamForm.get(field).markAsTouched();
+      for (const field in this.deviceForm.controls) {
+        this.deviceForm.get(field).markAsTouched();
       }
     }
   }
 
   onCreate() {
-    for (const field in this.teamForm.controls) {
-      this.team[field] = this.teamForm.get(field).value;
+    for (const field in this.deviceForm.controls) {
+      this.device[field] = this.deviceForm.get(field).value;
     }
-    console.log("create team", this.team);
-    this.teamService
-      .createTeam(this.team)
+    console.log("create device", this.device);
+    this.deviceService
+      .createDevice(this.device)
       .then(docRef => {
         //console.log("Document written with ID: ", docRef.id);
-        this.team.id = docRef.id;
+        this.device.id = docRef.id;
         this.crudAction = Crud.Update;
-        this.snackBar.open("Team '" + this.team.name + "' created.", "", {
+        this.snackBar.open("DEvice '" + this.device.id + "' created.", "", {
           duration: 2000
         });
       })
@@ -92,19 +104,19 @@ export class DeviceComponent implements OnInit {
   }
 
   onDelete() {
-    console.log("delete", this.team.id);
-    const teamName = this.team.name;
+    console.log("delete", this.device.id);
+    const deviceId = this.device.id;
 
-    this.teamService
-      .deleteTeam(this.team.id)
+    this.deviceService
+      .deleteDevice(this.device.id)
       .then(() => {
-        this.snackBar.open("Team '" + teamName + "' deleted!", "", {
+        this.snackBar.open("Device '" + device.id + "' deleted!", "", {
           duration: 2000
         });
-        this.ngZone.run(() => this.router.navigateByUrl("/teams"));
+        this.ngZone.run(() => this.router.navigateByUrl("/devices"));
       })
       .catch(function(error) {
-        console.error("Error deleting team: ", error);
+        console.error("Error deleting device: ", error);
       });
   }
 
