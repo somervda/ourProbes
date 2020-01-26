@@ -8,8 +8,8 @@ export interface Device {
   // set to true to allow board to communicate to IOT core
   communication: boolean;
   type: DeviceType;
-  longitude?: number;
-  latitude?: number;
+  longitude: number;
+  latitude: number;
   dateCreated?: Date;
 }
 

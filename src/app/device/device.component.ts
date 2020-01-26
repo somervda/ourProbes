@@ -2,7 +2,12 @@ import { DeviceType } from "./../models/device.model";
 import { Component, OnInit, NgZone, OnDestroy } from "@angular/core";
 import { Device } from "../models/device.model";
 import { Crud, Kvp } from "../models/global.model";
-import { FormGroup, FormBuilder, Validators } from "@angular/forms";
+import {
+  FormGroup,
+  FormBuilder,
+  Validators,
+  FormControl
+} from "@angular/forms";
 import { Subscription } from "rxjs";
 import { DeviceService } from "../services/device.service";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -48,7 +53,9 @@ export class DeviceComponent implements OnInit, OnDestroy {
         communication: true,
         description: "",
         type: DeviceType.esp32GatewayOlimex,
-        id: ""
+        id: "",
+        longitude: 0,
+        latitude: 0
       };
     } else {
       this.device = this.route.snapshot.data["device"];
@@ -78,7 +85,25 @@ export class DeviceComponent implements OnInit, OnDestroy {
         ]
       ],
       communication: [this.device.communication],
-      type: [this.device.type, [Validators.required]]
+      type: [this.device.type, [Validators.required]],
+      longitude: [
+        this.device.longitude,
+        [
+          Validators.min(-180),
+          Validators.max(180),
+          Validators.required,
+          Validators.pattern(/^[0-9]+(\.[0-9]{1,2})?$/)
+        ]
+      ],
+      latitude: [
+        this.device.latitude,
+        [
+          Validators.min(-90),
+          Validators.max(90),
+          Validators.required,
+          Validators.pattern(/^[0-9]+(\.[0-9]{1,2})?$/)
+        ]
+      ]
     });
 
     // Mark all fields as touched to trigger validation on initial entry to the fields
@@ -92,9 +117,13 @@ export class DeviceComponent implements OnInit, OnDestroy {
   onCreate() {
     for (const field in this.deviceForm.controls) {
       this.device[field] = this.deviceForm.get(field).value;
+      if (field == "latitude" || field == "longitude") {
+        this.device[field] = Number(this.deviceForm.get(field).value);
+      }
     }
     console.log("create device", this.device);
     const id = this.device.id;
+
     this.deviceService
       .create(this.device)
       .then(() => {
@@ -138,6 +167,8 @@ export class DeviceComponent implements OnInit, OnDestroy {
         newValue = firestore.Timestamp.fromDate(
           this.deviceForm.get(fieldName).value
         );
+      if (toType && toType == "Number")
+        newValue = Number(this.deviceForm.get(fieldName).value);
       this.deviceService.fieldUpdate(this.device.id, fieldName, newValue);
     }
   }
