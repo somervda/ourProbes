@@ -1,13 +1,14 @@
 import { DeviceType } from "./../models/device.model";
 import { Component, OnInit, NgZone, OnDestroy } from "@angular/core";
 import { Device } from "../models/device.model";
-import { Crud } from "../models/global.model";
+import { Crud, Kvp } from "../models/global.model";
 import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import { Subscription } from "rxjs";
 import { DeviceService } from "../services/device.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { MatSnackBar } from "@angular/material";
 import { firestore } from "firebase";
+import { enumToMap } from "../shared/utilities";
 
 @Component({
   selector: "app-device",
@@ -22,6 +23,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
 
   deviceForm: FormGroup;
   deviceSubscription$$: Subscription;
+  types: Kvp[];
 
   constructor(
     private deviceService: DeviceService,
@@ -33,6 +35,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    this.types = enumToMap(DeviceType);
     this.crudAction = Crud.Update;
     if (this.route.routeConfig.path == "device/delete/:id")
       this.crudAction = Crud.Delete;
@@ -75,7 +78,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
         ]
       ],
       communication: [this.device.communication],
-      type: [this.device.type]
+      type: [this.device.type, [Validators.required]]
     });
 
     // Mark all fields as touched to trigger validation on initial entry to the fields

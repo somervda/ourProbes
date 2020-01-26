@@ -32,9 +32,9 @@ import {
   MatFormFieldModule,
   // MatDatepickerModule,
   // MatDialogModule,
-  MatInputModule
-  // MatSelectModule,
+  MatSelectModule,
   // MatGridListModule
+  MatInputModule
 } from "@angular/material";
 
 import "hammerjs";
@@ -95,7 +95,7 @@ import { DeviceComponent } from "./device/device.component";
     MatFormFieldModule,
     // MatTableModule,
     // MatDialogModule,
-    // MatSelectModule,
+    MatSelectModule,
     // MatDatepickerModule,
     // MatMomentDateModule,
     AppRoutingModule,
