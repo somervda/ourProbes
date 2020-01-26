@@ -91,16 +91,18 @@ export class DeviceComponent implements OnInit, OnDestroy {
       this.device[field] = this.deviceForm.get(field).value;
     }
     console.log("create device", this.device);
+    const id = this.device.id;
     this.deviceService
       .create(this.device)
       .then(() => {
         this.crudAction = Crud.Update;
-        this.snackBar.open("Device '" + this.device.id + "' created.", "", {
+        this.snackBar.open("Device '" + id + "' created.", "", {
           duration: 2000
         });
+        this.ngZone.run(() => this.router.navigateByUrl("/device/" + id));
       })
       .catch(function(error) {
-        console.error("Error adding document: ", error);
+        console.error("Error adding document: ", id, error);
       });
   }
 
