@@ -7,8 +7,12 @@ import { Component, OnInit, Input } from "@angular/core";
 })
 export class SubheadingComponent implements OnInit {
   @Input() title: string;
+  @Input() returnRoute: string;
+  @Input() returnTitle: string;
 
   constructor() {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    console.log("returnRoute: ", this.returnRoute);
+  }
 }

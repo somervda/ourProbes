@@ -1,14 +1,20 @@
 <app-subheading
   [title]="'Update: ' + device.id"
   *ngIf="crudAction == Crud.Update"
+  returnRoute="/devices"
+  returnTitle="Return to Device List"
 ></app-subheading>
 <app-subheading
   title="Create New Device"
   *ngIf="crudAction == Crud.Create"
+  returnRoute="/devices"
+  returnTitle="Return to Device List"
 ></app-subheading>
 <app-subheading
   [title]="'Delete: ' + device.id"
   *ngIf="crudAction == Crud.Delete"
+  returnRoute="/devices"
+  returnTitle="Return to Device List"
 ></app-subheading>
 <div class="page-container">
   <form class="standard-form" [formGroup]="deviceForm">

@@ -1,1 +1,17 @@
-<mat-toolbar>{{title}}</mat-toolbar>
+<mat-toolbar
+  >{{ title }}
+  <span style="width:100%"> </span>
+  <button
+    mat-raised-button
+    routerLink="/devices"
+    style="min-width:40px;padding:0px;text-align: center;"
+    *ngIf="returnRoute"
+    [title]="returnTitle ? returnTitle : 'Return to parent'"
+  >
+    <i
+      class="material-icons-outlined"
+      style="margin-left: 5px;margin-right: 5px;"
+      >arrow_back</i
+    >
+  </button>
+</mat-toolbar>
