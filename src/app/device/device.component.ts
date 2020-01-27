@@ -92,7 +92,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
           Validators.min(-180),
           Validators.max(180),
           Validators.required,
-          Validators.pattern(/^[0-9]+(\.[0-9]{1,2})?$/)
+          Validators.pattern(/^[-+]?[0-9]+(\.[0-9]*)?$/)
         ]
       ],
       latitude: [
@@ -101,7 +101,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
           Validators.min(-90),
           Validators.max(90),
           Validators.required,
-          Validators.pattern(/^[0-9]+(\.[0-9]{1,2})?$/)
+          Validators.pattern(/^[-+]?[0-9]+(\.[0-9]*)?$/)
         ]
       ]
     });
