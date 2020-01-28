@@ -9,6 +9,7 @@ export class SubheadingComponent implements OnInit {
   @Input() title: string;
   @Input() returnRoute: string;
   @Input() returnTitle: string;
+  @Input() matIcon: string;
 
   constructor() {}
 

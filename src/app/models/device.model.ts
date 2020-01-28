@@ -11,6 +11,10 @@ export interface Device {
   longitude: number;
   latitude: number;
   dateCreated?: Date;
+  // minimum number of seconds taken for each main loop on the device
+  governorSeconds: number;
+  // stops probes from running on the device
+  runProbes: boolean;
 }
 
 export enum DeviceType {

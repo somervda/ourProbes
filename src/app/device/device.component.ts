@@ -55,7 +55,9 @@ export class DeviceComponent implements OnInit, OnDestroy {
         type: DeviceType.esp32GatewayOlimex,
         id: "",
         longitude: 0,
-        latitude: 0
+        latitude: 0,
+        governorSeconds: 300,
+        runProbes: false
       };
     } else {
       this.device = this.route.snapshot.data["device"];
@@ -81,9 +83,10 @@ export class DeviceComponent implements OnInit, OnDestroy {
         [
           Validators.required,
           Validators.minLength(20),
-          Validators.maxLength(200)
+          Validators.maxLength(500)
         ]
       ],
+      location: [this.device.location, [Validators.maxLength(500)]],
       communication: [this.device.communication],
       type: [this.device.type, [Validators.required]],
       longitude: [
@@ -103,7 +106,17 @@ export class DeviceComponent implements OnInit, OnDestroy {
           Validators.required,
           Validators.pattern(/^[-+]?[0-9]+(\.[0-9]*)?$/)
         ]
-      ]
+      ],
+      governorSeconds: [
+        this.device.governorSeconds,
+        [
+          Validators.min(300),
+          Validators.max(86400),
+          Validators.required,
+          Validators.pattern(/^[0-9]+$/)
+        ]
+      ],
+      runProbes: [this.device.runProbes]
     });
 
     // Mark all fields as touched to trigger validation on initial entry to the fields
@@ -117,7 +130,11 @@ export class DeviceComponent implements OnInit, OnDestroy {
   onCreate() {
     for (const field in this.deviceForm.controls) {
       this.device[field] = this.deviceForm.get(field).value;
-      if (field == "latitude" || field == "longitude") {
+      if (
+        field == "latitude" ||
+        field == "longitude" ||
+        field == "governorSeconds"
+      ) {
         this.device[field] = Number(this.deviceForm.get(field).value);
       }
     }

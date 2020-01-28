@@ -1,5 +1,6 @@
-<mat-toolbar
-  >{{ title }}
+<mat-toolbar>
+  <mat-icon *ngIf="matIcon">{{ matIcon }}</mat-icon>
+  {{ title }}
   <span style="width:100%"> </span>
   <button
     mat-raised-button

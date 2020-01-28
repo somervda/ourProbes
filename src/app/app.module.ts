@@ -103,8 +103,8 @@ import { DeviceComponent } from "./device/device.component";
     AngularFirePerformanceModule,
     AngularFireAuthModule,
     // Allow offline operations - useful when used in combination with PWA functionality
-    // AngularFirestoreModule,
-    AngularFirestoreModule.enablePersistence(),
+    AngularFirestoreModule,
+    // AngularFirestoreModule.enablePersistence(),
     ServiceWorkerModule.register("ngsw-worker.js", {
       enabled: environment.production
     })

@@ -34,8 +34,7 @@ export class DeviceService {
           return convertSnaps<Device>(snaps);
         }),
         // Not sure why this is needed but 2 sets of results are emitted with this query
-        // take(2)
-        first()
+        take(2)
       );
   }
 

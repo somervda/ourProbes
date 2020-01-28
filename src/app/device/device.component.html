@@ -3,150 +3,208 @@
   *ngIf="crudAction == Crud.Update"
   returnRoute="/devices"
   returnTitle="Return to Device List"
+  matIcon="developer_board"
 ></app-subheading>
 <app-subheading
   title="Create New Device"
   *ngIf="crudAction == Crud.Create"
   returnRoute="/devices"
   returnTitle="Return to Device List"
+  matIcon="developer_board"
 ></app-subheading>
 <app-subheading
   [title]="'Delete: ' + device.id"
   *ngIf="crudAction == Crud.Delete"
   returnRoute="/devices"
   returnTitle="Return to Device List"
+  matIcon="developer_board"
 ></app-subheading>
 <div class="page-container">
   <form class="standard-form" [formGroup]="deviceForm">
-    <mat-form-field class="full-width">
-      <input
-        matInput
-        formControlName="id"
-        (change)="onFieldUpdate('id')"
-        placeholder="Device Id"
-        required
-      />
-      <mat-error *ngIf="deviceForm.controls['id'].hasError('required')">
-        Device id is required.
-      </mat-error>
-      <mat-error *ngIf="deviceForm.controls['id'].hasError('minlength')">
-        Device id must be at least 3 characters long.
-      </mat-error>
-      <mat-error *ngIf="deviceForm.controls['id'].hasError('maxlength')">
-        Device id must be no more than 12 characters long.
-      </mat-error>
-    </mat-form-field>
+    <fieldset [disabled]="crudAction == Crud.Delete">
+      <mat-form-field class="full-width">
+        <input
+          matInput
+          formControlName="id"
+          (change)="onFieldUpdate('id')"
+          placeholder="Device Id"
+          required
+        />
+        <mat-error *ngIf="deviceForm.controls['id'].hasError('required')">
+          Device id is required.
+        </mat-error>
+        <mat-error *ngIf="deviceForm.controls['id'].hasError('minlength')">
+          Device id must be at least 3 characters long.
+        </mat-error>
+        <mat-error *ngIf="deviceForm.controls['id'].hasError('maxlength')">
+          Device id must be no more than 12 characters long.
+        </mat-error>
+      </mat-form-field>
 
-    <mat-form-field class="full-width">
-      <textarea
-        matInput
-        formControlName="description"
-        (change)="onFieldUpdate('description')"
-        matAutosizeMinRows="3"
-        matAutosizeMaxRows="10"
-        matTextareaAutosize
-        placeholder="Device Description"
-        required
-      ></textarea>
-      <mat-error
-        *ngIf="deviceForm.controls['description'].hasError('required')"
+      <mat-form-field class="full-width">
+        <textarea
+          matInput
+          formControlName="description"
+          (change)="onFieldUpdate('description')"
+          matAutosizeMinRows="3"
+          matAutosizeMaxRows="10"
+          matTextareaAutosize
+          placeholder="Device Description"
+          required
+        ></textarea>
+        <mat-error
+          *ngIf="deviceForm.controls['description'].hasError('required')"
+        >
+          Description is required.
+        </mat-error>
+        <mat-error
+          *ngIf="deviceForm.controls['description'].hasError('minlength')"
+        >
+          Description must be at least 20 characters long.
+        </mat-error>
+        <mat-error
+          *ngIf="deviceForm.controls['description'].hasError('maxlength')"
+        >
+          Description must be no more than 500 characters long.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="full-width">
+        <textarea
+          matInput
+          formControlName="location"
+          (change)="onFieldUpdate('location')"
+          matAutosizeMinRows="3"
+          matAutosizeMaxRows="10"
+          matTextareaAutosize
+          placeholder="Location details"
+        ></textarea>
+        <mat-error
+          *ngIf="deviceForm.controls['location'].hasError('maxlength')"
+        >
+          Location must be no more than 500 characters long.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="half-width">
+        <mat-label>Type</mat-label>
+        <mat-select
+          formControlName="type"
+          (selectionChange)="onFieldUpdate('type')"
+        >
+          <mat-option *ngFor="let item of types" [value]="item.key">
+            {{ item.value }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="deviceForm.controls['type'].hasError('required')">
+          A type must be selected.
+        </mat-error>
+        <mat-hint>The type of device.</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field class="half-width">
+        <mat-label>Governance Seconds</mat-label>
+        <input
+          matInput
+          formControlName="governorSeconds"
+          (change)="onFieldUpdate('governorSeconds', 'Number')"
+          placeholder="0"
+          type="number"
+          min="300"
+          max="86400"
+        />
+        <mat-error
+          *ngIf="deviceForm.controls['governorSeconds'].hasError('min')"
+        >
+          Must not be less than 300 seconds (5 Minutes)
+        </mat-error>
+        <mat-error
+          *ngIf="deviceForm.controls['governorSeconds'].hasError('max')"
+        >
+          Must not be more than 86400 seconds (1 day)
+        </mat-error>
+        <mat-error
+          *ngIf="deviceForm.controls['governorSeconds'].hasError('required')"
+        >
+          Is required
+        </mat-error>
+        <mat-error
+          *ngIf="deviceForm.controls['governorSeconds'].hasError('pattern')"
+        >
+          Not expected format (Must be integer)
+        </mat-error>
+      </mat-form-field>
+
+      <br />
+      <mat-form-field class="half-width">
+        <mat-label>Latitude</mat-label>
+        <input
+          matInput
+          formControlName="latitude"
+          (change)="onFieldUpdate('latitude', 'Number')"
+          placeholder="0"
+          type="number"
+          min="-90"
+          max="90"
+        />
+        <mat-error *ngIf="deviceForm.controls['latitude'].hasError('min')">
+          Must not be less than -90 degrees
+        </mat-error>
+        <mat-error *ngIf="deviceForm.controls['latitude'].hasError('max')">
+          Must not be more than 90 degrees
+        </mat-error>
+        <mat-error *ngIf="deviceForm.controls['latitude'].hasError('required')">
+          Is required (Enter 0 for unknown latitude)
+        </mat-error>
+        <mat-error *ngIf="deviceForm.controls['latitude'].hasError('pattern')">
+          Not expected format (Must be floating point)
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="half-width">
+        <mat-label>Longitude</mat-label>
+        <input
+          matInput
+          formControlName="longitude"
+          (change)="onFieldUpdate('longitude', 'Number')"
+          placeholder="0"
+          type="number"
+          min="-180"
+          max="180"
+        />
+        <mat-error *ngIf="deviceForm.controls['longitude'].hasError('min')">
+          Must not be less than -180 degrees
+        </mat-error>
+        <mat-error *ngIf="deviceForm.controls['longitude'].hasError('max')">
+          Must not be more than 180 degrees
+        </mat-error>
+        <mat-error
+          *ngIf="deviceForm.controls['longitude'].hasError('required')"
+        >
+          Is required (Enter 0 for unknown longitude)
+        </mat-error>
+        <mat-error *ngIf="deviceForm.controls['longitude'].hasError('pattern')">
+          Not expected format (Must be floating point)
+        </mat-error>
+      </mat-form-field>
+      <br />
+      <!-- <a href="https://www.latlong.net/" target="_blank">Find a Lat/lng</a>
+      <br /> -->
+      <!-- mat-form-field does not support mat-checkbox as a valid control type -->
+
+      <mat-checkbox
+        formControlName="communication"
+        (change)="onFieldUpdate('communication')"
+        >IOT Communication Allowed?</mat-checkbox
       >
-        Description is required.
-      </mat-error>
-      <mat-error
-        *ngIf="deviceForm.controls['description'].hasError('minlength')"
+      <br />
+      <mat-checkbox
+        formControlName="runProbes"
+        (change)="onFieldUpdate('runProbes')"
+        >Run Probes?</mat-checkbox
       >
-        Description must be at least 20 characters long.
-      </mat-error>
-      <mat-error
-        *ngIf="deviceForm.controls['description'].hasError('maxlength')"
-      >
-        Description must be no more than 200 characters long.
-      </mat-error>
-    </mat-form-field>
-
-    <mat-form-field class="half-width">
-      <mat-label>Type</mat-label>
-      <mat-select
-        formControlName="type"
-        (selectionChange)="onFieldUpdate('type')"
-      >
-        <mat-option *ngFor="let item of types" [value]="item.key">
-          {{ item.value }}
-        </mat-option>
-      </mat-select>
-      <mat-error *ngIf="deviceForm.controls['type'].hasError('required')">
-        A type must be selected.
-      </mat-error>
-      <mat-hint>The type of device.</mat-hint>
-    </mat-form-field>
-
-    <!-- <mat-form-field class="half-width">
-      <mat-label>Communication</mat-label>
-      <mat-select
-      formControlName="communication"
-      (selectionChange)="onFieldUpdate('communication')"
-    >
-      <mat-option  value="item.key">
-        Allow
-      </mat-option>
-    </mat-form-field> -->
-
-    <!-- mat-form-field does not support mat-checkbox as a valid control type -->
-    <mat-checkbox
-      class="half-width"
-      formControlName="communication"
-      (change)="onFieldUpdate('communication')"
-      labelPosition="before"
-      >IOT Communication Allowed</mat-checkbox
-    >
-
-    <mat-form-field class="half-width">
-      <mat-label>Latitude</mat-label>
-      <input
-        matInput
-        formControlName="latitude"
-        (change)="onFieldUpdate('latitude', 'Number')"
-        placeholder="0"
-      />
-      <mat-error *ngIf="deviceForm.controls['latitude'].hasError('min')">
-        Must not be less than -90 degrees
-      </mat-error>
-      <mat-error *ngIf="deviceForm.controls['latitude'].hasError('max')">
-        Must not be more than 90 degrees
-      </mat-error>
-      <mat-error *ngIf="deviceForm.controls['latitude'].hasError('required')">
-        Is required (Enter 0 for unknown latitude)
-      </mat-error>
-      <mat-error *ngIf="deviceForm.controls['latitude'].hasError('pattern')">
-        Not expected format (Must be floating point)
-      </mat-error>
-    </mat-form-field>
-
-    <mat-form-field class="half-width">
-      <mat-label>Longitude</mat-label>
-      <input
-        matInput
-        formControlName="longitude"
-        (change)="onFieldUpdate('longitude', 'Number')"
-        placeholder="0"
-      />
-      <mat-error *ngIf="deviceForm.controls['longitude'].hasError('min')">
-        Must not be less than -90 degrees
-      </mat-error>
-      <mat-error *ngIf="deviceForm.controls['longitude'].hasError('max')">
-        Must not be more than 90 degrees
-      </mat-error>
-      <mat-error *ngIf="deviceForm.controls['longitude'].hasError('required')">
-        Is required (Enter 0 for unknown longitude)
-      </mat-error>
-      <mat-error *ngIf="deviceForm.controls['longitude'].hasError('pattern')">
-        Not expected format (Must be floating point)
-      </mat-error>
-    </mat-form-field>
-    <br />
-    <a href="https://www.latlong.net/" target="_blank">Find a Lat/lng</a>
-    <br />
+      <br />
+    </fieldset>
 
     <button
       mat-raised-button
