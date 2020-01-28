@@ -1,5 +1,5 @@
 <app-subheading
-  [title]="'Update: ' + device.id"
+  [title]="device.id + ' [Update]'"
   *ngIf="crudAction == Crud.Update"
   returnRoute="/devices"
   returnTitle="Return to Device List"
@@ -13,7 +13,7 @@
   matIcon="developer_board"
 ></app-subheading>
 <app-subheading
-  [title]="'Delete: ' + device.id"
+  [title]="device.id + ' [Delete]'"
   *ngIf="crudAction == Crud.Delete"
   returnRoute="/devices"
   returnTitle="Return to Device List"

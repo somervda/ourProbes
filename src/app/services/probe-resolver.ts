@@ -20,7 +20,7 @@ export class ProbeResolver implements Resolve<Probe> {
     state: RouterStateSnapshot
   ): Observable<Probe> {
     const id = route.paramMap.get("id");
-    console.log("probe id", id);
+    // console.log("probe id", id);
     return this.probeservice.findById(id).pipe(first());
   }
 }

@@ -61,13 +61,13 @@ export class DeviceComponent implements OnInit, OnDestroy {
       };
     } else {
       this.device = this.route.snapshot.data["device"];
-      console.log("Device from resolver:", this.device);
+      // console.log("Device from resolver:", this.device);
       // Subscribe to team to keep getting live updates
       this.deviceSubscription$$ = this.deviceService
         .findById(this.device.id)
         .subscribe(device => {
           this.device = device;
-          console.log("subscribed device", this.device);
+          // console.log("subscribed device", this.device);
           this.deviceForm.patchValue(this.device);
         });
     }
@@ -138,7 +138,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
         this.device[field] = Number(this.deviceForm.get(field).value);
       }
     }
-    console.log("create device", this.device);
+    // console.log("create device", this.device);
     const id = this.device.id;
 
     this.deviceService
@@ -156,7 +156,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
   }
 
   onDelete() {
-    console.log("delete", this.device.id);
+    // console.log("delete", this.device.id);
     const deviceId = this.device.id;
 
     this.deviceService

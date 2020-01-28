@@ -65,13 +65,13 @@ const routes: Routes = [
   {
     path: "probe/delete/:id",
     component: ProbeComponent,
-    resolve: { device: ProbeResolver },
+    resolve: { probe: ProbeResolver },
     canActivate: [IsActivatedGuard]
   },
   {
     path: "probe/:id",
-    component: DeviceComponent,
-    resolve: { device: ProbeResolver },
+    component: ProbeComponent,
+    resolve: { probe: ProbeResolver },
     canActivate: [IsActivatedGuard]
   },
   {

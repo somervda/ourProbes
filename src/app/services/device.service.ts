@@ -30,7 +30,7 @@ export class DeviceService {
       .snapshotChanges()
       .pipe(
         map(snaps => {
-          console.log("findDevices", convertSnaps<Device>(snaps));
+          // console.log("findDevices", convertSnaps<Device>(snaps));
           return convertSnaps<Device>(snaps);
         }),
         // Not sure why this is needed but 2 sets of results are emitted with this query

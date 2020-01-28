@@ -20,7 +20,7 @@ export class DeviceResolver implements Resolve<Device> {
     state: RouterStateSnapshot
   ): Observable<Device> {
     const id = route.paramMap.get("id");
-    console.log("device id", id);
+    // console.log("device id", id);
     return this.deviceservice.findById(id).pipe(first());
   }
 }

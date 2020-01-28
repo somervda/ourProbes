@@ -29,7 +29,7 @@ export class ProbeService {
       .snapshotChanges()
       .pipe(
         map(snaps => {
-          console.log("findProbes", convertSnaps<Probe>(snaps));
+          // console.log("findProbes", convertSnaps<Probe>(snaps));
           return convertSnaps<Probe>(snaps);
         }),
         // Not sure why this is needed but 2 sets of results are emitted with this query
@@ -44,7 +44,7 @@ export class ProbeService {
     }
   }
 
-  createTeam(probe: Probe): Promise<DocumentReference> {
+  create(probe: Probe): Promise<DocumentReference> {
     return this.afs.collection("probes").add(probe);
   }
 

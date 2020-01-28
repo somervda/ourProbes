@@ -1,1 +1,144 @@
-<p>probe works!</p>
+<app-subheading
+  [title]="probe.name + ' [Update]'"
+  *ngIf="crudAction == Crud.Update"
+  returnRoute="/probes"
+  returnTitle="Return to Probe List"
+  matIcon="network_check"
+></app-subheading>
+<app-subheading
+  title="Create New Probe"
+  *ngIf="crudAction == Crud.Create"
+  returnRoute="/probes"
+  returnTitle="Return to Probe List"
+  matIcon="network_check"
+></app-subheading>
+<app-subheading
+  [title]="probe.name + ' [Delete]'"
+  *ngIf="crudAction == Crud.Delete"
+  returnRoute="/probes"
+  returnTitle="Return to Probe List"
+  matIcon="network_check"
+></app-subheading>
+<div class="page-container">
+  <form class="standard-form" [formGroup]="probeForm">
+    <fieldset [disabled]="crudAction == Crud.Delete">
+      <mat-form-field class="full-width">
+        <input
+          matInput
+          formControlName="name"
+          (change)="onFieldUpdate('name')"
+          placeholder="Name"
+          required
+        />
+        <mat-error *ngIf="probeForm.controls['name'].hasError('required')">
+          Name is required.
+        </mat-error>
+        <mat-error *ngIf="probeForm.controls['name'].hasError('minlength')">
+          Name must be at least 3 characters long.
+        </mat-error>
+        <mat-error *ngIf="probeForm.controls['name'].hasError('maxlength')">
+          Name must be no more than 25 characters long.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="full-width">
+        <textarea
+          matInput
+          formControlName="description"
+          (change)="onFieldUpdate('description')"
+          matAutosizeMinRows="3"
+          matAutosizeMaxRows="10"
+          matTextareaAutosize
+          placeholder="Description"
+          required
+        ></textarea>
+        <mat-error
+          *ngIf="probeForm.controls['description'].hasError('required')"
+        >
+          Description is required.
+        </mat-error>
+        <mat-error
+          *ngIf="probeForm.controls['description'].hasError('minlength')"
+        >
+          Description must be at least 10 characters long.
+        </mat-error>
+        <mat-error
+          *ngIf="probeForm.controls['description'].hasError('maxlength')"
+        >
+          Description must be no more than 500 characters long.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="full-width">
+        <input
+          matInput
+          formControlName="target"
+          (change)="onFieldUpdate('target')"
+          placeholder="Network Target"
+        />
+        <mat-error *ngIf="probeForm.controls['target'].hasError('required')">
+          Target is required.
+        </mat-error>
+        <mat-error *ngIf="probeForm.controls['target'].hasError('minlength')">
+          Target must be at least 5 characters long.
+        </mat-error>
+        <mat-error *ngIf="probeForm.controls['target'].hasError('maxlength')">
+          Target must be no more than 120 characters long.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="half-width">
+        <mat-label>Type</mat-label>
+        <mat-select
+          formControlName="type"
+          (selectionChange)="onFieldUpdate('type')"
+        >
+          <mat-option *ngFor="let item of types" [value]="item.key">
+            {{ item.value | titlecase }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="probeForm.controls['type'].hasError('required')">
+          A type must be selected.
+        </mat-error>
+        <mat-hint>The type of probe.</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field class="half-width">
+        <mat-label>Status</mat-label>
+        <mat-select
+          formControlName="status"
+          (selectionChange)="onFieldUpdate('status')"
+        >
+          <mat-option *ngFor="let item of status" [value]="item.key">
+            {{ item.value | titlecase }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="probeForm.controls['status'].hasError('required')">
+          A status must be selected.
+        </mat-error>
+      </mat-form-field>
+    </fieldset>
+
+    <button
+      mat-raised-button
+      color="primary"
+      *ngIf="crudAction == Crud.Create"
+      [disabled]="!probeForm.valid"
+      (click)="onCreate()"
+      id="btnCreate"
+    >
+      <mat-icon>add</mat-icon>
+      Create
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      *ngIf="crudAction == Crud.Delete"
+      (click)="onDelete()"
+      id="btnDelete"
+    >
+      <mat-icon>clear</mat-icon>
+      Delete
+    </button>
+  </form>
+</div>

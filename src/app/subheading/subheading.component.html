@@ -1,10 +1,11 @@
 <mat-toolbar>
-  <mat-icon *ngIf="matIcon">{{ matIcon }}</mat-icon>
+  <mat-icon *ngIf="matIcon">{{ matIcon }}</mat-icon
+  >&nbsp;
   {{ title }}
   <span style="width:100%"> </span>
   <button
     mat-raised-button
-    routerLink="/devices"
+    [routerLink]="returnRoute"
     style="min-width:40px;padding:0px;text-align: center;"
     *ngIf="returnRoute"
     [title]="returnTitle ? returnTitle : 'Return to parent'"
