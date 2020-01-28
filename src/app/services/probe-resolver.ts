@@ -12,7 +12,7 @@ import { first } from "rxjs/operators";
 @Injectable({
   providedIn: "root"
 })
-export class DeviceResolver implements Resolve<Probe> {
+export class ProbeResolver implements Resolve<Probe> {
   constructor(private probeservice: ProbeService) {}
 
   resolve(

@@ -15,6 +15,9 @@ import { IsLoggedInGuard } from "./guards/isLoggedIn.guard";
 import { NotauthorizedComponent } from "./notauthorized/notauthorized.component";
 import { DeviceComponent } from "./device/device.component";
 import { DeviceResolver } from "./services/device-resolver";
+import { ProbesComponent } from "./probes/probes.component";
+import { ProbeComponent } from "./probe/probe.component";
+import { ProbeResolver } from "./services/probe-resolver";
 
 const routes: Routes = [
   { path: "", component: HomeComponent, canActivate: [IsLoggedInGuard] },
@@ -47,6 +50,28 @@ const routes: Routes = [
     path: "device/:id",
     component: DeviceComponent,
     resolve: { device: DeviceResolver },
+    canActivate: [IsActivatedGuard]
+  },
+  {
+    path: "probes",
+    component: ProbesComponent,
+    canActivate: [IsActivatedGuard]
+  },
+  {
+    path: "probe/create",
+    component: ProbeComponent,
+    canActivate: [IsActivatedGuard]
+  },
+  {
+    path: "probe/delete/:id",
+    component: ProbeComponent,
+    resolve: { device: ProbeResolver },
+    canActivate: [IsActivatedGuard]
+  },
+  {
+    path: "probe/:id",
+    component: DeviceComponent,
+    resolve: { device: ProbeResolver },
     canActivate: [IsActivatedGuard]
   },
   {

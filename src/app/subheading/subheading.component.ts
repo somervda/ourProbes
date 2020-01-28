@@ -13,7 +13,5 @@ export class SubheadingComponent implements OnInit {
 
   constructor() {}
 
-  ngOnInit() {
-    console.log("returnRoute: ", this.returnRoute);
-  }
+  ngOnInit() {}
 }

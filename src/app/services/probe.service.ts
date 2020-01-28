@@ -8,29 +8,29 @@ import { Probe } from "../models/probe.model";
 @Injectable({
   providedIn: "root"
 })
-export class DeviceService {
+export class ProbeService {
   constructor(private afs: AngularFirestore) {}
 
-  findById(id: string): Observable<Device> {
+  findById(id: string): Observable<Probe> {
     return this.afs
-      .doc("/devices/" + id)
+      .doc("/probes/" + id)
       .snapshotChanges()
       .pipe(
         map(snap => {
-          return convertSnap<Device>(snap);
+          return convertSnap<Probe>(snap);
         })
       );
   }
 
-  findDevices(pageSize): Observable<Device[]> {
-    // console.log( "findDevices",  sortField, sortOrder  ,pageSize  );
+  findProbes(pageSize): Observable<Probe[]> {
+    // console.log( "findProbes",  sortField, sortOrder  ,pageSize  );
     return this.afs
-      .collection("devices", ref => ref.limit(pageSize))
+      .collection("probes", ref => ref.limit(pageSize))
       .snapshotChanges()
       .pipe(
         map(snaps => {
-          console.log("findDevices", convertSnaps<Device>(snaps));
-          return convertSnaps<Device>(snaps);
+          console.log("findProbes", convertSnaps<Probe>(snaps));
+          return convertSnaps<Probe>(snaps);
         }),
         // Not sure why this is needed but 2 sets of results are emitted with this query
         take(2)
@@ -40,23 +40,17 @@ export class DeviceService {
   fieldUpdate(docId: string, fieldName: string, newValue: any) {
     if (docId && fieldName) {
       const updateObject = {};
-      dbFieldUpdate("/devices/" + docId, fieldName, newValue, this.afs);
+      dbFieldUpdate("/probes/" + docId, fieldName, newValue, this.afs);
     }
   }
 
-  create(device: Device): Promise<void> {
-    // Todo - check for id existence and fail if it already exists
-    const id = device.id;
-    delete device.id;
-    return this.afs
-      .collection("devices")
-      .doc(id)
-      .set(device);
+  createTeam(probe: Probe): Promise<DocumentReference> {
+    return this.afs.collection("probes").add(probe);
   }
 
   delete(id: string): Promise<void> {
     return this.afs
-      .collection("devices")
+      .collection("probes")
       .doc(id)
       .delete();
   }

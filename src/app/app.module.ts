@@ -51,6 +51,8 @@ import { NotauthorizedComponent } from "./notauthorized/notauthorized.component"
 import { DevicesComponent } from "./devices/devices.component";
 import { SubheadingComponent } from "./subheading/subheading.component";
 import { DeviceComponent } from "./device/device.component";
+import { ProbesComponent } from './probes/probes.component';
+import { ProbeComponent } from './probe/probe.component';
 
 @NgModule({
   declarations: [
@@ -65,7 +67,9 @@ import { DeviceComponent } from "./device/device.component";
     NotauthorizedComponent,
     DevicesComponent,
     SubheadingComponent,
-    DeviceComponent
+    DeviceComponent,
+    ProbesComponent,
+    ProbeComponent
   ],
   imports: [
     BrowserModule,

@@ -1,5 +1,6 @@
 export interface Probe {
-  pid: string;
+  id?: string;
+  name: string;
   description: string;
   type: ProbeType;
   target: string;
