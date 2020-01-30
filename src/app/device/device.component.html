@@ -1,5 +1,5 @@
 <app-subheading
-  [title]="device.id + ' [Update]'"
+  [title]="device.id"
   *ngIf="crudAction == Crud.Update"
   returnRoute="/devices"
   returnTitle="Return to Device List"
@@ -22,7 +22,7 @@
 <div class="page-container">
   <form class="standard-form" [formGroup]="deviceForm">
     <fieldset [disabled]="crudAction == Crud.Delete">
-      <mat-form-field class="full-width">
+      <mat-form-field class="full-width" *ngIf="crudAction != Crud.Update">
         <input
           matInput
           formControlName="id"
@@ -38,6 +38,9 @@
         </mat-error>
         <mat-error *ngIf="deviceForm.controls['id'].hasError('maxlength')">
           Device id must be no more than 12 characters long.
+        </mat-error>
+        <mat-error *ngIf="deviceForm.controls['id'].hasError('pattern')">
+          Unexpected format (Must be letter plus 4 digits i.e. D0001)
         </mat-error>
       </mat-form-field>
 

@@ -53,7 +53,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
         communication: true,
         description: "",
         type: DeviceType.esp32GatewayOlimex,
-        id: "",
+        id: "D0000",
         longitude: 0,
         latitude: 0,
         governorSeconds: 300,
@@ -76,7 +76,12 @@ export class DeviceComponent implements OnInit, OnDestroy {
     this.deviceForm = this.fb.group({
       id: [
         this.device.id,
-        [Validators.required, Validators.minLength(3), Validators.maxLength(12)]
+        [
+          Validators.required,
+          Validators.minLength(3),
+          Validators.maxLength(12),
+          Validators.pattern(/^[A-Z]{1}[0-9]{4}?$/)
+        ]
       ],
       description: [
         this.device.description,

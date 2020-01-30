@@ -103,3 +103,14 @@ exports.probeEventsOnPublish = functions.pubsub
 
     return true;
   });
+
+exports.deviceCreate = functions.firestore
+  .document("devices/{id}")
+  .onCreate((snap, context) => {
+    return snap.ref.set(
+      {
+        dateCreated: admin.firestore.FieldValue.serverTimestamp()
+      },
+      { merge: true }
+    );
+  });
