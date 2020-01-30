@@ -15,6 +15,8 @@ export interface Device {
   governorSeconds: number;
   // stops probes from running on the device
   runProbes: boolean;
+  // public RSA key in PEM format
+  publicKey: string;
 }
 
 export enum DeviceType {

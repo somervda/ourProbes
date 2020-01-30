@@ -89,6 +89,38 @@
         </mat-error>
       </mat-form-field>
 
+      <mat-form-field class="full-width">
+        <textarea
+          matInput
+          formControlName="publicKey"
+          (change)="onFieldUpdate('publicKey')"
+          matAutosizeMinRows="8"
+          matAutosizeMaxRows="10"
+          matTextareaAutosize
+          placeholder="Public Key"
+          required
+          style="font-family: monospace;font-size:small"
+        ></textarea>
+        <mat-error
+          *ngIf="deviceForm.controls['publicKey'].hasError('required')"
+        >
+          Required!.
+        </mat-error>
+        <mat-error
+          *ngIf="deviceForm.controls['publicKey'].hasError('maxlength')"
+        >
+          Must be less than 1000 characters long.
+        </mat-error>
+        <mat-error
+          *ngIf="deviceForm.controls['publicKey'].hasError('minlength')"
+        >
+          Must be greater than 20 characters long.
+        </mat-error>
+        <mat-error *ngIf="deviceForm.controls['publicKey'].hasError('pattern')">
+          Must be a RSA PEM key.
+        </mat-error>
+      </mat-form-field>
+
       <mat-form-field class="half-width">
         <mat-label>Type</mat-label>
         <mat-select

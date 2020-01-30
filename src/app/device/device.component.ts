@@ -57,7 +57,8 @@ export class DeviceComponent implements OnInit, OnDestroy {
         longitude: 0,
         latitude: 0,
         governorSeconds: 300,
-        runProbes: false
+        runProbes: false,
+        publicKey: ""
       };
     } else {
       this.device = this.route.snapshot.data["device"];
@@ -121,7 +122,18 @@ export class DeviceComponent implements OnInit, OnDestroy {
           Validators.pattern(/^[0-9]+$/)
         ]
       ],
-      runProbes: [this.device.runProbes]
+      runProbes: [this.device.runProbes],
+      publicKey: [
+        this.device.publicKey,
+        [
+          Validators.required,
+          Validators.minLength(20),
+          Validators.maxLength(1000),
+          Validators.pattern(
+            /^-----BEGIN PUBLIC KEY-----[A-Za-z0-9+\/=\n\r]*-----END PUBLIC KEY-----$/
+          )
+        ]
+      ]
     });
 
     // Mark all fields as touched to trigger validation on initial entry to the fields

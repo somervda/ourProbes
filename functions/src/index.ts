@@ -107,7 +107,9 @@ exports.probeEventsOnPublish = functions.pubsub
 exports.deviceCreate = functions.firestore
   .document("devices/{id}")
   .onCreate((snap, context) => {
-    addDevice(context.params.id)
+    const publicKey = snap.get("publicKey");
+    console.log("publicKey:", publicKey);
+    addDevice(context.params.id, publicKey)
       .then(() => {
         console.log("Device added");
       })
@@ -123,13 +125,12 @@ exports.deviceCreate = functions.firestore
     );
   });
 
-async function addDevice(id: string) {
+async function addDevice(id: string, publicKey: string) {
   const cloudRegion = "us-central1";
   const deviceId = id;
   const projectId = "ourprobes-258320";
   const registryId = "microcontroller";
   const iot = require("@google-cloud/iot");
-  const fs = require("fs");
 
   const iotClient = new iot.v1.DeviceManagerClient({
     // optional auth parameters.
@@ -141,12 +142,14 @@ async function addDevice(id: string) {
     credentials: [
       {
         publicKey: {
-          format: "RSA_X509_PEM",
-          key: fs.readFileSync("rsa_public.pem").toString()
+          format: "RSA_PEM",
+          key: publicKey
         }
       }
     ]
   };
+
+  console.log("device.publickey:", publicKey);
 
   const request = {
     parent: regPath,
