@@ -9,6 +9,7 @@ import { AngularFirePerformanceModule } from "@angular/fire/performance";
 import { environment } from "../environments/environment";
 import { AngularFireAuthModule } from "@angular/fire/auth";
 import { AngularFirestoreModule } from "@angular/fire/firestore";
+import { AgmCoreModule } from "@agm/core";
 // import { AngularFireStorageModule } from "@angular/fire/storage";
 
 import { AppRoutingModule } from "./app-routing.module";
@@ -51,8 +52,8 @@ import { NotauthorizedComponent } from "./notauthorized/notauthorized.component"
 import { DevicesComponent } from "./devices/devices.component";
 import { SubheadingComponent } from "./subheading/subheading.component";
 import { DeviceComponent } from "./device/device.component";
-import { ProbesComponent } from './probes/probes.component';
-import { ProbeComponent } from './probe/probe.component';
+import { ProbesComponent } from "./probes/probes.component";
+import { ProbeComponent } from "./probe/probe.component";
 
 @NgModule({
   declarations: [
@@ -73,6 +74,9 @@ import { ProbeComponent } from './probe/probe.component';
   ],
   imports: [
     BrowserModule,
+    AgmCoreModule.forRoot({
+      apiKey: "AIzaSyBTXGNP8fuSxj8aZTz7VbQ4LduAZ20Jd3o"
+    }),
     BrowserAnimationsModule,
     FormsModule,
     ReactiveFormsModule,
