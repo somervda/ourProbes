@@ -108,14 +108,11 @@ exports.deviceCreate = functions.firestore
   .document("devices/{id}")
   .onCreate((snap, context) => {
     const publicKey = snap.get("publicKey");
+    const communication = snap.get("communication");
     console.log("publicKey:", publicKey);
-    addDevice(context.params.id, publicKey)
-      .then(() => {
-        console.log("Device added");
-      })
-      .catch(() => {
-        console.log("Device not added");
-      });
+    addDevice(context.params.id, publicKey, !communication)
+      .then()
+      .catch();
 
     return snap.ref.set(
       {
@@ -125,7 +122,11 @@ exports.deviceCreate = functions.firestore
     );
   });
 
-async function addDevice(id: string, publicKey: string) {
+async function addDevice(
+  id: string,
+  publicKey: string,
+  blockedCommunication: boolean
+) {
   const cloudRegion = "us-central1";
   const deviceId = id;
   const projectId = "ourprobes-258320";
@@ -137,6 +138,7 @@ async function addDevice(id: string, publicKey: string) {
   });
 
   const regPath = iotClient.registryPath(projectId, cloudRegion, registryId);
+  // see device json https://cloud.google.com/iot/docs/reference/cloudiot/rest/v1/projects.locations.registries.devices
   const device = {
     id: deviceId,
     credentials: [
@@ -146,7 +148,8 @@ async function addDevice(id: string, publicKey: string) {
           key: publicKey
         }
       }
-    ]
+    ],
+    blocked: blockedCommunication
   };
 
   console.log("device.publickey:", publicKey);
