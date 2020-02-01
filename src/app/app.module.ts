@@ -34,6 +34,7 @@ import {
   // MatDatepickerModule,
   // MatDialogModule,
   MatSelectModule,
+  MatTabsModule,
   // MatGridListModule
   MatInputModule
 } from "@angular/material";
@@ -54,6 +55,7 @@ import { SubheadingComponent } from "./subheading/subheading.component";
 import { DeviceComponent } from "./device/device.component";
 import { ProbesComponent } from "./probes/probes.component";
 import { ProbeComponent } from "./probe/probe.component";
+import { DevicelistComponent } from "./devicelist/devicelist.component";
 
 @NgModule({
   declarations: [
@@ -70,7 +72,8 @@ import { ProbeComponent } from "./probe/probe.component";
     SubheadingComponent,
     DeviceComponent,
     ProbesComponent,
-    ProbeComponent
+    ProbeComponent,
+    DevicelistComponent
   ],
   imports: [
     BrowserModule,
@@ -98,7 +101,7 @@ import { ProbeComponent } from "./probe/probe.component";
     MatProgressSpinnerModule,
     // MatMenuModule,
     // MatDividerModule,
-    // MatTabsModule,
+    MatTabsModule,
     MatInputModule,
     MatFormFieldModule,
     // MatTableModule,
