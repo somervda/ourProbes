@@ -14,8 +14,11 @@
         <div class="outline">
           <agm-map [latitude]="latitude" [longitude]="longitude" [zoom]="zoom">
             <agm-marker
-              [latitude]="latitude"
-              [longitude]="longitude"
+              *ngFor="let device of devices$ | async"
+              [latitude]="device.latitude"
+              [longitude]="device.longitude"
+              [title]="device.description"
+              [label]="device.id"
             ></agm-marker>
           </agm-map>
         </div>

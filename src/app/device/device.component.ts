@@ -207,6 +207,16 @@ export class DeviceComponent implements OnInit, OnDestroy {
     }
   }
 
+  latLngChange(latLng) {
+    console.log("latLngChange", latLng);
+    this.deviceService.fieldUpdate(this.device.id, "latitude", latLng.latitude);
+    this.deviceService.fieldUpdate(
+      this.device.id,
+      "longitude",
+      latLng.longitude
+    );
+  }
+
   ngOnDestroy() {
     if (this.deviceSubscription$$) this.deviceSubscription$$.unsubscribe();
   }

@@ -222,6 +222,7 @@
           Not expected format (Must be floating point)
         </mat-error>
       </mat-form-field>
+      <app-simplemap [latitude]="device.latitude" [longitude]=device.longitude (mapClick)="latLngChange($event)"></app-simplemap>
       <br />
       <!-- <a href="https://www.latlong.net/" target="_blank">Find a Lat/lng</a>
       <br /> -->
