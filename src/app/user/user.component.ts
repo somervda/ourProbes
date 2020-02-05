@@ -101,6 +101,34 @@ export class UserComponent implements OnInit, OnDestroy {
     );
   }
 
+  updateLongitude() {
+    this.userservice.dbFieldUpdate(
+      this.user.uid,
+      "longitude",
+      this.user.longitude
+    );
+  }
+
+  updateLatitude() {
+    this.userservice.dbFieldUpdate(
+      this.user.uid,
+      "latitude",
+      this.user.latitude
+    );
+  }
+
+  latLngChange(latLng) {
+    console.log("latLngChange", latLng);
+    this.userservice.dbFieldUpdate(
+      this.user.uid,
+      "longitude",
+      latLng.longitude
+    );
+    this.user.longitude = latLng.longitude;
+    this.userservice.dbFieldUpdate(this.user.uid, "latitude", latLng.latitude);
+    this.user.latitude = latLng.latitude;
+  }
+
   ngOnDestroy() {
     if (this.userInitSub) this.userInitSub.unsubscribe();
     if (this.navigationSubscription) this.navigationSubscription.unsubscribe();

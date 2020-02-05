@@ -38,5 +38,46 @@
         </td>
       </tr>
     </ng-container>
+    <tr>
+      <td>
+        <b>Latitude</b>
+      </td>
+      <td>
+        <input
+          matInput
+          [(ngModel)]="user.latitude"
+          (change)="updateLatitude()"
+          placeholder="0"
+          type="number"
+          min="-90"
+          max="90"
+        />
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <b>Longitude</b>
+      </td>
+      <td>
+        <input
+          matInput
+          [(ngModel)]="user.longitude"
+          (change)="updateLongitude()"
+          placeholder="0"
+          type="number"
+          min="-180"
+          max="180"
+        />
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <app-simplemap
+          [latitude]="user.latitude"
+          [longitude]="user.longitude"
+          (mapClick)="latLngChange($event)"
+        ></app-simplemap>
+      </td>
+    </tr>
   </table>
 </div>

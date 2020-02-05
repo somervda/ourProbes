@@ -56,7 +56,7 @@ export class AuthService {
       // Keep a subscription to the user$ observable alive so currentUser is maintained as a property
       this.user$.subscribe(User => {
         this.currentUser = User;
-        // console.log("Update currentUser", User);
+        console.log("Update currentUser", User);
       });
     });
   }
@@ -67,17 +67,23 @@ export class AuthService {
       `users/${result.user.uid}`
     );
 
+    // Only occurs when user first created?
+    console.log("updateUserData userRef:", userRef);
+
     const data = {
       uid: result.user.uid,
       email: result.user.email,
       displayName: result.user.displayName,
-      photoURL: result.user.photoURL
+      photoURL: result.user.photoURL,
+      longitude: 0,
+      latitude: 0
     };
 
     // Create a generic photoURL if auth. photoURL is null
     if (!data.photoURL) {
       data.photoURL = "https://ui-avatars.com/api/?name=" + data.displayName;
     }
+
     userRef.set(data, { merge: true });
 
     return;
