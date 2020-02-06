@@ -119,12 +119,14 @@ export class UserComponent implements OnInit, OnDestroy {
 
   latLngChange(latLng) {
     console.log("latLngChange", latLng);
+    console.log("update longitude");
     this.userservice.dbFieldUpdate(
       this.user.uid,
       "longitude",
       latLng.longitude
     );
     this.user.longitude = latLng.longitude;
+    console.log("update latitude");
     this.userservice.dbFieldUpdate(this.user.uid, "latitude", latLng.latitude);
     this.user.latitude = latLng.latitude;
   }

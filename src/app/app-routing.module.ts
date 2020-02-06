@@ -18,12 +18,14 @@ import { DeviceResolver } from "./services/device-resolver";
 import { ProbesComponent } from "./probes/probes.component";
 import { ProbeComponent } from "./probe/probe.component";
 import { ProbeResolver } from "./services/probe-resolver";
+import { NotactivatedComponent } from "./notactivated/notactivated.component";
 
 const routes: Routes = [
   { path: "", component: HomeComponent, canActivate: [IsLoggedInGuard] },
   { path: "about", component: AboutComponent },
   { path: "login", component: LoginComponent },
   { path: "notAuthorized", component: NotauthorizedComponent },
+  { path: "notActivated", component: NotactivatedComponent },
   {
     path: "administration",
     component: AdministrationComponent,

@@ -23,7 +23,7 @@ export class IsActivatedGuard implements CanActivate {
         // If the user does not have required access then redirect
         // console.log("u tap:", u);
         if (!u) this.router.navigateByUrl("login");
-        if (!u.isActivated) this.router.navigateByUrl("notAuthorized");
+        if (!u.isActivated) this.router.navigateByUrl("notActivated");
       }),
       map((u: User) => !!u)
     );

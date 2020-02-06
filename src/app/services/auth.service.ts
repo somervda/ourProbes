@@ -68,17 +68,21 @@ export class AuthService {
     );
 
     // Only occurs when user first created?
-    console.log("updateUserData userRef:", userRef);
+    console.log("updateUserData userRef:", userRef, result);
 
     const data = {
       uid: result.user.uid,
       email: result.user.email,
       displayName: result.user.displayName,
-      photoURL: result.user.photoURL,
-      longitude: 0,
-      latitude: 0
+      photoURL: result.user.photoURL
     };
 
+    if (result.additionalUserInfo.isNewUser) {
+      // New user document in firestore
+      console.log("Is new user:", result);
+      data["latitude"] = 0;
+      data["longitude"] = 0;
+    }
     // Create a generic photoURL if auth. photoURL is null
     if (!data.photoURL) {
       data.photoURL = "https://ui-avatars.com/api/?name=" + data.displayName;
