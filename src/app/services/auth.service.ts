@@ -47,18 +47,28 @@ export class AuthService {
       })
     );
 
+    console.log("Before wait:", new Date().getTime());
+    this.waitForUser();
+    console.log("After wait:", new Date().getTime());
+
     this.loggedIn$ = this.afAuth.authState.pipe(map(user => !!user));
 
     // Set  up a authentication watched to reload user info when user is authenticated
     // this covers initial signon and when the user refreshes the browser.
+    console.log("Begin  authStateChanges:", new Date().getTime());
     this.authStateChanges = this.afAuth.auth.onAuthStateChanged(authuser => {
       // console.log("onAuthStateChanges authuser", authuser);
       // Keep a subscription to the user$ observable alive so currentUser is maintained as a property
       this.user$.subscribe(User => {
         this.currentUser = User;
-        console.log("Update currentUser", User);
+        console.log("Update currentUser", User, " ", new Date().getTime());
       });
     });
+    console.log("End  authStateChanges:", new Date().getTime());
+  }
+
+  private async waitForUser() {
+    await this.user$.toPromise();
   }
 
   public updateUserData(result) {
