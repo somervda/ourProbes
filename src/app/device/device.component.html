@@ -222,8 +222,20 @@
           Not expected format (Must be floating point)
         </mat-error>
       </mat-form-field>
-      <app-simplemap [latitude]="device.latitude" [longitude]=device.longitude 
-        (mapClick)="latLngChange($event)"></app-simplemap>
+      <mat-accordion>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Edit Longitude/Latitude On Map
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <app-simplemap
+            [latitude]="device.latitude"
+            [longitude]="device.longitude"
+            (mapClick)="latLngChange($event)"
+          ></app-simplemap>
+        </mat-expansion-panel>
+      </mat-accordion>
       <br />
       <!-- <a href="https://www.latlong.net/" target="_blank">Find a Lat/lng</a>
       <br /> -->

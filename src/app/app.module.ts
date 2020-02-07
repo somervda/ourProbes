@@ -31,6 +31,7 @@ import {
   MatProgressSpinnerModule,
   MatDividerModule,
   MatFormFieldModule,
+  MatExpansionModule,
   // MatDatepickerModule,
   // MatDialogModule,
   MatSelectModule,
@@ -56,8 +57,8 @@ import { DeviceComponent } from "./device/device.component";
 import { ProbesComponent } from "./probes/probes.component";
 import { ProbeComponent } from "./probe/probe.component";
 import { DevicelistComponent } from "./devicelist/devicelist.component";
-import { SimplemapComponent } from './simplemap/simplemap.component';
-import { NotactivatedComponent } from './notactivated/notactivated.component';
+import { SimplemapComponent } from "./simplemap/simplemap.component";
+import { NotactivatedComponent } from "./notactivated/notactivated.component";
 
 @NgModule({
   declarations: [
@@ -103,6 +104,7 @@ import { NotactivatedComponent } from './notactivated/notactivated.component';
     MatPaginatorModule,
     MatSortModule,
     MatProgressSpinnerModule,
+    MatExpansionModule,
     // MatMenuModule,
     // MatDividerModule,
     MatTabsModule,

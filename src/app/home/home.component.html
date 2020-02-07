@@ -1,28 +1,15 @@
 <div class="page-container">
   <app-subheading title="Home" matIcon="home"></app-subheading>
-  <mat-tab-group>
-    <mat-tab label="Device List">
-      <ng-template matTabContent>
-        <app-devicelist
-          [showDelete]="false"
-          style="width: 100%;"
-        ></app-devicelist>
-      </ng-template>
-    </mat-tab>
-    <mat-tab label="Device Map">
-      <ng-template matTabContent>
-        <div class="outline">
-          <agm-map [latitude]="latitude" [longitude]="longitude" [zoom]="zoom">
-            <agm-marker
-              *ngFor="let device of devices$ | async"
-              [latitude]="device.latitude"
-              [longitude]="device.longitude"
-              [title]="device.description"
-              [label]="device.id"
-            ></agm-marker>
-          </agm-map>
-        </div>
-      </ng-template>
-    </mat-tab>
-  </mat-tab-group>
+
+  <agm-map [latitude]="latitude" [longitude]="longitude" [zoom]="zoom">
+    <agm-marker
+      *ngFor="let device of devices$ | async"
+      [latitude]="device.latitude"
+      [longitude]="device.longitude"
+      [title]="device.description"
+      [label]="device.id"
+    ></agm-marker>
+  </agm-map>
+
+  <app-devicelist [showDelete]="false" style="width: 100%;"></app-devicelist>
 </div>

@@ -33,11 +33,17 @@ export class HomeComponent implements OnInit, OnDestroy {
       .doc<User>(`users/${this.auth.currentUser.uid}`)
       .valueChanges();
     this.user$$ = this.user$.subscribe(user => {
+      console.log("activated", user.isActivated, user.latitude);
+      if ((user.latitude || user.latitude == 0) && !user.isActivated) {
+        this.ngZone.run(() => this.router.navigateByUrl("notActivated"));
+      }
       this.latitude = user.latitude;
       this.longitude = user.longitude;
-      if (!user.isActivated) {
-        console.log("activated", user.isActivated);
-        this.ngZone.run(() => this.router.navigateByUrl("notActivated"));
+      if (this.latitude == 0 && this.longitude == 0) {
+        console.log("Home zoom 2");
+        this.zoom = 2;
+      } else {
+        console.log("Home zoom ", this.zoom);
       }
       console.log("Lat/Lng update ", user, " ", new Date().getTime());
     });

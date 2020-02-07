@@ -1,7 +1,7 @@
 <agm-map
   [latitude]="latitude"
   [longitude]="longitude"
-  [zoom]="zoom"
+  [zoom]="latitude == 0 && longitude == 0 ? 2 : 10"
   (mapClick)="onChooseLocation($event)"
 >
   <agm-marker
