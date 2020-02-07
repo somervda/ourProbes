@@ -1,3 +1,4 @@
+import { ProbeType } from "./probe.model";
 export interface Device {
   // did = deviceId value in IOT device definition
   id: string;
@@ -17,10 +18,23 @@ export interface Device {
   runProbes: boolean;
   // public RSA key in PEM format
   publicKey: string;
+  // private RSA key in PEM format
+  privateKey: string;
+  // private RSA key decoded for use in the config.py key-config object
+  // see readme.txt
+  privateKeyTuple: string;
+  probeList: [];
 }
 
 export enum DeviceType {
   esp32HiLetGo = 1,
   esp32GatewayOlimex = 2,
   raspberryPi4 = 3
+}
+
+export interface ProbeListItem {
+  id: string;
+  target: string;
+  type: ProbeType;
+  active: boolean;
 }

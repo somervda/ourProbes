@@ -26,6 +26,11 @@ Make private key and then the public key
 openssl genrsa -out rsa_private.pem 2048
 openssl rsa -in rsa_private.pem -pubout -out rsa_public.pem
 
+config.py - jwt private key tuple. Do the conversion of the private key on your own machine using the 
+python command below, the output from this goes into the jwt_config property
+>python utils/decode_rsa.py
+see https://medium.com/google-cloud/connecting-micropython-devices-to-google-cloud-iot-core-3680e632681e for details
+
 
 gcloud pubsub subscriptions create projects/ourprobes-258320/subscriptions/probeSub --topic=projects/ourprobes-258320/topics/probe-events
 	

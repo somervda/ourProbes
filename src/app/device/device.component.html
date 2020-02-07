@@ -89,37 +89,6 @@
         </mat-error>
       </mat-form-field>
 
-      <mat-form-field class="full-width">
-        <textarea
-          matInput
-          formControlName="publicKey"
-          (change)="onFieldUpdate('publicKey')"
-          matAutosizeMinRows="8"
-          matAutosizeMaxRows="10"
-          matTextareaAutosize
-          placeholder="Public Key"
-          required
-          style="font-family: monospace;font-size:small"
-        ></textarea>
-        <mat-error
-          *ngIf="deviceForm.controls['publicKey'].hasError('required')"
-        >
-          Required!.
-        </mat-error>
-        <mat-error
-          *ngIf="deviceForm.controls['publicKey'].hasError('maxlength')"
-        >
-          Must be less than 1000 characters long.
-        </mat-error>
-        <mat-error
-          *ngIf="deviceForm.controls['publicKey'].hasError('minlength')"
-        >
-          Must be greater than 20 characters long.
-        </mat-error>
-        <mat-error *ngIf="deviceForm.controls['publicKey'].hasError('pattern')">
-          Must be a RSA PEM key.
-        </mat-error>
-      </mat-form-field>
 
       <mat-form-field class="half-width">
         <mat-label>Type</mat-label>
@@ -169,6 +138,110 @@
           Not expected format (Must be integer)
         </mat-error>
       </mat-form-field>
+
+      <mat-accordion>
+        <mat-expansion-panel [expanded]="crudAction == Crud.Create" >
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Edit Public/Private RSA Keys
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+      <mat-form-field class="full-width">
+        <textarea
+          matInput
+          formControlName="publicKey"
+          (change)="onFieldUpdate('publicKey')"
+          matAutosizeMinRows="8"
+          matAutosizeMaxRows="10"
+          matTextareaAutosize
+          placeholder="Public Key"
+          required
+          style="font-family: monospace;font-size:small"
+        ></textarea>
+        <mat-error
+          *ngIf="deviceForm.controls['publicKey'].hasError('required')"
+        >
+          Required!.
+        </mat-error>
+        <mat-error
+          *ngIf="deviceForm.controls['publicKey'].hasError('maxlength')"
+        >
+          Must be less than 1000 characters long.
+        </mat-error>
+        <mat-error
+          *ngIf="deviceForm.controls['publicKey'].hasError('minlength')"
+        >
+          Must be greater than 20 characters long.
+        </mat-error>
+        <mat-error *ngIf="deviceForm.controls['publicKey'].hasError('pattern')">
+          Must be a RSA PEM key.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="full-width">
+        <textarea
+          matInput
+          formControlName="privateKey"
+          (change)="onFieldUpdate('privateKey')"
+          matAutosizeMinRows="12"
+          matAutosizeMaxRows="16"
+          matTextareaAutosize
+          placeholder="Private Key"
+          required
+          style="font-family: monospace;font-size:small"
+        ></textarea>
+        <mat-error
+          *ngIf="deviceForm.controls['privateKey'].hasError('required')"
+        >
+          Required!.
+        </mat-error>
+        <mat-error
+          *ngIf="deviceForm.controls['privateKey'].hasError('maxlength')"
+        >
+          Must be less than 2000 characters long.
+        </mat-error>
+        <mat-error
+          *ngIf="deviceForm.controls['privateKey'].hasError('minlength')"
+        >
+          Must be greater than 20 characters long.
+        </mat-error>
+        <mat-error *ngIf="deviceForm.controls['privateKey'].hasError('pattern')">
+          Must be a RSA PEM key.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="full-width">
+        <textarea
+          matInput
+          formControlName="privateKeyTuple"
+          (change)="onFieldUpdate('privateKeyTuple')"
+          matAutosizeMinRows="12"
+          matAutosizeMaxRows="2"
+          matTextareaAutosize
+          placeholder="Private Key Tuple"
+          required
+          style="font-family: monospace;font-size:small"
+        ></textarea>
+        <mat-error
+          *ngIf="deviceForm.controls['privateKeyTuple'].hasError('required')"
+        >
+          Required!.
+        </mat-error>
+        <mat-error
+          *ngIf="deviceForm.controls['privateKeyTuple'].hasError('maxlength')"
+        >
+          Must be less than 1000 characters long.
+        </mat-error>
+        <mat-error
+          *ngIf="deviceForm.controls['privateKeyTuple'].hasError('minlength')"
+        >
+          Must be greater than 20 characters long.
+        </mat-error>
+      </mat-form-field>
+      </mat-expansion-panel>
+      </mat-accordion>
+
+
 
       <br />
       <mat-form-field class="half-width">

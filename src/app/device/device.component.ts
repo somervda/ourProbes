@@ -1,4 +1,4 @@
-import { DeviceType } from "./../models/device.model";
+import { DeviceType, ProbeListItem } from "./../models/device.model";
 import { Component, OnInit, NgZone, OnDestroy } from "@angular/core";
 import { Device } from "../models/device.model";
 import { Crud, Kvp } from "../models/global.model";
@@ -8,12 +8,14 @@ import {
   Validators,
   FormControl
 } from "@angular/forms";
-import { Subscription } from "rxjs";
+import { Subscription, Observable } from "rxjs";
 import { DeviceService } from "../services/device.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { MatSnackBar } from "@angular/material";
 import { firestore } from "firebase";
 import { enumToMap } from "../shared/utilities";
+import { ProbeService } from "../services/probe.service";
+import { Probe } from "../models/probe.model";
 
 @Component({
   selector: "app-device",
@@ -25,6 +27,8 @@ export class DeviceComponent implements OnInit, OnDestroy {
   crudAction: Crud;
   // Declare an instance of crud enum to use for checking crudAction value
   Crud = Crud;
+  probes$: Observable<Probe[]>;
+  displayedColumns: string[] = ["id", "description", "type"];
 
   deviceForm: FormGroup;
   deviceSubscription$$: Subscription;
@@ -36,11 +40,13 @@ export class DeviceComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
     private ngZone: NgZone,
-    private router: Router
+    private router: Router,
+    private probeservice: ProbeService
   ) {}
 
   ngOnInit() {
     this.types = enumToMap(DeviceType);
+    this.probes$ = this.probeservice.findProbes(100);
     this.crudAction = Crud.Update;
     if (this.route.routeConfig.path == "device/delete/:id")
       this.crudAction = Crud.Delete;
@@ -48,6 +54,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
       this.crudAction = Crud.Create;
 
     // console.log("team onInit", this.crudAction);
+
     if (this.crudAction == Crud.Create) {
       this.device = {
         communication: true,
@@ -58,7 +65,10 @@ export class DeviceComponent implements OnInit, OnDestroy {
         latitude: 0,
         governorSeconds: 300,
         runProbes: false,
-        publicKey: ""
+        publicKey: "",
+        privateKey: "",
+        privateKeyTuple: "",
+        probeList: []
       };
     } else {
       this.device = this.route.snapshot.data["device"];
@@ -132,6 +142,25 @@ export class DeviceComponent implements OnInit, OnDestroy {
           Validators.pattern(
             /^-----BEGIN PUBLIC KEY-----[A-Za-z0-9+\/=\n\r]*-----END PUBLIC KEY-----$/
           )
+        ]
+      ],
+      privateKey: [
+        this.device.privateKey,
+        [
+          Validators.required,
+          Validators.minLength(20),
+          Validators.maxLength(2000),
+          Validators.pattern(
+            /^-----BEGIN RSA PRIVATE KEY-----[A-Za-z0-9+\/=\n\r]*-----END RSA PRIVATE KEY-----$/
+          )
+        ]
+      ],
+      privateKeyTuple: [
+        this.device.privateKeyTuple,
+        [
+          Validators.required,
+          Validators.minLength(20),
+          Validators.maxLength(2000)
         ]
       ]
     });
