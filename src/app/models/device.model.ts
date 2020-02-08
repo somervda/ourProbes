@@ -23,7 +23,7 @@ export interface Device {
   // private RSA key decoded for use in the config.py key-config object
   // see readme.txt
   privateKeyTuple: string;
-  probeList: [];
+  probeList: ProbeListItem[];
 }
 
 export enum DeviceType {

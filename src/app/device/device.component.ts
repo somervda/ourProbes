@@ -15,7 +15,7 @@ import { MatSnackBar } from "@angular/material";
 import { firestore } from "firebase";
 import { enumToMap } from "../shared/utilities";
 import { ProbeService } from "../services/probe.service";
-import { Probe } from "../models/probe.model";
+import { Probe, ProbeType } from "../models/probe.model";
 
 @Component({
   selector: "app-device",
@@ -28,11 +28,12 @@ export class DeviceComponent implements OnInit, OnDestroy {
   // Declare an instance of crud enum to use for checking crudAction value
   Crud = Crud;
   probes$: Observable<Probe[]>;
-  displayedColumns: string[] = ["id", "description", "type"];
+  displayedColumns: string[] = ["name", "type", "target", "id"];
 
   deviceForm: FormGroup;
   deviceSubscription$$: Subscription;
   types: Kvp[];
+  ProbeType = ProbeType;
 
   constructor(
     private deviceService: DeviceService,
