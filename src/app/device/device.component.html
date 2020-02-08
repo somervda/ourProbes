@@ -138,11 +138,23 @@
         </mat-error>
       </mat-form-field>
 
+      <mat-checkbox
+        formControlName="communication"
+        (change)="onFieldUpdate('communication')"
+        >IOT Communication Allowed?</mat-checkbox
+      >
+      <br />
+      <mat-checkbox
+        formControlName="runProbes"
+        (change)="onFieldUpdate('runProbes')"
+        >Run Probes?</mat-checkbox
+      >
+
       <mat-accordion>
         <mat-expansion-panel [expanded]="crudAction == Crud.Create">
           <mat-expansion-panel-header>
             <mat-panel-title>
-              Edit Public/Private RSA Keys
+              Keys
             </mat-panel-title>
           </mat-expansion-panel-header>
           <mat-form-field class="full-width">
@@ -249,66 +261,72 @@
           </mat-form-field>
         </mat-expansion-panel>
       </mat-accordion>
-
       <br />
-      <mat-form-field class="half-width">
-        <mat-label>Latitude</mat-label>
-        <input
-          matInput
-          formControlName="latitude"
-          (change)="onFieldUpdate('latitude', 'Number')"
-          placeholder="0"
-          type="number"
-          min="-90"
-          max="90"
-        />
-        <mat-error *ngIf="deviceForm.controls['latitude'].hasError('min')">
-          Must not be less than -90 degrees
-        </mat-error>
-        <mat-error *ngIf="deviceForm.controls['latitude'].hasError('max')">
-          Must not be more than 90 degrees
-        </mat-error>
-        <mat-error *ngIf="deviceForm.controls['latitude'].hasError('required')">
-          Is required (Enter 0 for unknown latitude)
-        </mat-error>
-        <mat-error *ngIf="deviceForm.controls['latitude'].hasError('pattern')">
-          Not expected format (Must be floating point)
-        </mat-error>
-      </mat-form-field>
-
-      <mat-form-field class="half-width">
-        <mat-label>Longitude</mat-label>
-        <input
-          matInput
-          formControlName="longitude"
-          (change)="onFieldUpdate('longitude', 'Number')"
-          placeholder="0"
-          type="number"
-          min="-180"
-          max="180"
-        />
-        <mat-error *ngIf="deviceForm.controls['longitude'].hasError('min')">
-          Must not be less than -180 degrees
-        </mat-error>
-        <mat-error *ngIf="deviceForm.controls['longitude'].hasError('max')">
-          Must not be more than 180 degrees
-        </mat-error>
-        <mat-error
-          *ngIf="deviceForm.controls['longitude'].hasError('required')"
-        >
-          Is required (Enter 0 for unknown longitude)
-        </mat-error>
-        <mat-error *ngIf="deviceForm.controls['longitude'].hasError('pattern')">
-          Not expected format (Must be floating point)
-        </mat-error>
-      </mat-form-field>
       <mat-accordion>
         <mat-expansion-panel>
           <mat-expansion-panel-header>
             <mat-panel-title>
-              Edit Longitude/Latitude On Map
+              Location
             </mat-panel-title>
           </mat-expansion-panel-header>
+          <mat-form-field class="half-width">
+            <mat-label>Latitude</mat-label>
+            <input
+              matInput
+              formControlName="latitude"
+              (change)="onFieldUpdate('latitude', 'Number')"
+              placeholder="0"
+              type="number"
+              min="-90"
+              max="90"
+            />
+            <mat-error *ngIf="deviceForm.controls['latitude'].hasError('min')">
+              Must not be less than -90 degrees
+            </mat-error>
+            <mat-error *ngIf="deviceForm.controls['latitude'].hasError('max')">
+              Must not be more than 90 degrees
+            </mat-error>
+            <mat-error
+              *ngIf="deviceForm.controls['latitude'].hasError('required')"
+            >
+              Is required (Enter 0 for unknown latitude)
+            </mat-error>
+            <mat-error
+              *ngIf="deviceForm.controls['latitude'].hasError('pattern')"
+            >
+              Not expected format (Must be floating point)
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field class="half-width">
+            <mat-label>Longitude</mat-label>
+            <input
+              matInput
+              formControlName="longitude"
+              (change)="onFieldUpdate('longitude', 'Number')"
+              placeholder="0"
+              type="number"
+              min="-180"
+              max="180"
+            />
+            <mat-error *ngIf="deviceForm.controls['longitude'].hasError('min')">
+              Must not be less than -180 degrees
+            </mat-error>
+            <mat-error *ngIf="deviceForm.controls['longitude'].hasError('max')">
+              Must not be more than 180 degrees
+            </mat-error>
+            <mat-error
+              *ngIf="deviceForm.controls['longitude'].hasError('required')"
+            >
+              Is required (Enter 0 for unknown longitude)
+            </mat-error>
+            <mat-error
+              *ngIf="deviceForm.controls['longitude'].hasError('pattern')"
+            >
+              Not expected format (Must be floating point)
+            </mat-error>
+          </mat-form-field>
+
           <app-simplemap
             [latitude]="device.latitude"
             [longitude]="device.longitude"
@@ -320,53 +338,13 @@
       <!-- <a href="https://www.latlong.net/" target="_blank">Find a Lat/lng</a>
       <br /> -->
       <!-- mat-form-field does not support mat-checkbox as a valid control type -->
-
-      <mat-checkbox
-        formControlName="communication"
-        (change)="onFieldUpdate('communication')"
-        >IOT Communication Allowed?</mat-checkbox
-      >
-      <br />
-      <mat-checkbox
-        formControlName="runProbes"
-        (change)="onFieldUpdate('runProbes')"
-        >Run Probes?</mat-checkbox
-      >
-      <br />
     </fieldset>
 
-    <table mat-table [dataSource]="probes$ | async" class="mat-elevation-z8">
-      <ng-container matColumnDef="name" sticky>
-        <th mat-header-cell *matHeaderCellDef>Name</th>
-        <td mat-cell *matCellDef="let probe">
-          {{ probe.name }}
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="type">
-        <th mat-header-cell *matHeaderCellDef>Type</th>
-        <td mat-cell *matCellDef="let probe">
-          {{ ProbeType[probe.type] }}
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="target">
-        <th mat-header-cell *matHeaderCellDef>Target</th>
-        <td mat-cell *matCellDef="let probe">
-          {{ probe.target }}
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef></th>
-        <td mat-cell *matCellDef="let probe">
-          <mat-checkbox>{{ id }}</mat-checkbox>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-    </table>
+    <app-deviceprobes
+      [probeList]="device.probeList"
+      (probeListChange)="onProbeListChange($event)"
+      *ngIf="crudAction != Crud.Create"
+    ></app-deviceprobes>
 
     <button
       mat-raised-button

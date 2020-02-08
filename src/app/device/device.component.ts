@@ -14,8 +14,6 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { MatSnackBar } from "@angular/material";
 import { firestore } from "firebase";
 import { enumToMap } from "../shared/utilities";
-import { ProbeService } from "../services/probe.service";
-import { Probe, ProbeType } from "../models/probe.model";
 
 @Component({
   selector: "app-device",
@@ -27,13 +25,10 @@ export class DeviceComponent implements OnInit, OnDestroy {
   crudAction: Crud;
   // Declare an instance of crud enum to use for checking crudAction value
   Crud = Crud;
-  probes$: Observable<Probe[]>;
-  displayedColumns: string[] = ["name", "type", "target", "id"];
 
   deviceForm: FormGroup;
   deviceSubscription$$: Subscription;
   types: Kvp[];
-  ProbeType = ProbeType;
 
   constructor(
     private deviceService: DeviceService,
@@ -41,13 +36,12 @@ export class DeviceComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
     private ngZone: NgZone,
-    private router: Router,
-    private probeservice: ProbeService
+    private router: Router
   ) {}
 
   ngOnInit() {
     this.types = enumToMap(DeviceType);
-    this.probes$ = this.probeservice.findProbes(100);
+
     this.crudAction = Crud.Update;
     if (this.route.routeConfig.path == "device/delete/:id")
       this.crudAction = Crud.Delete;
@@ -79,6 +73,9 @@ export class DeviceComponent implements OnInit, OnDestroy {
         .findById(this.device.id)
         .subscribe(device => {
           this.device = device;
+          if (!device.probeList) {
+            device.probeList = [];
+          }
           // console.log("subscribed device", this.device);
           this.deviceForm.patchValue(this.device);
         });
@@ -245,6 +242,11 @@ export class DeviceComponent implements OnInit, OnDestroy {
       "longitude",
       latLng.longitude
     );
+  }
+
+  onProbeListChange($event) {
+    console.log("onProbeListChange", $event);
+    this.deviceService.fieldUpdate(this.device.id, "probeList", $event);
   }
 
   ngOnDestroy() {

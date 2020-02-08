@@ -36,5 +36,4 @@ export interface ProbeListItem {
   id: string;
   target: string;
   type: ProbeType;
-  active: boolean;
 }
