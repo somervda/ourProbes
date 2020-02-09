@@ -32,6 +32,7 @@ export const deviceUpdate = functions.firestore
         before.publicKey != after.publicKey
       ) {
         console.log("Update device:", before, after);
+        // see https://cloud.google.com/iot/docs/samples/device-manager-samples#patch_a_device_with_rsa_credentials
       }
       if (
         before.governorSeconds != after.governorSeconds ||
@@ -39,6 +40,7 @@ export const deviceUpdate = functions.firestore
         before.runProbes != after.runProbes
       ) {
         console.log("Update config:", before, after);
+        // see https://cloud.google.com/iot/docs/how-tos/config/configuring-devices#updating_and_reverting_device_configuration
       }
     }
   });
