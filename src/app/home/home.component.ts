@@ -26,29 +26,33 @@ export class HomeComponent implements OnInit, OnDestroy {
     private afs: AngularFirestore,
     private ngZone: NgZone,
     private router: Router
-  ) {}
+  ) {
+    // this.router.routeReuseStrategy.shouldReuseRoute = function() {
+    //   return false;
+    // };
+  }
 
   ngOnInit() {
-    this.user$ = this.afs
-      .doc<User>(`users/${this.auth.currentUser.uid}`)
-      .valueChanges();
-    this.user$$ = this.user$.subscribe(user => {
-      console.log("activated", user.isActivated, user.latitude);
-      if ((user.latitude || user.latitude == 0) && !user.isActivated) {
-        this.ngZone.run(() => this.router.navigateByUrl("notActivated"));
-      }
-      this.latitude = user.latitude;
-      this.longitude = user.longitude;
-      if (this.latitude == 0 && this.longitude == 0) {
-        console.log("Home zoom 2");
-        this.zoom = 2;
-      } else {
-        console.log("Home zoom ", this.zoom);
-      }
-      console.log("Lat/Lng update ", user, " ", new Date().getTime());
-    });
     this.devices$ = this.deviceservice.findDevices(100);
-    console.log("lat/long", this.latitude, this.longitude);
+    if (this.auth.currentUser) {
+      const uid = this.auth.currentUser.uid;
+      this.user$ = this.afs
+        .doc<User>(`users/${this.auth.currentUser.uid}`)
+        .valueChanges();
+      this.user$$ = this.user$.subscribe(user => {
+        if ((user.latitude || user.latitude == 0) && !user.isActivated) {
+          this.ngZone.run(() => this.router.navigateByUrl("notActivated"));
+        }
+        this.latitude = user.latitude;
+        this.longitude = user.longitude;
+        if (this.latitude == 0 && this.longitude == 0) {
+          this.zoom = 2;
+        }
+      });
+    } else {
+      // Happens on refresh and user info not ready - show world map
+      this.zoom = 2;
+    }
   }
 
   ngOnDestroy() {

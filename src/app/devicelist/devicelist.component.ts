@@ -19,7 +19,6 @@ export class DevicelistComponent implements OnInit {
       this.displayedColumns.push("communication");
     }
     // get a observable of all devices
-    console.log("showDelete:", this.showDelete);
     this.devices$ = this.deviceservice.findDevices(100);
   }
 }

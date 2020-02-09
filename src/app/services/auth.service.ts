@@ -18,6 +18,7 @@ import {
 
 import { Observable, of } from "rxjs";
 import { switchMap, map } from "rxjs/operators";
+import { UserComponent } from "../user/user.component";
 
 @Injectable({
   providedIn: "root"
@@ -47,24 +48,24 @@ export class AuthService {
       })
     );
 
-    console.log("Before wait:", new Date().getTime());
+    // console.log("Before wait:", new Date().getTime());
     this.waitForUser();
-    console.log("After wait:", new Date().getTime());
+    // console.log("After wait:", new Date().getTime());
 
     this.loggedIn$ = this.afAuth.authState.pipe(map(user => !!user));
 
     // Set  up a authentication watched to reload user info when user is authenticated
     // this covers initial signon and when the user refreshes the browser.
-    console.log("Begin  authStateChanges:", new Date().getTime());
+    // console.log("Begin  authStateChanges:", new Date().getTime());
     this.authStateChanges = this.afAuth.auth.onAuthStateChanged(authuser => {
       // console.log("onAuthStateChanges authuser", authuser);
       // Keep a subscription to the user$ observable alive so currentUser is maintained as a property
       this.user$.subscribe(User => {
         this.currentUser = User;
-        console.log("Update currentUser", User, " ", new Date().getTime());
+        // console.log("Update currentUser", User, " ", new Date().getTime());
       });
     });
-    console.log("End  authStateChanges:", new Date().getTime());
+    // console.log("End  authStateChanges:", new Date().getTime());
   }
 
   private async waitForUser() {
@@ -78,7 +79,7 @@ export class AuthService {
     );
 
     // Only occurs when user first created?
-    console.log("updateUserData userRef:", userRef, result);
+    // console.log("updateUserData userRef:", userRef, result);
 
     const data = {
       uid: result.user.uid,
@@ -127,7 +128,7 @@ export class AuthService {
       })
       .catch(function(error) {
         // Handle Errors here.
-        console.log("persistSeason error ", error);
+        console.error("persistSeason error ", error);
       });
   }
 
