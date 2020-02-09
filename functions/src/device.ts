@@ -19,6 +19,30 @@ export const deviceCreate = functions.firestore
     );
   });
 
+export const deviceUpdate = functions.firestore
+  .document("devices/{id}")
+  .onUpdate((change, context) => {
+    // 1. Update any non config changes as IOT device update API i.e. communication,publicKey
+    // 2  For config data changes update the config for the device (different API call) i.e. governorSeconds,probeList,runProbes
+    const before = change.before.data();
+    const after = change.after.data();
+    if (before && after) {
+      if (
+        before.communication != after.communication ||
+        before.publicKey != after.publicKey
+      ) {
+        console.log("Update device:", before, after);
+      }
+      if (
+        before.governorSeconds != after.governorSeconds ||
+        JSON.stringify(before.probeList) != JSON.stringify(after.probeList) ||
+        before.runProbes != after.runProbes
+      ) {
+        console.log("Update config:", before, after);
+      }
+    }
+  });
+
 async function addDevice(
   id: string,
   publicKey: string,

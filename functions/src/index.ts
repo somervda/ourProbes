@@ -2,7 +2,7 @@ export { userCreate } from "./user";
 
 export { probeEventsOnPublish } from "./probeEvents";
 
-export { deviceCreate } from "./device";
+export { deviceCreate, deviceUpdate } from "./device";
 
 // exports.scheduledFunction = functions.pubsub
 //   .schedule("every 5 minutes")
