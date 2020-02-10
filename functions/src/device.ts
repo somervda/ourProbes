@@ -39,7 +39,16 @@ export const deviceUpdate = functions.firestore
         JSON.stringify(before.probeList) != JSON.stringify(after.probeList) ||
         before.runProbes != after.runProbes
       ) {
-        console.log("Update config:", before, after);
+        console.log("Add config:", before, after);
+        const config = {
+          governorSeconds: after.governorSeconds,
+          runProbes: after.runProbes,
+          probeList: after.probeList
+        };
+        addConfig(context.params.id, JSON.stringify(config))
+          .then()
+          .catch();
+
         // see https://cloud.google.com/iot/docs/how-tos/config/configuring-devices#updating_and_reverting_device_configuration
       }
     }
@@ -88,5 +97,42 @@ async function addDevice(
     console.log("Created device", response);
   } catch (err) {
     console.error("Could not create device", err);
+  }
+}
+
+async function addConfig(id: string, config: string) {
+  console.log("addConfig:", id, config);
+
+  const cloudRegion = "us-central1";
+  const projectId = "ourprobes-258320";
+  const registryId = "microcontroller";
+  const iot = require("@google-cloud/iot");
+
+  const iotClient = new iot.v1.DeviceManagerClient({
+    // optional auth parameters.
+  });
+
+  const formattedName = iotClient.devicePath(
+    projectId,
+    cloudRegion,
+    registryId,
+    id
+  );
+
+  // const binaryData = Buffer.from(data).toString("base64");
+  const base64Config = Buffer.from(config).toString("base64");
+  const request = {
+    name: formattedName,
+    versionToUpdate: 0,
+    binaryData: base64Config
+  };
+
+  try {
+    const responses = await iotClient.modifyCloudToDeviceConfig(request);
+
+    console.log("Success:", responses[0]);
+  } catch (err) {
+    console.error("Could not update config:", id);
+    console.error("Message:", err);
   }
 }
