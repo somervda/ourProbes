@@ -1,6 +1,14 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 
+//  See https://googleapis.dev/nodejs/iot/latest/v1.DeviceManagerClient
+
+const iotEnv = {
+  cloudRegion: "us-central1",
+  projectId: "ourprobes-258320",
+  registryId: "microcontroller"
+};
+
 export const deviceCreate = functions.firestore
   .document("devices/{id}")
   .onCreate((snap, context) => {
@@ -32,6 +40,9 @@ export const deviceUpdate = functions.firestore
         before.publicKey != after.publicKey
       ) {
         console.log("Update device:", before, after);
+        updateDevice(context.params.id, after.publicKey, !after.communication)
+          .then()
+          .catch();
         // see https://cloud.google.com/iot/docs/samples/device-manager-samples#patch_a_device_with_rsa_credentials
       }
       if (
@@ -59,20 +70,16 @@ async function addDevice(
   publicKey: string,
   blockedCommunication: boolean
 ) {
-  const cloudRegion = "us-central1";
-  const deviceId = id;
-  const projectId = "ourprobes-258320";
-  const registryId = "microcontroller";
   const iot = require("@google-cloud/iot");
-
-  const iotClient = new iot.v1.DeviceManagerClient({
-    // optional auth parameters.
-  });
-
-  const regPath = iotClient.registryPath(projectId, cloudRegion, registryId);
+  const iotClient = new iot.v1.DeviceManagerClient({});
+  const regPath = iotClient.registryPath(
+    iotEnv.projectId,
+    iotEnv.cloudRegion,
+    iotEnv.registryId
+  );
   // see device json https://cloud.google.com/iot/docs/reference/cloudiot/rest/v1/projects.locations.registries.devices
   const device = {
-    id: deviceId,
+    id: id,
     credentials: [
       {
         publicKey: {
@@ -83,8 +90,6 @@ async function addDevice(
     ],
     blocked: blockedCommunication
   };
-
-  console.log("device.publickey:", publicKey);
 
   const request = {
     parent: regPath,
@@ -102,27 +107,20 @@ async function addDevice(
 
 async function addConfig(id: string, config: string) {
   console.log("addConfig:", id, config);
-
-  const cloudRegion = "us-central1";
-  const projectId = "ourprobes-258320";
-  const registryId = "microcontroller";
   const iot = require("@google-cloud/iot");
+  const iotClient = new iot.v1.DeviceManagerClient({});
 
-  const iotClient = new iot.v1.DeviceManagerClient({
-    // optional auth parameters.
-  });
-
-  const formattedName = iotClient.devicePath(
-    projectId,
-    cloudRegion,
-    registryId,
+  const devPath = iotClient.devicePath(
+    iotEnv.projectId,
+    iotEnv.cloudRegion,
+    iotEnv.registryId,
     id
   );
 
   // const binaryData = Buffer.from(data).toString("base64");
   const base64Config = Buffer.from(config).toString("base64");
   const request = {
-    name: formattedName,
+    name: devPath,
     versionToUpdate: 0,
     binaryData: base64Config
   };
@@ -134,5 +132,44 @@ async function addConfig(id: string, config: string) {
   } catch (err) {
     console.error("Could not update config:", id);
     console.error("Message:", err);
+  }
+}
+
+async function updateDevice(
+  id: string,
+  publicKey: string,
+  blockedCommunication: boolean
+) {
+  const iot = require("@google-cloud/iot");
+  const iotClient = new iot.v1.DeviceManagerClient({});
+  const devPath = iotClient.devicePath(
+    iotEnv.projectId,
+    iotEnv.cloudRegion,
+    iotEnv.registryId,
+    id
+  );
+  const device = {
+    name: devPath,
+    credentials: [
+      {
+        publicKey: {
+          format: "RSA_PEM",
+          key: publicKey
+        }
+      }
+    ],
+    blocked: blockedCommunication
+  };
+
+  try {
+    const responses = await iotClient.updateDevice({
+      device: device,
+      updateMask: { paths: ["credentials", "blocked"] }
+    });
+
+    console.log("Patched device:", id);
+    console.log("Response", responses[0]);
+  } catch (err) {
+    console.error("Error patching device:", id, err);
   }
 }

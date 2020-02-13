@@ -31,6 +31,7 @@ from third_party import string
 import esp32
 import machine
 import umemory
+import gc
 
 
 print("Starting Main")
@@ -127,30 +128,12 @@ def get_mqtt_client(project_id, cloud_region, registry_id, device_id, jwt):
     return client
 
 
-uresults.reset()
-connect()
-set_time()
-loopCnt = 0
-jwtExpiry = utime.time() + config.jwt_config['token_ttl']
-jwt = create_jwt(config.google_cloud_config['project_id'], config.jwt_config['private_key'],
-                 config.jwt_config['algorithm'], config.jwt_config['token_ttl'])
-
-while jwtExpiry > utime.time():
-    loopCnt += 1
-    # main loop
-    # 1. connect to Google IOT, get new probeConfig(from config topic) and send results of network tests (probeConfig)
-    # 2. Perform probeConfig, build up next set of results
-    # 3. Loop Governance : delay next loop for required time so loop isn't too fast
-
-    print('****** ', loopCnt, " memory:", umemory.free())
-
-    # 1 **************************   MQTT  *********************************
-
-    led.value(1)
-    loopStartTime = utime.time()
+def mqttProcessConfigAndResults():
+    gc.collect()
+    # print('Connecting MQTT client...')
     client = get_mqtt_client(config.google_cloud_config['project_id'], config.google_cloud_config['cloud_region'],
                              config.google_cloud_config['registry_id'], config.google_cloud_config['device_id'], jwt)
-
+    led.value(1)
     client.check_msg()  # Check for new messages on subscription
     probeConfig = uprobeConfig.get()
     # print("probeConfig : ", str(probeConfig))
@@ -169,13 +152,39 @@ while jwtExpiry > utime.time():
         utime.sleep_ms(500)
         led.value(1)
 
-    print('disconnecting MQTT client...')
+    # print('disconnecting MQTT client...')
     client.disconnect()
+    return probeConfig
 
-    # 2 *******************  Probes - network capability tests *****************************
+
+uresults.reset()
+connect()
+set_time()
+loopCnt = 0
+ip = net_if.ifconfig()[0]
+jwtExpiry = utime.time() + config.jwt_config['token_ttl']
+jwt = create_jwt(config.google_cloud_config['project_id'], config.jwt_config['private_key'],
+                 config.jwt_config['algorithm'], config.jwt_config['token_ttl'])
+
+
+# Do initial MQTT connection to get thew probeConfig
+probeConfig = mqttProcessConfigAndResults()
+
+while jwtExpiry > utime.time():
+    loopCnt += 1
+    # main loop
+    # 1. build up next set of results
+    # 2. Loop Governance : delay next loop for required time so loop isn't too fast, while this is going on
+    #    connect to Google IOT, get new probeConfig(from config topic) and send results of network tests (probeConfig)
+
+    print('****** ', loopCnt, " memory:", umemory.free())
+    loopStartTime = utime.time()
+
+    # 1 *******************  Probes - network capability tests *****************************
     if probeConfig['runProbes'] == True:
         for probe in probeConfig['probeList']:
-            if probe['type'] == 'bing':
+            #   bing = 1, echo = 2, webPage = 3,tracert = 4
+            if probe['type'] == 1:
                 host = probe['target']
                 bingResult = ubing.bing(
                     host, 5, loopBackAdjustment=True, quiet=True, timeout=3000)
@@ -188,7 +197,8 @@ while jwtExpiry > utime.time():
                         'rtl': -1,
                         'type': 'bing',
                         'available': False,
-                        'responseMs': -1
+                        'responseMs': -1,
+                        'deviceip': ip
                     }
                     uresults.add(result)
                     print("bing failed:", result)
@@ -201,21 +211,25 @@ while jwtExpiry > utime.time():
                         'rtl': bingResult[1],
                         'type': 'bing',
                         'available': True,
-                        'responseMs': 0
+                        'responseMs': 0,
+                        'deviceip': ip
                     }
                     uresults.add(result)
                     print("bing successful:", result)
 
-    # 3 **************** Governor ***************************
+    # 2 **************** Governor & probeConfig refresh ***************************
 
     led.value(0)
     print("governorSeconds: ", str(probeConfig['governorSeconds']))
     # print("loop time so far:", utime.time() - loopStartTime)
+    probeConfig = mqttProcessConfigAndResults()
     sleeper = probeConfig['governorSeconds'] - (utime.time() - loopStartTime)
-    if sleeper > 0:
-        print("sleeping: ", sleeper)
-        utime.sleep(sleeper)
-        # utime.sleep(1)
+    while sleeper > 0:
+        # print("Sleeping time remaining: ", sleeper)
+        utime.sleep(15)
+        probeConfig = mqttProcessConfigAndResults()
+        sleeper = probeConfig['governorSeconds'] - \
+            (utime.time() - loopStartTime)
 
 # Clean up network connection (Not needed when used in a real main.py that never ends)
 print('disconnecting from network...')

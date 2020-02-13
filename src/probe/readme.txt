@@ -39,3 +39,10 @@ Put private key here C:\Projects\iot\nodejs-docs-samples\iot\mqtt_example
 node cloudiot_mqtt_example_nodejs.js mqttDeviceDemo --projectId=ourprobes-258320 --cloudRegion=us-central1 --registryId=microcontroller --deviceId=probe01 --privateKeyFile=rsa_private.pem --numMessages=5 --algorithm=RS256
 
 gcloud pubsub subscriptions pull --auto-ack projects/ourprobes-258320/subscriptions/probeSub
+
+SDCard
+For ESP32-Gateway rev e from olimex
+    spisd = SPI(-1, sck=Pin(14), mosi=Pin(15), miso=Pin(2))
+    sd = sdcard.SDCard(spisd, Pin(13))
+import sdcard.py
+Make sure sdcard is formated as FAT32 (SDHC UHS-I 8GB type 4 has worked)

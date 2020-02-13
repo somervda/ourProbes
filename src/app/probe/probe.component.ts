@@ -139,7 +139,7 @@ export class ProbeComponent implements OnInit, OnDestroy {
         this.snackBar.open("Probe '" + deviceId + "' deleted!", "", {
           duration: 2000
         });
-        this.ngZone.run(() => this.router.navigateByUrl("/devices"));
+        this.ngZone.run(() => this.router.navigateByUrl("/probes"));
       })
       .catch(function(error) {
         console.error("Error deleting probe: ", error);

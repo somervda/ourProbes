@@ -17,7 +17,8 @@ export const probeEventsOnPublish = functions.pubsub
       deviceNumId: "",
       type: "",
       available: false,
-      responseMs: 0
+      responseMs: 0,
+      deviceip: ""
     };
 
     try {
@@ -31,6 +32,10 @@ export const probeEventsOnPublish = functions.pubsub
 
       if (message.json.probeId) {
         probeEvent.probeId = message.json.probeId;
+      }
+
+      if (message.json.deviceip) {
+        probeEvent.deviceip = message.json.deviceip;
       }
 
       if (message.json.probeUMT) {
