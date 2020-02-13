@@ -1,5 +1,6 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
+import * as middlewareEvent from "./middlewareEvent";
 
 //  See https://googleapis.dev/nodejs/iot/latest/v1.DeviceManagerClient
 
@@ -37,7 +38,7 @@ export const deviceUpdate = functions.firestore
     if (before && after) {
       if (
         before.communication != after.communication ||
-        before.publicKey != after.publicKey
+        ~before.publicKey != after.publicKey
       ) {
         console.log("Update device:", before, after);
         updateDevice(context.params.id, after.publicKey, !after.communication)
@@ -101,6 +102,7 @@ async function addDevice(
     const response = responses[0];
     console.log("Created device", response);
   } catch (err) {
+    middlewareEvent.writeMiddlewareEvent("Device creation error", id, err);
     console.error("Could not create device", err);
   }
 }
@@ -130,6 +132,7 @@ async function addConfig(id: string, config: string) {
 
     console.log("Success:", responses[0]);
   } catch (err) {
+    middlewareEvent.writeMiddlewareEvent("Device config update error", id, err);
     console.error("Could not update config:", id);
     console.error("Message:", err);
   }
@@ -166,10 +169,11 @@ async function updateDevice(
       device: device,
       updateMask: { paths: ["credentials", "blocked"] }
     });
-
+    middlewareEvent.writeMiddlewareEvent("Device update OK", id, {});
     console.log("Patched device:", id);
     console.log("Response", responses[0]);
   } catch (err) {
+    middlewareEvent.writeMiddlewareEvent("Device update error", id, err);
     console.error("Error patching device:", id, err);
   }
 }

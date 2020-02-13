@@ -10,4 +10,5 @@ except:
 print("1 sd present:", sdPresent)
 if sdPresent:
     os.mount(sd, '/sd')
-    print(os.listdir(''))
+    print("/ - ", os.listdir(''))
+    print("/sd - "os.listdir('/sd'))
