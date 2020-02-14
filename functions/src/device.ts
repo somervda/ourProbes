@@ -10,6 +10,8 @@ const iotEnv = {
   registryId: "microcontroller"
 };
 
+// ****** device.onCreate ********
+
 export const deviceCreate = functions.firestore
   .document("devices/{id}")
   .onCreate((snap, context) => {
@@ -26,44 +28,6 @@ export const deviceCreate = functions.firestore
       },
       { merge: true }
     );
-  });
-
-export const deviceUpdate = functions.firestore
-  .document("devices/{id}")
-  .onUpdate((change, context) => {
-    // 1. Update any non config changes as IOT device update API i.e. communication,publicKey
-    // 2  For config data changes update the config for the device (different API call) i.e. governorSeconds,probeList,runProbes
-    const before = change.before.data();
-    const after = change.after.data();
-    if (before && after) {
-      if (
-        before.communication != after.communication ||
-        ~before.publicKey != after.publicKey
-      ) {
-        console.log("Update device:", before, after);
-        updateDevice(context.params.id, after.publicKey, !after.communication)
-          .then()
-          .catch();
-        // see https://cloud.google.com/iot/docs/samples/device-manager-samples#patch_a_device_with_rsa_credentials
-      }
-      if (
-        before.governorSeconds != after.governorSeconds ||
-        JSON.stringify(before.probeList) != JSON.stringify(after.probeList) ||
-        before.runProbes != after.runProbes
-      ) {
-        console.log("Add config:", before, after);
-        const config = {
-          governorSeconds: after.governorSeconds,
-          runProbes: after.runProbes,
-          probeList: after.probeList
-        };
-        addConfig(context.params.id, JSON.stringify(config))
-          .then()
-          .catch();
-
-        // see https://cloud.google.com/iot/docs/how-tos/config/configuring-devices#updating_and_reverting_device_configuration
-      }
-    }
   });
 
 async function addDevice(
@@ -107,36 +71,54 @@ async function addDevice(
   }
 }
 
-async function addConfig(id: string, config: string) {
-  console.log("addConfig:", id, config);
-  const iot = require("@google-cloud/iot");
-  const iotClient = new iot.v1.DeviceManagerClient({});
+// ****** device.onUpdate ********
 
-  const devPath = iotClient.devicePath(
-    iotEnv.projectId,
-    iotEnv.cloudRegion,
-    iotEnv.registryId,
-    id
-  );
+export const deviceUpdate = functions.firestore
+  .document("devices/{id}")
+  .onUpdate((change, context) => {
+    // 1. Update any non config changes as IOT device update API i.e. communication,publicKey
+    // 2  For config data changes update the config for the device (different API call) i.e. governorSeconds,probeList,runProbes
+    const before = change.before.data();
+    const after = change.after.data();
+    if (before && after) {
+      // middlewareEvent.writeMiddlewareEvent(
+      //   "Device update start with after",
+      //   context.params.id,
+      //   { test: "1", item: 2 }
+      // );
+      // middlewareEvent.writeMiddlewareEvent(
+      //   "Device update start",
+      //   context.params.id
+      // );
+      if (
+        before.communication != after.communication ||
+        ~before.publicKey != after.publicKey
+      ) {
+        console.log("Update device:", before, after);
+        updateDevice(context.params.id, after.publicKey, !after.communication)
+          .then()
+          .catch();
+        // see https://cloud.google.com/iot/docs/samples/device-manager-samples#patch_a_device_with_rsa_credentials
+      }
+      if (
+        before.governorSeconds != after.governorSeconds ||
+        JSON.stringify(before.probeList) != JSON.stringify(after.probeList) ||
+        before.runProbes != after.runProbes
+      ) {
+        console.log("Add config:", before, after);
+        const config = {
+          governorSeconds: after.governorSeconds,
+          runProbes: after.runProbes,
+          probeList: after.probeList
+        };
+        newConfig(context.params.id, JSON.stringify(config))
+          .then()
+          .catch();
 
-  // const binaryData = Buffer.from(data).toString("base64");
-  const base64Config = Buffer.from(config).toString("base64");
-  const request = {
-    name: devPath,
-    versionToUpdate: 0,
-    binaryData: base64Config
-  };
-
-  try {
-    const responses = await iotClient.modifyCloudToDeviceConfig(request);
-
-    console.log("Success:", responses[0]);
-  } catch (err) {
-    middlewareEvent.writeMiddlewareEvent("Device config update error", id, err);
-    console.error("Could not update config:", id);
-    console.error("Message:", err);
-  }
-}
+        // see https://cloud.google.com/iot/docs/how-tos/config/configuring-devices#updating_and_reverting_device_configuration
+      }
+    }
+  });
 
 async function updateDevice(
   id: string,
@@ -175,5 +157,36 @@ async function updateDevice(
   } catch (err) {
     middlewareEvent.writeMiddlewareEvent("Device update error", id, err);
     console.error("Error patching device:", id, err);
+  }
+}
+
+async function newConfig(id: string, config: string) {
+  console.log("newConfig:", id, config);
+  const iot = require("@google-cloud/iot");
+  const iotClient = new iot.v1.DeviceManagerClient({});
+
+  const devPath = iotClient.devicePath(
+    iotEnv.projectId,
+    iotEnv.cloudRegion,
+    iotEnv.registryId,
+    id
+  );
+
+  // const binaryData = Buffer.from(data).toString("base64");
+  const base64Config = Buffer.from(config).toString("base64");
+  const request = {
+    name: devPath,
+    versionToUpdate: 0,
+    binaryData: base64Config
+  };
+
+  try {
+    const responses = await iotClient.modifyCloudToDeviceConfig(request);
+
+    console.log("Success:", responses[0]);
+  } catch (err) {
+    middlewareEvent.writeMiddlewareEvent("Device config update error", id, err);
+    console.error("Could not update config:", id);
+    console.error("Message:", err);
   }
 }
