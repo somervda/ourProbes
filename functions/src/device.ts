@@ -75,7 +75,7 @@ async function addDevice(
 
 export const deviceUpdate = functions.firestore
   .document("devices/{id}")
-  .onUpdate((change, context) => {
+  .onUpdate(async (change, context) => {
     // 1. Update any non config changes as IOT device update API i.e. communication,publicKey
     // 2  For config data changes update the config for the device (different API call) i.e. governorSeconds,probeList,runProbes
     const before = change.before.data();
@@ -95,9 +95,12 @@ export const deviceUpdate = functions.firestore
         ~before.publicKey != after.publicKey
       ) {
         console.log("Update device:", before, after);
-        updateDevice(context.params.id, after.publicKey, !after.communication)
-          .then()
-          .catch();
+        const result1 = await updateDevice(
+          context.params.id,
+          after.publicKey,
+          !after.communication
+        );
+        console.log("result1", result1);
         // see https://cloud.google.com/iot/docs/samples/device-manager-samples#patch_a_device_with_rsa_credentials
       }
       if (
@@ -112,8 +115,8 @@ export const deviceUpdate = functions.firestore
           probeList: after.probeList
         };
         newConfig(context.params.id, JSON.stringify(config))
-          .then()
-          .catch();
+          .then(x => console.log("ok", x))
+          .catch(y => console.log("err: ", y));
 
         // see https://cloud.google.com/iot/docs/how-tos/config/configuring-devices#updating_and_reverting_device_configuration
       }
@@ -145,19 +148,28 @@ async function updateDevice(
     ],
     blocked: blockedCommunication
   };
+  // https://cloud.google.com/nodejs/docs/reference/iot/0.2.x/v1.DeviceManagerClient#updateDevice
+  const result = await iotClient.updateDevice({
+    device: device,
+    updateMask: { paths: ["credentials", "blocked"] }
+  });
+  console.log("pResult:", result);
+  return result;
 
-  try {
-    const responses = await iotClient.updateDevice({
-      device: device,
-      updateMask: { paths: ["credentials", "blocked"] }
-    });
-    middlewareEvent.writeMiddlewareEvent("Device update OK", id, {});
-    console.log("Patched device:", id);
-    console.log("Response", responses[0]);
-  } catch (err) {
-    middlewareEvent.writeMiddlewareEvent("Device update error", id, err);
-    console.error("Error patching device:", id, err);
-  }
+  // try {
+  //   const responses =  iotClient.updateDevice({
+  //     device: device,
+  //     updateMask: { paths: ["credentials", "blocked"] }
+  //   });
+  //   middlewareEvent.writeMiddlewareEvent("Device update OK", id, {});
+  //   console.log("Patched device:", id);
+  //   console.log("Response", responses[0]);
+  //   return responses;
+  // } catch (err) {
+  //   middlewareEvent.writeMiddlewareEvent("Device update error", id, err);
+  //   console.error("Error patching device:", id, err);
+  //   return err;
+  // }
 }
 
 async function newConfig(id: string, config: string) {
