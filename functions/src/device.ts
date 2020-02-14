@@ -94,14 +94,26 @@ export const deviceUpdate = functions.firestore
         before.communication != after.communication ||
         ~before.publicKey != after.publicKey
       ) {
-        console.log("Update device:", before, after);
-        const result1 = await updateDevice(
-          context.params.id,
-          after.publicKey,
-          !after.communication
-        );
-        console.log("result1", result1);
         // see https://cloud.google.com/iot/docs/samples/device-manager-samples#patch_a_device_with_rsa_credentials
+        try {
+          await updateDevice(
+            context.params.id,
+            after.publicKey,
+            !after.communication
+          );
+          // console.log("result1", result1);
+          middlewareEvent.writeMiddlewareEvent(
+            "updateDevice OK",
+            context.params.id
+          );
+        } catch (err) {
+          console.log("err:", err);
+          middlewareEvent.writeMiddlewareEvent(
+            "updateDevice error",
+            context.params.id,
+            JSON.stringify(err)
+          );
+        }
       }
       if (
         before.governorSeconds != after.governorSeconds ||
@@ -123,7 +135,7 @@ export const deviceUpdate = functions.firestore
     }
   });
 
-async function updateDevice(
+function updateDevice(
   id: string,
   publicKey: string,
   blockedCommunication: boolean
@@ -149,27 +161,10 @@ async function updateDevice(
     blocked: blockedCommunication
   };
   // https://cloud.google.com/nodejs/docs/reference/iot/0.2.x/v1.DeviceManagerClient#updateDevice
-  const result = await iotClient.updateDevice({
+  return iotClient.updateDevice({
     device: device,
     updateMask: { paths: ["credentials", "blocked"] }
   });
-  console.log("pResult:", result);
-  return result;
-
-  // try {
-  //   const responses =  iotClient.updateDevice({
-  //     device: device,
-  //     updateMask: { paths: ["credentials", "blocked"] }
-  //   });
-  //   middlewareEvent.writeMiddlewareEvent("Device update OK", id, {});
-  //   console.log("Patched device:", id);
-  //   console.log("Response", responses[0]);
-  //   return responses;
-  // } catch (err) {
-  //   middlewareEvent.writeMiddlewareEvent("Device update error", id, err);
-  //   console.error("Error patching device:", id, err);
-  //   return err;
-  // }
 }
 
 async function newConfig(id: string, config: string) {
