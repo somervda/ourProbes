@@ -60,6 +60,7 @@ import { DevicelistComponent } from "./devicelist/devicelist.component";
 import { SimplemapComponent } from "./simplemap/simplemap.component";
 import { NotactivatedComponent } from "./notactivated/notactivated.component";
 import { DeviceprobesComponent } from './deviceprobes/deviceprobes.component';
+import { DeviceconfigComponent } from './deviceconfig/deviceconfig.component';
 
 @NgModule({
   declarations: [
@@ -80,7 +81,8 @@ import { DeviceprobesComponent } from './deviceprobes/deviceprobes.component';
     DevicelistComponent,
     SimplemapComponent,
     NotactivatedComponent,
-    DeviceprobesComponent
+    DeviceprobesComponent,
+    DeviceconfigComponent
   ],
   imports: [
     BrowserModule,

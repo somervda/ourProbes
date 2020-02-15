@@ -334,18 +334,24 @@
           ></app-simplemap>
         </mat-expansion-panel>
       </mat-accordion>
-      <br />
+
       <!-- <a href="https://www.latlong.net/" target="_blank">Find a Lat/lng</a>
       <br /> -->
       <!-- mat-form-field does not support mat-checkbox as a valid control type -->
     </fieldset>
 
+    <div *ngIf="crudAction == Crud.Update">
+      <br /><app-deviceconfig [id]="device.id"></app-deviceconfig><br /><br />
+    </div>
+    <div *ngIf="crudAction != Crud.Update">
+      <br />
+    </div>
     <app-deviceprobes
       [probeList]="device.probeList"
       (probeListChange)="onProbeListChange($event)"
       *ngIf="crudAction != Crud.Create"
     ></app-deviceprobes>
-
+    <br />
     <button
       mat-raised-button
       color="primary"

@@ -9,5 +9,12 @@ export const environment = {
     messagingSenderId: "159351003399",
     appId: "1:159351003399:web:44f1fdcb0fa525fed94da2",
     measurementId: "G-CDZ4QQ81HY"
+  },
+  google_cloud_config: {
+    project_id: "ourprobes-258320",
+    cloud_region: "us-central1",
+    registry_id: "microcontroller",
+    mqtt_bridge_hostname: "mqtt.googleapis.com",
+    mqtt_bridge_port: 8883
   }
 };
