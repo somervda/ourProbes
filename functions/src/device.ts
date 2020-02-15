@@ -14,13 +14,20 @@ const iotEnv = {
 
 export const deviceCreate = functions.firestore
   .document("devices/{id}")
-  .onCreate((snap, context) => {
+  .onCreate(async (snap, context) => {
     const publicKey = snap.get("publicKey");
     const communication = snap.get("communication");
     console.log("publicKey:", publicKey);
-    addDevice(context.params.id, publicKey, !communication)
-      .then()
-      .catch();
+    try {
+      addDevice(context.params.id, publicKey, !communication);
+    } catch (err) {
+      console.log("addDevice err:", err);
+      middlewareEvent.writeMiddlewareEvent(
+        "addDevice error",
+        context.params.id,
+        JSON.stringify(err)
+      );
+    }
 
     return snap.ref.set(
       {
@@ -30,7 +37,7 @@ export const deviceCreate = functions.firestore
     );
   });
 
-async function addDevice(
+function addDevice(
   id: string,
   publicKey: string,
   blockedCommunication: boolean
@@ -61,14 +68,7 @@ async function addDevice(
     device
   };
 
-  try {
-    const responses = await iotClient.createDevice(request);
-    const response = responses[0];
-    console.log("Created device", response);
-  } catch (err) {
-    middlewareEvent.writeMiddlewareEvent("Device creation error", id, err);
-    console.error("Could not create device", err);
-  }
+  return iotClient.createDevice(request);
 }
 
 // ****** device.onUpdate ********
@@ -81,18 +81,9 @@ export const deviceUpdate = functions.firestore
     const before = change.before.data();
     const after = change.after.data();
     if (before && after) {
-      // middlewareEvent.writeMiddlewareEvent(
-      //   "Device update start with after",
-      //   context.params.id,
-      //   { test: "1", item: 2 }
-      // );
-      // middlewareEvent.writeMiddlewareEvent(
-      //   "Device update start",
-      //   context.params.id
-      // );
       if (
-        before.communication != after.communication ||
-        ~before.publicKey != after.publicKey
+        before.communication !== after.communication ||
+        ~before.publicKey !== after.publicKey
       ) {
         // see https://cloud.google.com/iot/docs/samples/device-manager-samples#patch_a_device_with_rsa_credentials
         try {
@@ -101,13 +92,8 @@ export const deviceUpdate = functions.firestore
             after.publicKey,
             !after.communication
           );
-          // console.log("result1", result1);
-          middlewareEvent.writeMiddlewareEvent(
-            "updateDevice OK",
-            context.params.id
-          );
         } catch (err) {
-          console.log("err:", err);
+          console.log("updateDevice err:", err);
           middlewareEvent.writeMiddlewareEvent(
             "updateDevice error",
             context.params.id,
@@ -115,22 +101,27 @@ export const deviceUpdate = functions.firestore
           );
         }
       }
+
       if (
-        before.governorSeconds != after.governorSeconds ||
-        JSON.stringify(before.probeList) != JSON.stringify(after.probeList) ||
-        before.runProbes != after.runProbes
+        before.governorSeconds !== after.governorSeconds ||
+        JSON.stringify(before.probeList) !== JSON.stringify(after.probeList) ||
+        before.runProbes !== after.runProbes
       ) {
-        console.log("Add config:", before, after);
         const config = {
           governorSeconds: after.governorSeconds,
           runProbes: after.runProbes,
           probeList: after.probeList
         };
-        newConfig(context.params.id, JSON.stringify(config))
-          .then(x => console.log("ok", x))
-          .catch(y => console.log("err: ", y));
-
-        // see https://cloud.google.com/iot/docs/how-tos/config/configuring-devices#updating_and_reverting_device_configuration
+        try {
+          await newConfig(context.params.id, JSON.stringify(config));
+        } catch (err) {
+          console.log("newConfig err:", err);
+          middlewareEvent.writeMiddlewareEvent(
+            "newConfig error",
+            context.params.id,
+            JSON.stringify(err)
+          );
+        }
       }
     }
   });
@@ -167,8 +158,8 @@ function updateDevice(
   });
 }
 
-async function newConfig(id: string, config: string) {
-  console.log("newConfig:", id, config);
+function newConfig(id: string, config: string) {
+  // see https://cloud.google.com/iot/docs/how-tos/config/configuring-devices#updating_and_reverting_device_configuration
   const iot = require("@google-cloud/iot");
   const iotClient = new iot.v1.DeviceManagerClient({});
 
@@ -179,21 +170,11 @@ async function newConfig(id: string, config: string) {
     id
   );
 
-  // const binaryData = Buffer.from(data).toString("base64");
   const base64Config = Buffer.from(config).toString("base64");
   const request = {
     name: devPath,
     versionToUpdate: 0,
     binaryData: base64Config
   };
-
-  try {
-    const responses = await iotClient.modifyCloudToDeviceConfig(request);
-
-    console.log("Success:", responses[0]);
-  } catch (err) {
-    middlewareEvent.writeMiddlewareEvent("Device config update error", id, err);
-    console.error("Could not update config:", id);
-    console.error("Message:", err);
-  }
+  return iotClient.modifyCloudToDeviceConfig(request);
 }

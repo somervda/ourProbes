@@ -7,7 +7,7 @@ export const probeEventsOnPublish = functions.pubsub
   .onPublish(message => {
     // ...
     console.log("probe-events message 02:", message);
-    let probeEvent = {
+    const probeEvent = {
       bps: null,
       rtl: null,
       probeId: null,
