@@ -4,13 +4,13 @@ import { db } from "./init";
 export function writeMiddlewareEvent(
   title: string,
   id: string,
-  error?: string
+  details?: string
 ) {
   const middlewareEventItem = {
     title: title,
     logTime: admin.firestore.FieldValue.serverTimestamp(),
     id: id,
-    error: error || ""
+    details: details || ""
   };
 
   db.collection("middlewareEvents").add(middlewareEventItem);
