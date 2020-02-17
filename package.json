@@ -13,6 +13,8 @@
   "private": true,
   "dependencies": {
     "@agm/core": "^1.1.0",
+    "@angular-devkit/core": "^9.0.2",
+    "@angular-devkit/schematics": "^9.0.2",
     "@angular/animations": "^8.2.14",
     "@angular/cdk": "^7.3.7",
     "@angular/common": "^8.2.14",
@@ -27,6 +29,7 @@
     "@angular/pwa": "^0.803.24",
     "@angular/router": "^8.2.14",
     "@angular/service-worker": "^8.2.14",
+    "@schematics/angular": "^9.0.2",
     "core-js": "^2.6.11",
     "firebase": "^6.6.2",
     "firebaseui": "^4.4.0",
