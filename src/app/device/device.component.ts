@@ -11,7 +11,7 @@ import {
 import { Subscription, Observable } from "rxjs";
 import { DeviceService } from "../services/device.service";
 import { ActivatedRoute, Router } from "@angular/router";
-import { MatSnackBar } from "@angular/material";
+import { MatSnackBar } from "@angular/material/snack-bar";
 import { firestore } from "firebase";
 import { enumToMap } from "../shared/utilities";
 

@@ -4,7 +4,7 @@ import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import { Subscription } from "rxjs";
 import { ProbeService } from "../services/probe.service";
 import { ActivatedRoute, Router } from "@angular/router";
-import { MatSnackBar } from "@angular/material";
+import { MatSnackBar } from "@angular/material/snack-bar";
 import { Probe, ProbeType, ProbeStatus } from "../models/probe.model";
 import { enumToMap } from "../shared/utilities";
 import { firestore } from "firebase";
