@@ -2,9 +2,10 @@ import * as functions from "firebase-functions";
 import * as probeEvents from "./probeEvents";
 
 export const hourlyFunction = functions.pubsub
-  .schedule("0 * * * *")
+  .schedule("every 5 minutes")
   .onRun(context => {
-    // Runs at the start of every hour
+    // .schedule("0 * * * *")
+    // Runs at the start  of every hour
     // run 2 jobs
     // 1 - each hour summarize probeEvent data collected over the last hour and delete data more than 7 days old
     // 2 - Summarize hourly data from previous day , delete hourly data more than 60 days old.

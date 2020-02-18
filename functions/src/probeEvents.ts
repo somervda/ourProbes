@@ -87,25 +87,35 @@ export enum probeEventSummaryPeriod {
   day = 2
 }
 
-export async function summarize(from: Date, period: probeEventSummaryPeriod) {
+export async function summarize(to: Date, period: probeEventSummaryPeriod) {
   let probeEventSummaries: probeEventSummary[] = [];
   const periodSec = period === probeEventSummaryPeriod.hour ? 3600 : 3600 * 24;
-  const to = new Date(from.getSeconds() + periodSec);
-  console.log("summerize times", from, to, periodSec);
+  const from = new Date(to.getTime() - 1000 * periodSec);
+  console.log(
+    "summerize times from:",
+    from,
+    " to: ",
+    to,
+    " periodSec: ",
+    periodSec
+  );
   const probeEvents = <FirebaseFirestore.CollectionReference>db
     .collection("probeEvents")
     .where("probeUMT", ">=", from)
     .where("probeUMT", "<=", to);
 
+  let eventArray;
+
   await probeEvents
     .get()
     .then(snaps => {
       console.log("probeEvents get snaps.docs.length:", snaps.docs.length);
+      snaps.docs.map(snap => eventArray.push(snap.data()));
     })
     .catch(function(error: any) {
       console.error("Error getting probeEvents:", error);
     });
-
+  console.log("eventArray:", eventArray);
   return probeEventSummaries;
 }
 
