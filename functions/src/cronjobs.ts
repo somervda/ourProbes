@@ -1,4 +1,5 @@
 import * as functions from "firebase-functions";
+import * as probeEvents from "./probeEvents";
 
 export const hourlyFunction = functions.pubsub
   .schedule("0 * * * *")
@@ -15,6 +16,11 @@ export const hourlyFunction = functions.pubsub
     const hour = currentTime.getHours();
     hourlyProcess();
     console.log("This will be run every hour!", currentTime, hour);
+    probeEvents
+      .summarize(currentTime, probeEvents.probeEventSummaryPeriod.hour)
+      .then(x => console.log("cron summarize", x))
+      .catch(err => console.log("cron summarize err", err));
+
     if (hour === 0) {
       console.log("This will be run every day!", currentTime, hour);
       dailyProcess();

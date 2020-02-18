@@ -81,3 +81,46 @@ export const probeEventsOnPublish = functions.pubsub
 
     return true;
   });
+
+export enum probeEventSummaryPeriod {
+  hour = 1,
+  day = 2
+}
+
+export async function summarize(from: Date, period: probeEventSummaryPeriod) {
+  let probeEventSummaries: probeEventSummary[] = [];
+  const periodSec = period === probeEventSummaryPeriod.hour ? 3600 : 3600 * 24;
+  const to = new Date(from.getSeconds() + periodSec);
+  console.log("summerize times", from, to, periodSec);
+  const probeEvents = <FirebaseFirestore.CollectionReference>db
+    .collection("probeEvents")
+    .where("probeUMT", ">=", from)
+    .where("probeUMT", "<=", to);
+
+  await probeEvents
+    .get()
+    .then(snaps => {
+      console.log("probeEvents get snaps.docs.length:", snaps.docs.length);
+    })
+    .catch(function(error: any) {
+      console.error("Error getting probeEvents:", error);
+    });
+
+  return probeEventSummaries;
+}
+
+export interface probeEventSummary {
+  deviceId: string;
+  probeId: string;
+  umt: Date;
+  period: probeEventSummaryPeriod;
+  mean: number;
+  p25: number;
+  p50: number;
+  p75: number;
+  stdDev: number;
+  count: number;
+  availabilityCount: number;
+  max: number;
+  min: CountQueuingStrategy;
+}
