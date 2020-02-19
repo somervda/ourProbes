@@ -74,22 +74,25 @@ export class DeviceconfigComponent implements OnInit, OnDestroy {
         }
         // console.log("deviceSubscription: ", device);
         // Javascript does not support tuples like python so need to manually format the private key tuple
+        // Also need to change case for true and false values
         const ReplaceMePKT = "(" + device.privateKeyTuple + ")";
         const configData =
-          "device_config: " +
-          JSON.stringify(this.device_config) +
-          ",\r\n" +
-          "wifi_config: " +
-          JSON.stringify(this.wifi_config) +
-          ",\r\n" +
-          "google_cloud_config: " +
-          JSON.stringify(this.google_cloud_config) +
-          ",\r\n" +
-          "jwt_config: " +
-          JSON.stringify(this.jwt_config).replace(
-            '"ReplaceMePKT"',
-            ReplaceMePKT
-          );
+          "device_config = " +
+          JSON.stringify(this.device_config)
+            .replace("false", "False")
+            .replace("true", "True")
+            .replace(/,/g, ",\r\n") +
+          ",\r\n\r\n" +
+          "wifi_config = " +
+          JSON.stringify(this.wifi_config).replace(/,/g, ",\r\n") +
+          ",\r\n\r\n" +
+          "google_cloud_config = " +
+          JSON.stringify(this.google_cloud_config).replace(/,/g, ",\r\n") +
+          ",\r\n\r\n" +
+          "jwt_config = " +
+          JSON.stringify(this.jwt_config)
+            .replace(/,/g, ",\r\n")
+            .replace('"ReplaceMePKT"', ReplaceMePKT);
 
         // console.log("configData:", configData);
 

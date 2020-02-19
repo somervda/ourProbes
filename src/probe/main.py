@@ -189,33 +189,31 @@ while jwtExpiry > utime.time():
                 bingResult = ubing.bing(
                     host, 5, loopBackAdjustment=True, quiet=True, timeout=3000)
                 if bingResult == None:
-                    result = {
+                    measurement = {
                         "probeId": probe['id'],
-                        "probeUMT": utime.time() + 946684800,
-                        "bps": -1,
-                        'target': probe['target'],
-                        'rtl': -1,
-                        'type': 'bing',
-                        'available': False,
-                        'responseMs': -1,
-                        'deviceip': ip
+                        "UMT": utime.time() + 946684800,
+                        "value": -1,
+                        'type': 'bps'
                     }
-                    uresults.add(result)
-                    print("bing failed:", result)
+                    uresults.add(measurement)
+                    print("bing failed:", measurement)
                 else:
-                    result = {
+                    measurement = {
                         "probeId": probe['id'],
-                        "probeUMT": utime.time() + 946684800,
-                        "bps": bingResult[0],
-                        'target': probe['target'],
-                        'rtl': bingResult[1],
-                        'type': 'bing',
-                        'available': True,
-                        'responseMs': 0,
-                        'deviceip': ip
+                        "UMT": utime.time() + 946684800,
+                        "value": bingResult[0],
+                        'type': 'bps'
                     }
-                    uresults.add(result)
-                    print("bing successful:", result)
+                    uresults.add(measurement)
+                    print("bps successful:", measurement)
+                    measurement = {
+                        "probeId": probe['id'],
+                        "UMT": utime.time() + 946684800,
+                        "value": bingResult[1],
+                        'type': 'rtl'
+                    }
+                    uresults.add(measurement)
+                    print("rtl successful:", measurement)
 
     # 2 **************** Governor & probeConfig refresh ***************************
 
@@ -224,12 +222,10 @@ while jwtExpiry > utime.time():
     # print("loop time so far:", utime.time() - loopStartTime)
     probeConfig = mqttProcessConfigAndResults()
     sleeper = probeConfig['governorSeconds'] - (utime.time() - loopStartTime)
-    while sleeper > 0:
-        # print("Sleeping time remaining: ", sleeper)
-        utime.sleep(15)
-        probeConfig = mqttProcessConfigAndResults()
-        sleeper = probeConfig['governorSeconds'] - \
-            (utime.time() - loopStartTime)
+    print("Sleeping time remaining: ", sleeper)
+    utime.sleep(sleeper)
+    probeConfig = mqttProcessConfigAndResults()
+
 
 # Clean up network connection (Not needed when used in a real main.py that never ends)
 print('disconnecting from network...')
