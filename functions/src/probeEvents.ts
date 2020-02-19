@@ -87,6 +87,15 @@ export enum probeEventSummaryPeriod {
   day = 2
 }
 
+export interface probeEventItem {
+  deviceId: string;
+  probeId: string;
+  probeUMT: Date;
+  available: boolean;
+  responseMs: number;
+  bps: number;
+}
+
 export async function summarize(to: Date, period: probeEventSummaryPeriod) {
   let probeEventSummaries: probeEventSummary[] = [];
   const periodSec = period === probeEventSummaryPeriod.hour ? 3600 : 3600 * 24;
@@ -104,19 +113,39 @@ export async function summarize(to: Date, period: probeEventSummaryPeriod) {
     .where("probeUMT", ">=", from)
     .where("probeUMT", "<=", to);
 
-  let eventArray;
+  let eventArray: probeEventItem[] = [];
 
   await probeEvents
     .get()
     .then(snaps => {
       console.log("probeEvents get snaps.docs.length:", snaps.docs.length);
-      snaps.docs.map(snap => eventArray.push(snap.data()));
+      snaps.docs.map(snap => {
+        const pe: probeEventItem = {
+          deviceId: snap.data().deviceId,
+          probeId: snap.data().probeId,
+          probeUMT: snap.data().probeUMT,
+          bps: snap.data().bps,
+          responseMs: snap.data().responseMs,
+          available: snap.data().available
+        };
+        eventArray.push(pe);
+      });
     })
     .catch(function(error: any) {
       console.error("Error getting probeEvents:", error);
     });
   console.log("eventArray:", eventArray);
+  eventArray.sort(eventItemCompare);
+  console.log("eventArray after sort:", eventArray);
   return probeEventSummaries;
+}
+
+function eventItemCompare(a: probeEventItem, b: probeEventItem) {
+  const aKey = a.deviceId + a.probeId;
+  const bKey = b.deviceId + b.probeId;
+  if (aKey > bKey) return 1;
+  if (bKey > aKey) return -1;
+  return 0;
 }
 
 export interface probeEventSummary {
