@@ -130,9 +130,23 @@ export async function summarize(to: Date, period: measurementSummaryPeriod) {
         ms.mean /= ms.count;
         valueArray.sort((a, b) => a - b);
         ms.stdDev = Math.sqrt(
-          valueArray.reduce((a, v) => a + Math.pow(v - ms.mean, 2)) / ms.count
+          valueArray.reduce((a, v) => a + Math.pow(v - ms.mean, 2), 0) /
+            ms.count
         );
-        console.log("calc stddev:", ms.stdDev, valueArray);
+        // console.log(
+        //   "device:",
+        //   ms.deviceId,
+        //   "probe:",
+        //   ms.probeId,
+        //   "type:",
+        //   ms.type,
+        //   "calc stddev:",
+        //   ms.stdDev,
+        //   valueArray,
+        //   " valueArray.reduce((a, v) => a + Math.pow(v - ms.mean, 2),0) :",
+        //   valueArray.reduce((a, v) => a + Math.pow(v - ms.mean, 2), 0)
+        // );
+        // These results checked against https://www.calculator.net/standard-deviation-calculator.html
         // Calc percentiles
         ms.p00 = valueArray[0];
         ms.p25 = valueArray[Math.floor((valueArray.length - 1) * 0.25)];
@@ -160,9 +174,22 @@ export async function summarize(to: Date, period: measurementSummaryPeriod) {
     ms.mean /= ms.count;
     valueArray.sort((a, b) => a - b);
     ms.stdDev = Math.sqrt(
-      valueArray.reduce((a, v) => a + Math.pow(v - ms.mean, 2)) / ms.count
+      valueArray.reduce((a, v) => a + Math.pow(v - ms.mean, 2), 0) / ms.count
     );
-    console.log("calc stddev:", ms.stdDev, valueArray);
+    // console.log(
+    //   "device:",
+    //   ms.deviceId,
+    //   "probe:",
+    //   ms.probeId,
+    //   "type:",
+    //   ms.type,
+    //   "calc stddev:",
+    //   ms.stdDev,
+    //   valueArray,
+    //   " valueArray.reduce((a, v) => a + Math.pow(v - ms.mean, 2),0) :",
+    //   valueArray.reduce((a, v) => a + Math.pow(v - ms.mean, 2), 0)
+    // );
+    // These results checked against https://www.calculator.net/standard-deviation-calculator.html
     // Calc percentiles
     ms.p00 = valueArray[0];
     ms.p25 = valueArray[Math.floor((valueArray.length - 1) * 0.25)];
