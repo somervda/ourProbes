@@ -188,32 +188,28 @@ while jwtExpiry > utime.time():
                 host = probe['target']
                 bingResult = ubing.bing(
                     host, 5, loopBackAdjustment=True, quiet=True, timeout=3000)
-                if bingResult == None:
-                    measurement = {
-                        "probeId": probe['id'],
-                        "UMT": utime.time() + 946684800,
-                        "value": -1,
-                        'type': 'bps'
-                    }
-                    uresults.add(measurement)
-                    print("bing failed:", measurement)
+                if bingResult != None:
+                    if (bingResult[1] != -1):
+                        measurement = {
+                            "probeId": probe['id'],
+                            "UMT": utime.time() + 946684800,
+                            "value": bingResult[0],
+                            'type': 'bps'
+                        }
+                        uresults.add(measurement)
+                        print("bps successful:", measurement)
+                        measurement = {
+                            "probeId": probe['id'],
+                            "UMT": utime.time() + 946684800,
+                            "value": bingResult[1],
+                            'type': 'rtl'
+                        }
+                        uresults.add(measurement)
+                        print("rtl successful:", measurement)
+                    else:
+                        print("rtl fail:", measurement)
                 else:
-                    measurement = {
-                        "probeId": probe['id'],
-                        "UMT": utime.time() + 946684800,
-                        "value": bingResult[0],
-                        'type': 'bps'
-                    }
-                    uresults.add(measurement)
-                    print("bps successful:", measurement)
-                    measurement = {
-                        "probeId": probe['id'],
-                        "UMT": utime.time() + 946684800,
-                        "value": bingResult[1],
-                        'type': 'rtl'
-                    }
-                    uresults.add(measurement)
-                    print("rtl successful:", measurement)
+                    print("bing fail: result None")
 
     # 2 **************** Governor & probeConfig refresh ***************************
 

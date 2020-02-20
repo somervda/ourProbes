@@ -81,17 +81,23 @@ export class DeviceconfigComponent implements OnInit, OnDestroy {
           JSON.stringify(this.device_config)
             .replace("false", "False")
             .replace("true", "True")
-            .replace(/,/g, ",\r\n") +
-          ",\r\n\r\n" +
+            .replace(/,/g, ",\r\n")
+            .replace("}", "\r\n}") +
+          "\r\n\r\n" +
           "wifi_config = " +
-          JSON.stringify(this.wifi_config).replace(/,/g, ",\r\n") +
-          ",\r\n\r\n" +
+          JSON.stringify(this.wifi_config)
+            .replace(/,/g, ",\r\n")
+            .replace("}", "\r\n}") +
+          "\r\n\r\n" +
           "google_cloud_config = " +
-          JSON.stringify(this.google_cloud_config).replace(/,/g, ",\r\n") +
-          ",\r\n\r\n" +
+          JSON.stringify(this.google_cloud_config)
+            .replace(/,/g, ",\r\n")
+            .replace("}", "\r\n}") +
+          "\r\n\r\n" +
           "jwt_config = " +
           JSON.stringify(this.jwt_config)
             .replace(/,/g, ",\r\n")
+            .replace("}", "\r\n}")
             .replace('"ReplaceMePKT"', ReplaceMePKT);
 
         // console.log("configData:", configData);

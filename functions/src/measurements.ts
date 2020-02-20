@@ -113,8 +113,6 @@ export async function summarize(to: Date, period: measurementSummaryPeriod) {
     umt: from,
     period: period,
     count: 0,
-    min: Number.MAX_VALUE,
-    max: Number.MIN_VALUE,
     mean: 0
   };
   // Value array is list of values for the group that is bused to
@@ -136,9 +134,11 @@ export async function summarize(to: Date, period: measurementSummaryPeriod) {
         );
         console.log("calc stddev:", ms.stdDev, valueArray);
         // Calc percentiles
-        ms.p25 = valueArray[Math.floor(valueArray.length * 0.25)];
-        ms.p50 = valueArray[Math.floor(valueArray.length * 0.5)];
-        ms.p75 = valueArray[Math.floor(valueArray.length * 0.75)];
+        ms.p00 = valueArray[0];
+        ms.p25 = valueArray[Math.floor((valueArray.length - 1) * 0.25)];
+        ms.p50 = valueArray[Math.floor((valueArray.length - 1) * 0.5)];
+        ms.p75 = valueArray[Math.floor((valueArray.length - 1) * 0.75)];
+        ms.p100 = valueArray[valueArray.length - 1];
         // Create a new copy of the object to push
         let copyOfms = <measurementSummary>{};
         Object.assign(copyOfms, ms);
@@ -149,14 +149,10 @@ export async function summarize(to: Date, period: measurementSummaryPeriod) {
       ms.probeId = mi.probeId;
       ms.type = mi.type;
       ms.count = 0;
-      ms.min = Number.MAX_VALUE;
-      ms.max = Number.MIN_VALUE;
       ms.mean = 0;
     }
     ms.count += 1;
     valueArray.push(mi.value);
-    if (mi.value < ms.min) ms.min = mi.value;
-    if (mi.value > ms.max) ms.max = mi.value;
     ms.mean += mi.value;
   });
   if (ms.deviceId != "" && ms.probeId != "") {
@@ -168,9 +164,11 @@ export async function summarize(to: Date, period: measurementSummaryPeriod) {
     );
     console.log("calc stddev:", ms.stdDev, valueArray);
     // Calc percentiles
+    ms.p00 = valueArray[0];
     ms.p25 = valueArray[Math.floor((valueArray.length - 1) * 0.25)];
     ms.p50 = valueArray[Math.floor((valueArray.length - 1) * 0.5)];
     ms.p75 = valueArray[Math.floor((valueArray.length - 1) * 0.75)];
+    ms.p100 = valueArray[valueArray.length - 1];
     measurementSummaries.push(ms);
   }
   return measurementSummaries;
@@ -191,13 +189,13 @@ export interface measurementSummary {
   umt: Date;
   period: measurementSummaryPeriod;
   mean: number;
+  p00?: number;
   p25?: number;
   p50?: number;
   p75?: number;
+  p100?: number;
   stdDev?: number;
   count: number;
-  max: number;
-  min: number;
 }
 
 export function writeMeasurementSummaries(
