@@ -70,7 +70,7 @@ export async function summarize(to: Date, period: measurementSummaryPeriod) {
   const periodSec = period === measurementSummaryPeriod.hour ? 3600 : 3600 * 24;
   const from = new Date(to.getTime() - 1000 * periodSec);
   console.log(
-    "summerize times from:",
+    "summarize times from:",
     from,
     " to: ",
     to,
@@ -105,13 +105,11 @@ export async function summarize(to: Date, period: measurementSummaryPeriod) {
   // console.log("measurementArray:", measurementArray);
   measurementArray.sort(measurementCompare);
   console.log("measurementArray after sort:", measurementArray);
-  // Create measurementSummaries array, one for each unique set of device/probe , include start and end indexes for the set in the measuermentArray
+  // Create measurementSummaries array, one for each unique set of device/probe , include start and end indexes for the set in the measurmentArray
   let ms: measurementSummary = {
     probeId: "",
     deviceId: "",
     type: "",
-    startIndex: 0,
-    endIndex: 0,
     umt: from,
     period: period,
     count: 0,
@@ -119,6 +117,9 @@ export async function summarize(to: Date, period: measurementSummaryPeriod) {
     max: Number.MIN_VALUE,
     mean: 0
   };
+  // Value array is list of values for the group that is bused to
+  // calculate the stddev and percentiles
+  let valueArray: number[] = [];
   measurementArray.forEach((mi, i) => {
     if (
       ms.deviceId !== mi.deviceId ||
@@ -127,13 +128,23 @@ export async function summarize(to: Date, period: measurementSummaryPeriod) {
     ) {
       // Change of summary group
       if (ms.deviceId !== "" && ms.probeId !== "" && ms.type !== "") {
-        // push current summary with indexes
-        ms.endIndex = i - 1;
+        // push current summary
         ms.mean /= ms.count;
+        valueArray.sort((a, b) => a - b);
+        ms.stdDev = Math.sqrt(
+          valueArray.reduce((a, v) => a + Math.pow(v - ms.mean, 2)) / ms.count
+        );
+        console.log("calc stddev:", ms.stdDev, valueArray);
+        // Calc percentiles
+        ms.p25 = valueArray[Math.floor(valueArray.length * 0.25)];
+        ms.p50 = valueArray[Math.floor(valueArray.length * 0.5)];
+        ms.p75 = valueArray[Math.floor(valueArray.length * 0.75)];
         // Create a new copy of the object to push
-        measurementSummaries.push(JSON.parse(JSON.stringify(ms)));
+        let copyOfms = <measurementSummary>{};
+        Object.assign(copyOfms, ms);
+        measurementSummaries.push(copyOfms);
       }
-      ms.startIndex = i;
+      valueArray = [];
       ms.deviceId = mi.deviceId;
       ms.probeId = mi.probeId;
       ms.type = mi.type;
@@ -143,14 +154,23 @@ export async function summarize(to: Date, period: measurementSummaryPeriod) {
       ms.mean = 0;
     }
     ms.count += 1;
+    valueArray.push(mi.value);
     if (mi.value < ms.min) ms.min = mi.value;
     if (mi.value > ms.max) ms.max = mi.value;
     ms.mean += mi.value;
   });
   if (ms.deviceId != "" && ms.probeId != "") {
     // push final summary
-    ms.endIndex = measurementArray.length - 1;
     ms.mean /= ms.count;
+    valueArray.sort((a, b) => a - b);
+    ms.stdDev = Math.sqrt(
+      valueArray.reduce((a, v) => a + Math.pow(v - ms.mean, 2)) / ms.count
+    );
+    console.log("calc stddev:", ms.stdDev, valueArray);
+    // Calc percentiles
+    ms.p25 = valueArray[Math.floor((valueArray.length - 1) * 0.25)];
+    ms.p50 = valueArray[Math.floor((valueArray.length - 1) * 0.5)];
+    ms.p75 = valueArray[Math.floor((valueArray.length - 1) * 0.75)];
     measurementSummaries.push(ms);
   }
   return measurementSummaries;
@@ -168,8 +188,6 @@ export interface measurementSummary {
   deviceId: string;
   probeId: string;
   type: string;
-  startIndex?: number;
-  endIndex?: number;
   umt: Date;
   period: measurementSummaryPeriod;
   mean: number;
@@ -180,4 +198,12 @@ export interface measurementSummary {
   count: number;
   max: number;
   min: number;
+}
+
+export function writeMeasurementSummaries(
+  measurementSummaries: measurementSummary[]
+) {
+  measurementSummaries.forEach(ms =>
+    db.collection("measurementSummaries").add(ms)
+  );
 }

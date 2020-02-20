@@ -1,8 +1,8 @@
 import * as functions from "firebase-functions";
-// import * as measurements from "./measurements";
+import * as measurements from "./measurements";
 
 export const hourlyFunction = functions.pubsub
-  .schedule("every 5 hours")
+  .schedule("0 * * * *")
   .onRun(context => {
     // .schedule("0 * * * *")
     // Runs at the start  of every hour
@@ -17,10 +17,6 @@ export const hourlyFunction = functions.pubsub
     const hour = currentTime.getHours();
     hourlyProcess();
     console.log("This will be run every hour!", currentTime, hour);
-    // measurements
-    // .summarize(currentTime, measurements.measurementSummaryPeriod.hour)
-    // .then(x => console.log("cron summarize", x))
-    // .catch(err => console.log("cron summarize err", err));
 
     if (hour === 0) {
       console.log("This will be run every day!", currentTime, hour);
@@ -31,10 +27,16 @@ export const hourlyFunction = functions.pubsub
 
 function hourlyProcess() {
   console.log("hourlyProcess", Date.now());
-  // Read all data in a timerange and get statistics for mean, mode, max, min, counts,stddev
+  measurements
+    .summarize(new Date(), measurements.measurementSummaryPeriod.hour)
+    .then(x => measurements.writeMeasurementSummaries(x))
+    .catch(err => console.log("cron hourly summarize err", err));
 }
 
 function dailyProcess() {
   console.log("dailyProcess", Date.now());
-  // Read all data in a timerange and get statistics for mean, mode, max, min, counts,stddev
+  measurements
+    .summarize(new Date(), measurements.measurementSummaryPeriod.day)
+    .then(x => measurements.writeMeasurementSummaries(x))
+    .catch(err => console.log("cron daily summarize err", err));
 }
