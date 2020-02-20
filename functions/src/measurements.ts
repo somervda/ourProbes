@@ -69,14 +69,14 @@ export async function summarize(to: Date, period: measurementSummaryPeriod) {
   let measurementSummaries: measurementSummary[] = [];
   const periodSec = period === measurementSummaryPeriod.hour ? 3600 : 3600 * 24;
   const from = new Date(to.getTime() - 1000 * periodSec);
-  console.log(
-    "summarize times from:",
-    from,
-    " to: ",
-    to,
-    " periodSec: ",
-    periodSec
-  );
+  // console.log(
+  //   "summarize times from:",
+  //   from,
+  //   " to: ",
+  //   to,
+  //   " periodSec: ",
+  //   periodSec
+  // );
   const measurements = <FirebaseFirestore.CollectionReference>db
     .collection("measurements")
     .where("UMT", ">=", from)
@@ -104,7 +104,7 @@ export async function summarize(to: Date, period: measurementSummaryPeriod) {
     });
   // console.log("measurementArray:", measurementArray);
   measurementArray.sort(measurementCompare);
-  console.log("measurementArray after sort:", measurementArray);
+  // console.log("measurementArray after sort:", measurementArray);
   // Create measurementSummaries array, one for each unique set of device/probe , include start and end indexes for the set in the measurmentArray
   let ms: measurementSummary = {
     probeId: "",
