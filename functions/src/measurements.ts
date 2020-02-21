@@ -66,6 +66,7 @@ export interface measurementItem {
 }
 
 export async function summarize(to: Date, period: measurementSummaryPeriod) {
+  console.log("summarize timing start", Date.now());
   let measurementSummaries: measurementSummary[] = [];
   const periodSec = period === measurementSummaryPeriod.hour ? 3600 : 3600 * 24;
   const from = new Date(to.getTime() - 1000 * periodSec);
@@ -83,7 +84,7 @@ export async function summarize(to: Date, period: measurementSummaryPeriod) {
     .where("UMT", "<=", to);
 
   let measurementArray: measurementItem[] = [];
-
+  console.log("summarize timing before getting measurements", Date.now());
   await measurements
     .get()
     .then(snaps => {
@@ -103,7 +104,9 @@ export async function summarize(to: Date, period: measurementSummaryPeriod) {
       console.error("Error getting measurement:", error);
     });
   // console.log("measurementArray:", measurementArray);
+  console.log("summarize timing before sort", Date.now());
   measurementArray.sort(measurementCompare);
+  console.log("summarize timing after sort", Date.now());
   // console.log("measurementArray after sort:", measurementArray);
   // Create measurementSummaries array, one for each unique set of device/probe , include start and end indexes for the set in the measurmentArray
   let ms: measurementSummary = {

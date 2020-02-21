@@ -26,17 +26,19 @@ export const hourlyFunction = functions.pubsub
   });
 
 function hourlyProcess() {
-  console.log("hourlyProcess", Date.now());
+  console.log("hourlyProcess Start", Date.now());
   measurements
     .summarize(new Date(), measurements.measurementSummaryPeriod.hour)
     .then(x => measurements.writeMeasurementSummaries(x))
     .catch(err => console.log("cron hourly summarize err", err));
+  console.log("hourlyProcess End", Date.now());
 }
 
 function dailyProcess() {
-  console.log("dailyProcess", Date.now());
+  console.log("dailyProcess Start", Date.now());
   measurements
     .summarize(new Date(), measurements.measurementSummaryPeriod.day)
     .then(x => measurements.writeMeasurementSummaries(x))
     .catch(err => console.log("cron daily summarize err", err));
+  console.log("dailyProcess End", Date.now());
 }
