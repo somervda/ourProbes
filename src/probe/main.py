@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import ubing
-import uresults
+import umeasurements
 import uprobeConfig
 import config
 import ujson
@@ -128,7 +128,7 @@ def get_mqtt_client(project_id, cloud_region, registry_id, device_id, jwt):
     return client
 
 
-def mqttProcessConfigAndResults():
+def mqttProcessConfigAndMeasurements():
     gc.collect()
     # print('Connecting MQTT client...')
     client = get_mqtt_client(config.google_cloud_config['project_id'], config.google_cloud_config['cloud_region'],
@@ -138,17 +138,16 @@ def mqttProcessConfigAndResults():
     probeConfig = uprobeConfig.get()
     # print("probeConfig : ", str(probeConfig))
 
-    # Turn of led while sending probe results to IOT core
-    for fName in uresults.list():
+    # Turn of led while sending probe measurements to IOT core
+    for fName in umeasurements.list():
         led.value(0)
-        result = uresults.get(fName)
-        # print("Publishing result ", fName, " : ",
-        #       str(ujson.dumps(result)))
+        result = umeasurements.get(fName)
+        # print("Publishing result ", fName, " : ", str(ujson.dumps(result)))
         mqtt_topic = '/devices/{}/{}'.format(
             config.google_cloud_config['device_id'], 'events')
         client.publish(mqtt_topic.encode('utf-8'),
                        ujson.dumps(result).encode('utf-8'))
-        uresults.remove(fName)
+        umeasurements.remove(fName)
         utime.sleep_ms(500)
         led.value(1)
 
@@ -157,7 +156,7 @@ def mqttProcessConfigAndResults():
     return probeConfig
 
 
-uresults.reset()
+umeasurements.reset()
 connect()
 set_time()
 loopCnt = 0
@@ -168,14 +167,14 @@ jwt = create_jwt(config.google_cloud_config['project_id'], config.jwt_config['pr
 
 
 # Do initial MQTT connection to get thew probeConfig
-probeConfig = mqttProcessConfigAndResults()
+probeConfig = mqttProcessConfigAndMeasurements()
 
 while jwtExpiry > utime.time():
     loopCnt += 1
     # main loop
-    # 1. build up next set of results
+    # 1. build up next set of measurements
     # 2. Loop Governance : delay next loop for required time so loop isn't too fast, while this is going on
-    #    connect to Google IOT, get new probeConfig(from config topic) and send results of network tests (probeConfig)
+    #    connect to Google IOT, get new probeConfig(from config topic) and send measurements of network tests (probeConfig)
 
     print('****** ', loopCnt, " memory:", umemory.free())
     loopStartTime = utime.time()
@@ -196,7 +195,7 @@ while jwtExpiry > utime.time():
                             "value": bingResult[0],
                             'type': 'bps'
                         }
-                        uresults.add(measurement)
+                        umeasurements.add(measurement)
                         print("bps successful:", measurement)
                         measurement = {
                             "probeId": probe['id'],
@@ -204,7 +203,7 @@ while jwtExpiry > utime.time():
                             "value": bingResult[1],
                             'type': 'rtl'
                         }
-                        uresults.add(measurement)
+                        umeasurements.add(measurement)
                         print("rtl successful:", measurement)
                     else:
                         print("rtl fail:", measurement)
@@ -216,11 +215,11 @@ while jwtExpiry > utime.time():
     led.value(0)
     print("governorSeconds: ", str(probeConfig['governorSeconds']))
     # print("loop time so far:", utime.time() - loopStartTime)
-    probeConfig = mqttProcessConfigAndResults()
+    probeConfig = mqttProcessConfigAndMeasurements()
     sleeper = probeConfig['governorSeconds'] - (utime.time() - loopStartTime)
     print("Sleeping time remaining: ", sleeper)
     utime.sleep(sleeper)
-    probeConfig = mqttProcessConfigAndResults()
+    probeConfig = mqttProcessConfigAndMeasurements()
 
 
 # Clean up network connection (Not needed when used in a real main.py that never ends)
