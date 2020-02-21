@@ -29,6 +29,7 @@
     "@angular/router": "^9.0.1",
     "@angular/service-worker": "^9.0.1",
     "@schematics/angular": "^9.0.2",
+    "@swimlane/ngx-charts": "^13.0.2",
     "core-js": "^2.6.11",
     "firebase": "^6.6.2",
     "firebaseui": "^4.4.0",

@@ -1,3 +1,4 @@
+import { DataanalysisComponent } from "./dataanalysis/dataanalysis.component";
 import { DevicesComponent } from "./devices/devices.component";
 import { NgModule } from "@angular/core";
 import { Routes, RouterModule } from "@angular/router";
@@ -35,6 +36,11 @@ const routes: Routes = [
   {
     path: "devices",
     component: DevicesComponent,
+    canActivate: [IsActivatedGuard]
+  },
+  {
+    path: "dataanalysis",
+    component: DataanalysisComponent,
     canActivate: [IsActivatedGuard]
   },
   {

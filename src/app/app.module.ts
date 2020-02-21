@@ -2,6 +2,7 @@ import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { NgxChartsModule } from "@swimlane/ngx-charts";
 
 import { AngularFireModule } from "@angular/fire";
 import { AngularFirePerformanceModule } from "@angular/fire/performance";
@@ -22,16 +23,18 @@ import { MatDividerModule } from "@angular/material/divider";
 import { MatExpansionModule } from "@angular/material/expansion";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
-import { 
-// MatGridListModule
-MatInputModule } from "@angular/material/input";
+import {
+  // MatGridListModule
+  MatInputModule
+} from "@angular/material/input";
 import { MatListModule } from "@angular/material/list";
 import { MatPaginatorModule } from "@angular/material/paginator";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
-import { 
-// MatDatepickerModule,
-// MatDialogModule,
-MatSelectModule } from "@angular/material/select";
+import {
+  // MatDatepickerModule,
+  // MatDialogModule,
+  MatSelectModule
+} from "@angular/material/select";
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { MatSortModule } from "@angular/material/sort";
@@ -57,8 +60,10 @@ import { ProbeComponent } from "./probe/probe.component";
 import { DevicelistComponent } from "./devicelist/devicelist.component";
 import { SimplemapComponent } from "./simplemap/simplemap.component";
 import { NotactivatedComponent } from "./notactivated/notactivated.component";
-import { DeviceprobesComponent } from './deviceprobes/deviceprobes.component';
-import { DeviceconfigComponent } from './deviceconfig/deviceconfig.component';
+import { DeviceprobesComponent } from "./deviceprobes/deviceprobes.component";
+import { DeviceconfigComponent } from "./deviceconfig/deviceconfig.component";
+import { DataanalysisComponent } from "./dataanalysis/dataanalysis.component";
+import { DatrendsComponent } from "./datrends/datrends.component";
 
 @NgModule({
   declarations: [
@@ -80,7 +85,9 @@ import { DeviceconfigComponent } from './deviceconfig/deviceconfig.component';
     SimplemapComponent,
     NotactivatedComponent,
     DeviceprobesComponent,
-    DeviceconfigComponent
+    DeviceconfigComponent,
+    DataanalysisComponent,
+    DatrendsComponent
   ],
   imports: [
     BrowserModule,
@@ -88,6 +95,7 @@ import { DeviceconfigComponent } from './deviceconfig/deviceconfig.component';
       apiKey: "AIzaSyBTXGNP8fuSxj8aZTz7VbQ4LduAZ20Jd3o"
     }),
     BrowserAnimationsModule,
+    NgxChartsModule,
     FormsModule,
     ReactiveFormsModule,
     AppRoutingModule,
