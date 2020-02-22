@@ -54,5 +54,9 @@ service cloud.firestore {
       allow read:  if isActivated();
       allow write:  if isActivated();
     }
+
+    match /{path=**}/measurements/{did} {
+      allow read:  if (true);
+    }
   }
 }

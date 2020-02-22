@@ -64,6 +64,7 @@ import { DeviceprobesComponent } from "./deviceprobes/deviceprobes.component";
 import { DeviceconfigComponent } from "./deviceconfig/deviceconfig.component";
 import { DataanalysisComponent } from "./dataanalysis/dataanalysis.component";
 import { DatrendsComponent } from "./datrends/datrends.component";
+import { TestyComponent } from './testy/testy.component';
 
 @NgModule({
   declarations: [
@@ -87,7 +88,8 @@ import { DatrendsComponent } from "./datrends/datrends.component";
     DeviceprobesComponent,
     DeviceconfigComponent,
     DataanalysisComponent,
-    DatrendsComponent
+    DatrendsComponent,
+    TestyComponent
   ],
   imports: [
     BrowserModule,

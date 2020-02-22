@@ -20,8 +20,10 @@ import { ProbesComponent } from "./probes/probes.component";
 import { ProbeComponent } from "./probe/probe.component";
 import { ProbeResolver } from "./services/probe-resolver";
 import { NotactivatedComponent } from "./notactivated/notactivated.component";
+import { TestyComponent } from "./testy/testy.component";
 
 const routes: Routes = [
+  { path: "testy", component: TestyComponent },
   { path: "", component: HomeComponent, canActivate: [IsLoggedInGuard] },
   { path: "about", component: AboutComponent },
   { path: "login", component: LoginComponent },

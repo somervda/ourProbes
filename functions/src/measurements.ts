@@ -66,7 +66,7 @@ export interface measurementItem {
 }
 
 export async function summarize(to: Date, period: measurementSummaryPeriod) {
-  console.log("summarize timing start", Date.now());
+  console.log("2. summarize timing start", Date.now());
   let measurementSummaries: measurementSummary[] = [];
   const periodSec = period === measurementSummaryPeriod.hour ? 3600 : 3600 * 24;
   const from = new Date(to.getTime() - 1000 * periodSec);
@@ -84,11 +84,18 @@ export async function summarize(to: Date, period: measurementSummaryPeriod) {
     .where("UMT", "<=", to);
 
   let measurementArray: measurementItem[] = [];
-  console.log("summarize timing before getting measurements", Date.now());
+  console.log("3. summarize timing before getting measurements", Date.now());
   await measurements
     .get()
     .then(snaps => {
-      console.log("measurement get snaps.docs.length:", snaps.docs.length);
+      console.log(
+        "4. measurement get snaps.docs.length:",
+        snaps.docs.length,
+        " period:",
+        period,
+        " time:",
+        Date.now()
+      );
       snaps.docs.map(snap => {
         const measurement: measurementItem = {
           deviceId: snap.data().deviceId,
@@ -104,9 +111,14 @@ export async function summarize(to: Date, period: measurementSummaryPeriod) {
       console.error("Error getting measurement:", error);
     });
   // console.log("measurementArray:", measurementArray);
-  console.log("summarize timing before sort", Date.now());
+  console.log(
+    "5. summarize timing before sort",
+    Date.now(),
+    " period:",
+    period
+  );
   measurementArray.sort(measurementCompare);
-  console.log("summarize timing after sort", Date.now());
+  console.log("6. summarize timing after sort", Date.now(), " period:", period);
   // console.log("measurementArray after sort:", measurementArray);
   // Create measurementSummaries array, one for each unique set of device/probe , include start and end indexes for the set in the measurmentArray
   let ms: measurementSummary = {
@@ -172,6 +184,12 @@ export async function summarize(to: Date, period: measurementSummaryPeriod) {
     valueArray.push(mi.value);
     ms.mean += mi.value;
   });
+  console.log(
+    "7. summarize before FINAL PUSH  ",
+    Date.now(),
+    " period:",
+    period
+  );
   if (ms.deviceId != "" && ms.probeId != "") {
     // push final summary
     ms.mean /= ms.count;
@@ -201,6 +219,12 @@ export async function summarize(to: Date, period: measurementSummaryPeriod) {
     ms.p100 = valueArray[valueArray.length - 1];
     measurementSummaries.push(ms);
   }
+  console.log(
+    "8. summarize AFTER FINAL PUSH  ",
+    Date.now(),
+    " period:",
+    period
+  );
   return measurementSummaries;
 }
 

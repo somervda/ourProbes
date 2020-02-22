@@ -1,24 +1,31 @@
 <app-subheading title="Data Analysis" matIcon="bar_chart"></app-subheading>
 <div class="page-container">
   <mat-tab-group>
-    <mat-tab label="Extract">
+    <mat-tab label="Overview">
       <ng-template matTabContent>
-        Content 1 - Loaded:
+        Show heatchart of Probes and Devices (Choose metric eg count, bps, rtl
+        etc)
       </ng-template>
     </mat-tab>
-    <mat-tab label="Trends">
+    <mat-tab label="Trends (Stats)">
+      <ng-template matTabContent>
+        <app-datrends></app-datrends>
+      </ng-template>
+    </mat-tab>
+    <mat-tab label="Trends (Percentiles)">
       <ng-template matTabContent>
         <app-datrends></app-datrends>
       </ng-template>
     </mat-tab>
     <mat-tab label="Comparisons">
       <ng-template matTabContent>
-        Content 3 - Loaded:
+        Select up to three devices and a specific probe/metric to compare
       </ng-template>
     </mat-tab>
-    <mat-tab label="Overview">
+    <mat-tab label="Extract">
       <ng-template matTabContent>
-        Content 4 - Loaded:
+        Extract selected data both measurements or measurement summaries. De
+        normalize probe and device info.
       </ng-template>
     </mat-tab>
   </mat-tab-group>

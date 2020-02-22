@@ -3,8 +3,9 @@ import * as measurements from "./measurements";
 
 export const hourlyFunction = functions.pubsub
   .schedule("0 * * * *")
-  .onRun(context => {
+  .onRun(async context => {
     // .schedule("0 * * * *")
+    // .schedule("every 5 minutes")
     // Runs at the start  of every hour
     // run 2 jobs
     // 1 - each hour summarize probeEvent data collected over the last hour and delete data more than 7 days old
@@ -15,30 +16,34 @@ export const hourlyFunction = functions.pubsub
 
     const currentTime = new Date();
     const hour = currentTime.getHours();
-    hourlyProcess();
-    console.log("This will be run every hour!", currentTime, hour);
+    await hourlyProcess()
+      .then(x => console.log("1. cron hourly", Date.now()))
+      .catch(err => console.log("cron hourly  err", err));
+    console.log("99. This will be run every hour!", currentTime, hour);
 
     if (hour === 0) {
-      console.log("This will be run every day!", currentTime, hour);
-      dailyProcess();
+      await dailyProcess()
+        .then(x => console.log("1 cron daily", Date.now()))
+        .catch(err => console.log("1 cron daily  err", err));
+      console.log("99. This will be run every day!", currentTime, hour);
     }
     return null;
   });
 
-function hourlyProcess() {
-  console.log("hourlyProcess Start", Date.now());
-  measurements
+async function hourlyProcess() {
+  console.log("1 hourlyProcess Start", Date.now());
+  await measurements
     .summarize(new Date(), measurements.measurementSummaryPeriod.hour)
     .then(x => measurements.writeMeasurementSummaries(x))
     .catch(err => console.log("cron hourly summarize err", err));
-  console.log("hourlyProcess End", Date.now());
+  console.log("99 hourlyProcess End", Date.now());
 }
 
-function dailyProcess() {
-  console.log("dailyProcess Start", Date.now());
-  measurements
+async function dailyProcess() {
+  console.log("1 dailyProcess Start", Date.now());
+  await measurements
     .summarize(new Date(), measurements.measurementSummaryPeriod.day)
     .then(x => measurements.writeMeasurementSummaries(x))
     .catch(err => console.log("cron daily summarize err", err));
-  console.log("dailyProcess End", Date.now());
+  console.log("99 dailyProcess End", Date.now());
 }
