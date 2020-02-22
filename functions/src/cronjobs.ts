@@ -17,13 +17,13 @@ export const hourlyFunction = functions.pubsub
     const currentTime = new Date();
     const hour = currentTime.getHours();
     await hourlyProcess()
-      .then(x => console.log("1. cron hourly", Date.now()))
+      .then(x => console.log("98. cron hourly", Date.now()))
       .catch(err => console.log("cron hourly  err", err));
     console.log("99. This will be run every hour!", currentTime, hour);
 
     if (hour === 0) {
       await dailyProcess()
-        .then(x => console.log("1 cron daily", Date.now()))
+        .then(x => console.log("98 cron daily", Date.now()))
         .catch(err => console.log("1 cron daily  err", err));
       console.log("99. This will be run every day!", currentTime, hour);
     }
