@@ -65,6 +65,9 @@ import { DeviceconfigComponent } from "./deviceconfig/deviceconfig.component";
 import { DataanalysisComponent } from "./dataanalysis/dataanalysis.component";
 import { DatrendsComponent } from "./datrends/datrends.component";
 import { TestyComponent } from './testy/testy.component';
+import { DatrendpComponent } from './datrendp/datrendp.component';
+import { DaoverComponent } from './daover/daover.component';
+import { DaextractComponent } from './daextract/daextract.component';
 
 @NgModule({
   declarations: [
@@ -89,7 +92,10 @@ import { TestyComponent } from './testy/testy.component';
     DeviceconfigComponent,
     DataanalysisComponent,
     DatrendsComponent,
-    TestyComponent
+    TestyComponent,
+    DatrendpComponent,
+    DaoverComponent,
+    DaextractComponent
   ],
   imports: [
     BrowserModule,

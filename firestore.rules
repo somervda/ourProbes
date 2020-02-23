@@ -55,7 +55,13 @@ service cloud.firestore {
       allow write:  if isActivated();
     }
 
+    // metrics are read only by anyone
+
     match /{path=**}/measurements/{did} {
+      allow read:  if (true);
+    }
+
+    match /{path=**}/measurementSummary/{did} {
       allow read:  if (true);
     }
   }

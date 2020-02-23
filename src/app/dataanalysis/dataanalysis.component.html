@@ -5,6 +5,7 @@
       <ng-template matTabContent>
         Show heatchart of Probes and Devices (Choose metric eg count, bps, rtl
         etc)
+        <app-daover></app-daover>
       </ng-template>
     </mat-tab>
     <mat-tab label="Trends (Stats)">
@@ -14,7 +15,7 @@
     </mat-tab>
     <mat-tab label="Trends (Percentiles)">
       <ng-template matTabContent>
-        <app-datrends></app-datrends>
+        <app-datrendp></app-datrendp>
       </ng-template>
     </mat-tab>
     <mat-tab label="Comparisons">
@@ -26,6 +27,7 @@
       <ng-template matTabContent>
         Extract selected data both measurements or measurement summaries. De
         normalize probe and device info.
+        <app-daextract></app-daextract>
       </ng-template>
     </mat-tab>
   </mat-tab-group>
