@@ -63,6 +63,7 @@ export class DeviceprobesComponent implements OnInit, OnDestroy {
         // console.log("Probe to add to probe list:", probe);
         const probeListItem: ProbeListItem = {
           id: probe.id,
+          name: probe.name,
           target: probe.target,
           type: probe.type
         };

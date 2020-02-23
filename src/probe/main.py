@@ -141,12 +141,13 @@ def mqttProcessConfigAndMeasurements():
     # Turn of led while sending probe measurements to IOT core
     for fName in umeasurements.list():
         led.value(0)
-        result = umeasurements.get(fName)
-        # print("Publishing result ", fName, " : ", str(ujson.dumps(result)))
+        measurement = umeasurements.get(fName)
+        # print("Publishing result ", fName, " : ",
+        #       str(ujson.dumps(measurement)))
         mqtt_topic = '/devices/{}/{}'.format(
             config.google_cloud_config['device_id'], 'events')
         client.publish(mqtt_topic.encode('utf-8'),
-                       ujson.dumps(result).encode('utf-8'))
+                       ujson.dumps(measurement).encode('utf-8'))
         umeasurements.remove(fName)
         utime.sleep_ms(500)
         led.value(1)
@@ -189,8 +190,10 @@ while jwtExpiry > utime.time():
                     host, 5, loopBackAdjustment=True, quiet=True, timeout=3000)
                 if bingResult != None:
                     if (bingResult[1] != -1):
+                        # valid bing, also include probe name on measurement to save looking it up latter
                         measurement = {
                             "probeId": probe['id'],
+                            "name": probe['name'],
                             "UMT": utime.time() + 946684800,
                             "value": bingResult[0],
                             'type': 'bps'
@@ -199,6 +202,7 @@ while jwtExpiry > utime.time():
                         print("bps successful:", measurement)
                         measurement = {
                             "probeId": probe['id'],
+                            "name": probe['name'],
                             "UMT": utime.time() + 946684800,
                             "value": bingResult[1],
                             'type': 'rtl'

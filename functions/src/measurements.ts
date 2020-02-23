@@ -10,6 +10,7 @@ export const measurementsOnPublish = functions.pubsub
     const measurement = {
       value: null,
       probeId: null,
+      name: null,
       UMT: new admin.firestore.Timestamp(0, 0),
       deviceId: "",
       type: ""
@@ -22,6 +23,10 @@ export const measurementsOnPublish = functions.pubsub
 
       if (message.json.probeId) {
         measurement.probeId = message.json.probeId;
+      }
+
+      if (message.json.name) {
+        measurement.name = message.json.name;
       }
 
       if (message.json.UMT) {
@@ -59,6 +64,7 @@ export enum measurementSummaryPeriod {
 
 export interface measurementItem {
   deviceId: string;
+  name: string;
   probeId: string;
   type: string;
   UMT: Date;
@@ -100,6 +106,7 @@ export async function summarize(to: Date, period: measurementSummaryPeriod) {
         const measurement: measurementItem = {
           deviceId: snap.data().deviceId,
           probeId: snap.data().probeId,
+          name: snap.data().name,
           type: snap.data().type,
           UMT: snap.data().UMT,
           value: snap.data().value
@@ -124,6 +131,7 @@ export async function summarize(to: Date, period: measurementSummaryPeriod) {
   let ms: measurementSummary = {
     probeId: "",
     deviceId: "",
+    name: "",
     type: "",
     umt: from,
     period: period,
@@ -173,9 +181,11 @@ export async function summarize(to: Date, period: measurementSummaryPeriod) {
         Object.assign(copyOfms, ms);
         measurementSummaries.push(copyOfms);
       }
+      // Re initialize the measurementSummary for next group of measurements
       valueArray = [];
       ms.deviceId = mi.deviceId;
       ms.probeId = mi.probeId;
+      mi.name ? (ms.name = mi.name) : (ms.name = "");
       ms.type = mi.type;
       ms.count = 0;
       ms.mean = 0;
@@ -239,6 +249,7 @@ function measurementCompare(a: measurementItem, b: measurementItem) {
 export interface measurementSummary {
   deviceId: string;
   probeId: string;
+  name: string;
   type: string;
   umt: Date;
   period: measurementSummaryPeriod;

@@ -34,6 +34,7 @@ export enum DeviceType {
 
 export interface ProbeListItem {
   id: string;
+  name: string;
   target: string;
   type: ProbeType;
 }
