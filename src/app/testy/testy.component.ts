@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { AngularFirestore } from "@angular/fire/firestore";
-import { Subscription } from "rxjs";
+import { Subscription, Observable } from "rxjs";
+import { map } from "rxjs/operators";
 
 @Component({
   selector: "app-testy",
@@ -9,6 +10,8 @@ import { Subscription } from "rxjs";
 })
 export class TestyComponent implements OnInit, OnDestroy {
   mes$$: Subscription;
+  mesO$: Observable<any>;
+  mesO$$: Subscription;
   constructor(private afs: AngularFirestore) {}
 
   ngOnInit(): void {
@@ -53,9 +56,52 @@ export class TestyComponent implements OnInit, OnDestroy {
         graphData.push({ name: "p50", series: p50Series });
         console.log("graphData:", graphData);
       });
+
+    this.mesO$ = this.afs
+      .collection("measurementSummaries", ref =>
+        ref
+          .where("umt", ">=", from)
+          .where("umt", "<=", to)
+          .where("period", "==", 1)
+          .where("deviceId", "==", "D0002")
+          .where("probeId", "==", "zHc8RqIk452QxMLo0JKJ")
+          .where("type", "==", "bps")
+      )
+      .snapshotChanges()
+      .pipe(
+        map(snaps => {
+          // return snaps.map(x => x.payload.doc.data());
+          let graphData = [];
+          // Get mean series
+          const meanSeries = snaps.reduce(
+            (a, s) =>
+              a.concat({
+                umt: s.payload.doc.data()["umt"].toDate(),
+                value: Math.round(s.payload.doc.data()["mean"])
+              }),
+            []
+          );
+          graphData.push({ name: "mean", series: meanSeries });
+
+          // get p50 series
+          const p50Series = snaps.reduce(
+            (a, s) =>
+              a.concat({
+                umt: s.payload.doc.data()["umt"].toDate(),
+                value: Math.round(s.payload.doc.data()["p50"])
+              }),
+            []
+          );
+          graphData.push({ name: "p50", series: p50Series });
+
+          return graphData;
+        })
+      );
+    this.mesO$$ = this.mesO$.subscribe(s => console.log("mesO$:", s));
   }
 
   ngOnDestroy() {
     if (this.mes$$) this.mes$$.unsubscribe();
+    if (this.mesO$$) this.mesO$$.unsubscribe();
   }
 }
