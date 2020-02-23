@@ -61,7 +61,7 @@ service cloud.firestore {
       allow read:  if (true);
     }
 
-    match /{path=**}/measurementSummary/{did} {
+    match /{path=**}/measurementSummaries/{did} {
       allow read:  if (true);
     }
   }
