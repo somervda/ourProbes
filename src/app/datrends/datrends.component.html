@@ -1,3 +1,28 @@
+<mat-form-field
+  ><mat-label>Select Device</mat-label>
+  <select matNativeControl (change)="onDeviceChange($event)">
+    <option *ngFor="let device of devices$ | async" [value]="device.id">{{
+      device.id
+    }}</option>
+  </select>
+</mat-form-field>
+<br />
+
+<mat-label>Available Series </mat-label>
+<mat-checkbox
+  *ngFor="let seriesName of availableSeries"
+  (change)="onCbSeriesChange($event)"
+  [value]="seriesName"
+  [checked]="seriesName == 'p50'"
+>
+  {{ seriesName }}&nbsp;
+</mat-checkbox>
+
+<br />
+<mat-label>Autorange? </mat-label>
+<mat-checkbox (change)="onCbAutoScaleChange($event)" [checked]="true">
+</mat-checkbox>
+
 <ngx-charts-line-chart
   *ngIf="showChart"
   [view]="view"
@@ -11,6 +36,7 @@
   [yAxisLabel]="yAxisLabel"
   [timeline]="timeline"
   [results]="chartData"
+  [autoScale]="autoScale"
   (select)="onSelect($event)"
 >
 </ngx-charts-line-chart>

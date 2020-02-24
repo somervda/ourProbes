@@ -19,3 +19,14 @@ export enum measurementSummaryPeriod {
   hour = 1,
   day = 2
 }
+
+export const measurementSummaryAvailableSeries = [
+  "mean",
+  "p00",
+  "p25",
+  "p50",
+  "p75",
+  "p100",
+  "stdDev",
+  "count"
+];
