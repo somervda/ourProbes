@@ -110,7 +110,8 @@ export class TestyComponent implements OnInit, OnDestroy {
       1,
       "D0002",
       "zHc8RqIk452QxMLo0JKJ",
-      "bps"
+      "bps",
+      ["mean", "p00", "p100", "p50"]
     );
     this.mesO$$ = this.mesO$.subscribe(s => {
       console.log("mesO$:", s);

@@ -1,4 +1,5 @@
-<ngx-charts-area-chart-stacked
+<ngx-charts-line-chart
+  *ngIf="showChart"
   [view]="view"
   [scheme]="colorScheme"
   [legend]="legend"
@@ -9,7 +10,7 @@
   [xAxisLabel]="xAxisLabel"
   [yAxisLabel]="yAxisLabel"
   [timeline]="timeline"
-  [results]="multi"
+  [results]="chartData"
   (select)="onSelect($event)"
 >
-</ngx-charts-area-chart-stacked>
+</ngx-charts-line-chart>

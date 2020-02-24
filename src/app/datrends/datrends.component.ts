@@ -1,6 +1,9 @@
 import { Component, OnInit, NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { NgxChartsModule } from "@swimlane/ngx-charts";
+import { Observable, Subscription } from "rxjs";
+import { AngularFirestore } from "@angular/fire/firestore";
+import { MeasurementSummaryService } from "../services/measurement-summary.service";
 
 @Component({
   selector: "app-datrends",
@@ -9,74 +12,10 @@ import { NgxChartsModule } from "@swimlane/ngx-charts";
 })
 export class DatrendsComponent implements OnInit {
   view: any[] = [700, 300];
-  multi = [
-    {
-      name: "Germany",
-      series: [
-        {
-          name: "1990",
-          value: 62000000
-        },
-        {
-          name: "2010",
-          value: 73000000
-        },
-        {
-          name: "2011",
-          value: 89400000
-        }
-      ]
-    },
-
-    {
-      name: "USA",
-      series: [
-        {
-          name: "1990",
-          value: 250000000
-        },
-        {
-          name: "2010",
-          value: 309000000
-        },
-        {
-          name: "2011",
-          value: 311000000
-        }
-      ]
-    },
-
-    {
-      name: "France",
-      series: [
-        {
-          name: "1990",
-          value: 58000000
-        },
-        {
-          name: "2010",
-          value: 50000020
-        },
-        {
-          name: "2011",
-          value: 58000000
-        }
-      ]
-    },
-    {
-      name: "UK",
-      series: [
-        {
-          name: "1990",
-          value: 57000000
-        },
-        {
-          name: "2010",
-          value: 62000000
-        }
-      ]
-    }
-  ];
+  chartData$: Observable<any>;
+  chartData$$: Subscription;
+  chartData: [];
+  showChart: boolean = false;
 
   // options
   legend: boolean = true;
@@ -86,19 +25,44 @@ export class DatrendsComponent implements OnInit {
   yAxis: boolean = true;
   showYAxisLabel: boolean = true;
   showXAxisLabel: boolean = true;
-  xAxisLabel: string = "Year";
-  yAxisLabel: string = "Population";
-  timeline: boolean = true;
+  xAxisLabel: string = "Time";
+  yAxisLabel: string = "bps";
+  timeline: boolean = false;
 
   colorScheme = {
     domain: ["#5AA454", "#E44D25", "#CFC0BB", "#7aa3e5", "#a8385d", "#aae3f5"]
   };
 
-  constructor() {}
+  constructor(
+    private afs: AngularFirestore,
+    private mss: MeasurementSummaryService
+  ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    const to = new Date();
+    const from = new Date(to.getTime() - 1000 * 40000);
+    this.chartData$ = this.mss.getChartSeries(
+      from,
+      to,
+      1,
+      "D0002",
+      "mF4wmQV6oX58nV5WhYAM",
+      "bps",
+      ["mean", "p50", "p25", "p75"]
+    );
+
+    this.chartData$$ = this.chartData$.subscribe(s => {
+      console.log("chartData$:", s);
+      this.chartData = s;
+      this.showChart = true;
+    });
+  }
 
   onSelect(event) {
     console.log(event);
+  }
+
+  ngOnDestroy() {
+    if (this.chartData$$) this.chartData$$.unsubscribe();
   }
 }
