@@ -1,42 +1,85 @@
-<mat-form-field
-  ><mat-label>Select Device</mat-label>
-  <select matNativeControl (change)="onDeviceChange($event)">
-    <option *ngFor="let device of devices$ | async" [value]="device.id">{{
-      device.id
-    }}</option>
-  </select>
-</mat-form-field>
-<br />
+<div class="page-container">
+  <mat-form-field class="half-width"
+    ><mat-label>Select Time Range</mat-label>
+    <select matNativeControl (change)="onRangeChange($event)">
+      <option
+        *ngFor="let range of availableRanges"
+        [value]="range.hours"
+        [selected]="range.hours == selectedRangeHours"
+        >{{ range.name }}</option
+      >
+    </select>
+  </mat-form-field>
 
-<mat-label>Available Series </mat-label>
-<mat-checkbox
-  *ngFor="let seriesName of availableSeries"
-  (change)="onCbSeriesChange($event)"
-  [value]="seriesName"
-  [checked]="seriesName == 'p50'"
->
-  {{ seriesName }}&nbsp;
-</mat-checkbox>
+  <mat-form-field class="half-width"
+    ><mat-label>Select Measurement Type</mat-label>
+    <select matNativeControl (change)="onTypeChange($event)">
+      <option
+        *ngFor="let type of availableTypes"
+        [value]="type"
+        [selected]="type == selectedType"
+        >{{ type }}</option
+      >
+    </select>
+  </mat-form-field>
 
-<br />
-<mat-label>Autorange? </mat-label>
-<mat-checkbox (change)="onCbAutoScaleChange($event)" [checked]="true">
-</mat-checkbox>
+  <mat-form-field class="half-width"
+    ><mat-label>Select Device</mat-label>
+    <select matNativeControl (change)="onDeviceChange($event)">
+      <option
+        *ngFor="let device of devices$ | async"
+        [value]="device.id"
+        [selected]="device.id == selectedDeviceId"
+        >{{ device.id }}</option
+      >
+    </select>
+  </mat-form-field>
 
-<ngx-charts-line-chart
-  *ngIf="showChart"
-  [view]="view"
-  [scheme]="colorScheme"
-  [legend]="legend"
-  [showXAxisLabel]="showXAxisLabel"
-  [showYAxisLabel]="showYAxisLabel"
-  [xAxis]="xAxis"
-  [yAxis]="yAxis"
-  [xAxisLabel]="xAxisLabel"
-  [yAxisLabel]="yAxisLabel"
-  [timeline]="timeline"
-  [results]="chartData"
-  [autoScale]="autoScale"
-  (select)="onSelect($event)"
->
-</ngx-charts-line-chart>
+  <mat-form-field class="half-width"
+    ><mat-label>Select Probe</mat-label>
+    <select matNativeControl (change)="onProbeChange($event)">
+      <option
+        *ngFor="let probe of probes$ | async"
+        [value]="probe.id"
+        [selected]="probe.id == selectedProbeId"
+        >{{ probe.name }}</option
+      >
+    </select>
+  </mat-form-field>
+
+  <div class="full-width">
+    <mat-label>Available Series </mat-label>
+    <mat-checkbox
+      *ngFor="let seriesName of availableSeries"
+      (change)="onCbSeriesChange($event)"
+      [value]="seriesName"
+      [checked]="seriesName == 'p50'"
+    >
+      {{ seriesName }}&nbsp;
+    </mat-checkbox>
+  </div>
+
+  <br />
+  <mat-label>Auto-Scale Y axis? </mat-label>
+  <mat-checkbox (change)="onCbAutoScaleChange($event)" [checked]="autoScale">
+  </mat-checkbox>
+
+  <div class="chart-holder">
+    <ngx-charts-line-chart
+      *ngIf="showChart"
+      [scheme]="colorScheme"
+      [legend]="legend"
+      [showXAxisLabel]="showXAxisLabel"
+      [showYAxisLabel]="showYAxisLabel"
+      [xAxis]="xAxis"
+      [yAxis]="yAxis"
+      [xAxisLabel]="xAxisLabel"
+      [yAxisLabel]="yAxisLabel"
+      [timeline]="timeline"
+      [results]="chartData"
+      [autoScale]="autoScale"
+      (select)="onSelect($event)"
+    >
+    </ngx-charts-line-chart>
+  </div>
+</div>

@@ -30,3 +30,5 @@ export const measurementSummaryAvailableSeries = [
   "stdDev",
   "count"
 ];
+
+export const measurementSummaryAvailableTypes = ["bps", "rtl"];

@@ -4,10 +4,14 @@ import { NgxChartsModule } from "@swimlane/ngx-charts";
 import { Observable, Subscription } from "rxjs";
 import { AngularFirestore } from "@angular/fire/firestore";
 import { MeasurementSummaryService } from "../services/measurement-summary.service";
-import { measurementSummaryAvailableSeries } from "../models/measurementSummary.model";
+import {
+  measurementSummaryAvailableSeries,
+  measurementSummaryAvailableTypes
+} from "../models/measurementSummary.model";
 import { DeviceService } from "../services/device.service";
 import { ProbeService } from "../services/probe.service";
 import { Device } from "../models/device.model";
+import { Probe } from "../models/probe.model";
 
 @Component({
   selector: "app-datrends",
@@ -15,11 +19,35 @@ import { Device } from "../models/device.model";
   styleUrls: ["./datrends.component.scss"]
 })
 export class DatrendsComponent implements OnInit {
-  view: any[] = [900, 400];
+  // view: any[] = [900, 400];
   chartData$: Observable<any>;
   chartData$$: Subscription;
   chartData: [];
   showChart: boolean = false;
+
+  // Measurement selectors
+  from: Date;
+  to: Date;
+  series: string[] = ["p50"];
+  availableSeries = measurementSummaryAvailableSeries;
+  devices: string[];
+  selectedDeviceId: string = "D0001";
+  devices$: Observable<Device[]>;
+  devices$$: Subscription;
+  probes: string[];
+  selectedProbeId: string = "";
+  probes$: Observable<Probe[]>;
+  probes$$: Subscription;
+  availableTypes = measurementSummaryAvailableTypes;
+  selectedType: string = this.availableTypes[0];
+  availableRanges = [
+    { name: "6 hours", period: 1, hours: 6 },
+    { name: "24 hours", period: 1, hours: 24 },
+    { name: "7 Days", period: 1, hours: 168 },
+    { name: "30 Days", period: 2, hours: 720 },
+    { name: "90 Days", period: 2, hours: 2160 }
+  ];
+  selectedRange = this.availableRanges[0].hours;
 
   // options
   legend: boolean = true;
@@ -29,22 +57,10 @@ export class DatrendsComponent implements OnInit {
   yAxis: boolean = true;
   showYAxisLabel: boolean = true;
   showXAxisLabel: boolean = true;
-  xAxisLabel: string = "Time";
-  yAxisLabel: string = "bps";
-  timeline: boolean = true;
-  autoScale: boolean = true;
-
-  // Measurement selectors
-  from: Date;
-  to: Date;
-  series: string[] = ["p50"];
-  availableSeries = measurementSummaryAvailableSeries;
-  devices: string[];
-  deviceId: string = "D0001";
-  devices$: Observable<Device[]>;
-  probes: string[];
-  probeId: string = "";
-  probes$$: Subscription;
+  xAxisLabel: string = "Local Time";
+  yAxisLabel: string = this.selectedType;
+  timeline: boolean = false;
+  autoScale: boolean = false;
 
   colorScheme = {
     domain: ["#5AA454", "#E44D25", "#CFC0BB", "#7aa3e5", "#a8385d", "#aae3f5"]
@@ -59,22 +75,48 @@ export class DatrendsComponent implements OnInit {
 
   ngOnInit(): void {
     this.to = new Date();
-    this.from = new Date(this.to.getTime() - 1000 * 40000);
     this.devices$ = this.deviceService.findDevices(100);
-    this.getChartData();
+    this.probes$ = this.probeService.findProbes(100);
+    // Set initial probe to query
+    this.probes$$ = this.probes$.subscribe(p => {
+      console.log("p:", p);
+      this.selectedProbeId = p[0].id;
+      this.getChartData();
+    });
+    this.devices$$ = this.devices$.subscribe(d => {
+      console.log("d:", d);
+      this.selectedDeviceId = d[0].id;
+      this.getChartData();
+    });
   }
 
   getChartData() {
-    console.log("getChartData");
+    // selected range is in hours - multiply by 3600 and 1000 to convert to milliseconds
+    const msRange = 3600 * 1000 * this.selectedRange;
+    this.from = new Date(this.to.getTime() - msRange);
+    // get the period associated with this selectedRange
+    const period = this.availableRanges.find(
+      element => element.hours == this.selectedRange
+    ).period;
+    console.log(
+      "getChartData from:",
+      this.from,
+      " to:",
+      this.to,
+      this.selectedRange,
+      "period:",
+      period
+    );
     this.chartData$ = this.mss.getChartSeries(
       this.from,
       this.to,
-      1,
-      this.deviceId,
-      "mF4wmQV6oX58nV5WhYAM",
-      "bps",
+      period,
+      this.selectedDeviceId,
+      this.selectedProbeId,
+      this.selectedType,
       this.series
     );
+    if (this.chartData$$) this.chartData$$.unsubscribe();
     this.chartData$$ = this.chartData$.subscribe(s => {
       console.log("chartData$:", s);
       this.chartData = s;
@@ -106,11 +148,30 @@ export class DatrendsComponent implements OnInit {
 
   onDeviceChange(event) {
     console.log("onDeviceChange:", event, event.srcElement.value);
-    this.deviceId = event.srcElement.value;
+    this.selectedDeviceId = event.srcElement.value;
+    this.getChartData();
+  }
+  onProbeChange(event) {
+    console.log("onProbeChange:", event, event.srcElement.value);
+    this.selectedProbeId = event.srcElement.value;
+    this.getChartData();
+  }
+  onTypeChange(event) {
+    console.log("onTypeChange:", event, event.srcElement.value);
+    this.selectedType = event.srcElement.value;
+    this.yAxisLabel = this.selectedType;
+    this.getChartData();
+  }
+
+  onRangeChange(event) {
+    console.log("onRangeChange:", event, event.srcElement.value);
+    this.selectedRange = event.srcElement.value;
     this.getChartData();
   }
 
   ngOnDestroy() {
     if (this.chartData$$) this.chartData$$.unsubscribe();
+    if (this.probes$$) this.probes$$.unsubscribe();
+    if (this.devices$$) this.devices$$.unsubscribe();
   }
 }
