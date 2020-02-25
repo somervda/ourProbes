@@ -47,22 +47,36 @@
     </select>
   </mat-form-field>
 
-  <div class="full-width">
-    <mat-label>Available Series </mat-label>
-    <mat-checkbox
-      *ngFor="let seriesName of availableSeries"
-      (change)="onCbSeriesChange($event)"
-      [value]="seriesName"
-      [checked]="seriesName == 'p50'"
-    >
-      {{ seriesName }}&nbsp;
-    </mat-checkbox>
-  </div>
-
-  <br />
-  <mat-label>Auto-Scale Y axis? </mat-label>
-  <mat-checkbox (change)="onCbAutoScaleChange($event)" [checked]="autoScale">
-  </mat-checkbox>
+  <!-- Yuck - couldn't work oy the css for doing this so used a table -->
+  <table width="100%">
+    <tr>
+      <td>
+        Available&nbsp;Series&nbsp;
+      </td>
+      <td width="100%">
+        <mat-checkbox
+          *ngFor="let seriesName of availableSeries"
+          (change)="onCbSeriesChange($event)"
+          [value]="seriesName"
+          [checked]="seriesName == 'p50'"
+        >
+          {{ seriesName }}&nbsp;
+        </mat-checkbox>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        AutoScale&nbsp;Y&nbsp;axis?&nbsp;
+      </td>
+      <td>
+        <mat-checkbox
+          (change)="onCbAutoScaleChange($event)"
+          [checked]="autoScale"
+        >
+        </mat-checkbox>
+      </td>
+    </tr>
+  </table>
 
   <div class="chart-holder">
     <ngx-charts-line-chart

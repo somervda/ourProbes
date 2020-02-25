@@ -25,6 +25,20 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "measurements",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "UMT",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": []
