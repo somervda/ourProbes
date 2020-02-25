@@ -1,8 +1,9 @@
+import { firestore } from "firebase";
 export interface Measurement {
   deviceId: string;
   probeId: string;
   name: string;
   type: string;
-  UMT: Date;
+  UMT: firestore.Timestamp;
   value: number;
 }

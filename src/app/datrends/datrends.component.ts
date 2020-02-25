@@ -49,7 +49,7 @@ export class DatrendsComponent implements OnInit {
   ];
   selectedRange = this.availableRanges[0].hours;
 
-  // options
+  // chart options
   legend: boolean = true;
   showLabels: boolean = true;
   animations: boolean = true;
