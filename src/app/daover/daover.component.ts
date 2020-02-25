@@ -26,6 +26,10 @@ export class DaoverComponent implements OnInit, OnDestroy {
   availableTypes = measurementSummaryAvailableTypes;
   selectedType: string = this.availableTypes[0];
   minDate = new Date("1970-01-01Z00:00:00:000");
+  availableFilters: { name: string; type: string; value: string }[] = [
+    { name: "No Filter", type: "", value: "" }
+  ];
+  selectedFilterIndex = 0;
 
   chartData = [];
   showChart: boolean = false;
@@ -64,6 +68,9 @@ export class DaoverComponent implements OnInit, OnDestroy {
   }
 
   showOverviewChart() {
+    this.showChart = false;
+    this.overviewData = [];
+    this.chartData = [];
     this.devices$ = this.deviceService.findDevices(100);
     this.probes$ = this.probeService.findProbes(100);
     this.measurements$ = this.measurementService.findLastHoursMeasurments(
@@ -74,6 +81,7 @@ export class DaoverComponent implements OnInit, OnDestroy {
 
     // Get all the data in one big subscription using forkJoin function
     console.log("ngOnInit");
+    if (this.allData$$) this.allData$$.unsubscribe();
     this.allData$$ = combineLatest(
       this.devices$,
       this.probes$,
@@ -81,6 +89,15 @@ export class DaoverComponent implements OnInit, OnDestroy {
     ).subscribe(([devices, probes, measurements]) => {
       console.log("subscription:", devices, probes, measurements);
       this.updateChart(devices, probes, measurements);
+      if (this.availableFilters.length == 1) {
+        probes.forEach(p =>
+          this.availableFilters.push({
+            name: p.name + " [Probe]",
+            type: "Probe",
+            value: p.id
+          })
+        );
+      }
     });
   }
 
@@ -99,7 +116,14 @@ export class DaoverComponent implements OnInit, OnDestroy {
             count: 0
           }
         };
-        this.overviewData.push(DeviceProbeStateItem);
+        // apply filter if needed
+        if (
+          this.selectedFilterIndex == 0 ||
+          (this.availableFilters[this.selectedFilterIndex].type == "Probe" &&
+            this.availableFilters[this.selectedFilterIndex].value == p.id)
+        ) {
+          this.overviewData.push(DeviceProbeStateItem);
+        }
       })
     );
     console.log("Initial this.overviewData", this.overviewData);
@@ -165,6 +189,12 @@ export class DaoverComponent implements OnInit, OnDestroy {
 
   onSelect(data): void {
     console.log("Item clicked", JSON.parse(JSON.stringify(data)));
+  }
+
+  onFilterChange(event) {
+    console.log("onFilterChange", event, event.srcElement.value);
+    this.selectedFilterIndex = event.srcElement.value;
+    this.showOverviewChart();
   }
 
   ngOnDestroy() {
