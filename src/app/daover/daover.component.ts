@@ -1,3 +1,4 @@
+import { ChartSeries } from "./../models/chart.model";
 import { Device } from "./../models/device.model";
 import { Measurement } from "./../models/measurement.model";
 import { Component, OnInit, OnDestroy } from "@angular/core";
@@ -26,11 +27,11 @@ export class DaoverComponent implements OnInit, OnDestroy {
   selectedType: string = this.availableTypes[0];
   minDate = new Date("1970-01-01Z00:00:00:000");
 
-  chartData: [];
+  chartData = [];
   showChart: boolean = false;
 
   // chart options
-  view: any[] = [700, 300];
+  //view: any[] = [700, 300];
   legend: boolean = true;
   showLabels: boolean = true;
   animations: boolean = true;
@@ -38,13 +39,17 @@ export class DaoverComponent implements OnInit, OnDestroy {
   yAxis: boolean = true;
   showYAxisLabel: boolean = true;
   showXAxisLabel: boolean = true;
-  xAxisLabel: string = "Local Time";
-  yAxisLabel: string = this.selectedType;
+  xAxisLabel: string = "Probe Name";
+  yAxisLabel: string = "Device";
   timeline: boolean = false;
   autoScale: boolean = false;
 
+  // colorScheme = {
+  //   domain: ["#5AA454", "#E44D25", "#CFC0BB", "#7aa3e5", "#a8385d", "#aae3f5"]
+  // };
+
   colorScheme = {
-    domain: ["#5AA454", "#E44D25", "#CFC0BB", "#7aa3e5", "#a8385d", "#aae3f5"]
+    domain: ["#FFF0F0", "#BBBBBB", "#888888", "#444444", "#0000FF"]
   };
 
   constructor(
@@ -125,18 +130,41 @@ export class DaoverComponent implements OnInit, OnDestroy {
 
     // Finally convert the array to the data format used by the heat chart of ngx-charts
     // and update the chart
+    // overviewData is natually sorted by device/probe becouse of how it was created
+
+    // couldn't think of a way to do this with a reduce :(
+    let lastDeviceId = "";
+    let chartSeries = [];
+    this.overviewData.forEach(od => {
+      if (lastDeviceId != "" && od.deviceId != lastDeviceId) {
+        // push out the last deviceSeries
+        this.chartData.push({ name: lastDeviceId, series: chartSeries });
+        chartSeries = [];
+      }
+      chartSeries.push({ name: od.probeName, value: od.state.value });
+      lastDeviceId = od.deviceId;
+    });
+    if (lastDeviceId != "") {
+      this.chartData.push({ name: lastDeviceId, series: chartSeries });
+    }
+    console.log("chartData:", JSON.stringify(this.chartData));
+    this.showChart = true;
+    // this.chartData = this.overviewData.reduce((chartMultiSeries, deviceProbe) => {
+    //   const chartSeries = snaps.reduce(
+    //     (a, s) =>
+    //       a.concat({
+    //         name: s.payload.doc.data()["umt"].toDate(),
+    //         value: Math.round(s.payload.doc.data()[seriesName])
+    //       }),
+    //     []
+    //   );
+    //   chartMultiSeries.push({ name: seriesName, series: chartSeries });
+    //   return chartMultiSeries;
+    // }, []);
   }
 
   onSelect(data): void {
     console.log("Item clicked", JSON.parse(JSON.stringify(data)));
-  }
-
-  onActivate(data): void {
-    console.log("Activate", JSON.parse(JSON.stringify(data)));
-  }
-
-  onDeactivate(data): void {
-    console.log("Deactivate", JSON.parse(JSON.stringify(data)));
   }
 
   ngOnDestroy() {

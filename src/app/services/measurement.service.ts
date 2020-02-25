@@ -17,7 +17,7 @@ export class MeasurementService {
     pageSize
   ): Observable<Measurement[]> {
     // console.log( "findDevices",  sortField, sortOrder  ,pageSize  );
-    const from = new Date(to.getTime() - 1000 * 500);
+    const from = new Date(to.getTime() - 1000 * 3600);
     return this.afs
       .collection("measurements", ref =>
         ref
