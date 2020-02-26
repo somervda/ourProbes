@@ -47,7 +47,7 @@ export class DatrendsComponent implements OnInit {
     { name: "30 Days", period: 2, hours: 720 },
     { name: "90 Days", period: 2, hours: 2160 }
   ];
-  selectedRange = this.availableRanges[0].hours;
+  selectedRangeHours = this.availableRanges[0].hours;
 
   // chart options
   legend: boolean = true;
@@ -92,18 +92,18 @@ export class DatrendsComponent implements OnInit {
 
   getChartData() {
     // selected range is in hours - multiply by 3600 and 1000 to convert to milliseconds
-    const msRange = 3600 * 1000 * this.selectedRange;
+    const msRange = 3600 * 1000 * this.selectedRangeHours;
     this.from = new Date(this.to.getTime() - msRange);
     // get the period associated with this selectedRange
     const period = this.availableRanges.find(
-      element => element.hours == this.selectedRange
+      element => element.hours == this.selectedRangeHours
     ).period;
     console.log(
       "getChartData from:",
       this.from,
       " to:",
       this.to,
-      this.selectedRange,
+      this.selectedRangeHours,
       "period:",
       period
     );
@@ -165,7 +165,7 @@ export class DatrendsComponent implements OnInit {
 
   onRangeChange(event) {
     console.log("onRangeChange:", event, event.srcElement.value);
-    this.selectedRange = event.srcElement.value;
+    this.selectedRangeHours = event.srcElement.value;
     this.getChartData();
   }
 
