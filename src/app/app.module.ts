@@ -23,6 +23,7 @@ import { MatDividerModule } from "@angular/material/divider";
 import { MatExpansionModule } from "@angular/material/expansion";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
+import { MatRadioModule } from "@angular/material/radio";
 import {
   // MatGridListModule
   MatInputModule
@@ -121,6 +122,7 @@ import { DaextractComponent } from "./daextract/daextract.component";
     MatSortModule,
     MatProgressSpinnerModule,
     MatExpansionModule,
+    MatRadioModule,
     // MatMenuModule,
     // MatDividerModule,
     MatTabsModule,

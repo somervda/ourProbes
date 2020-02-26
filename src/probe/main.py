@@ -209,9 +209,33 @@ while jwtExpiry > utime.time():
                         }
                         umeasurements.add(measurement)
                         print("rtl successful:", measurement)
+                        measurement = {
+                            "probeId": probe['id'],
+                            "name": probe['name'],
+                            "UMT": utime.time() + 946684800,
+                            "value": 0,
+                            'type': 'success'
+                        }
+                        umeasurements.add(measurement)
                     else:
-                        print("rtl fail:", measurement)
+                        measurement = {
+                            "probeId": probe['id'],
+                            "name": probe['name'],
+                            "UMT": utime.time() + 946684800,
+                            "value": 0,
+                            'type': 'fail'
+                        }
+                        umeasurements.add(measurement)
+                        print("bing fail:", measurement)
                 else:
+                    measurement = {
+                        "probeId": probe['id'],
+                        "name": probe['name'],
+                        "UMT": utime.time() + 946684800,
+                        "value": 0,
+                        'type': 'fail'
+                    }
+                    umeasurements.add(measurement)
                     print("bing fail: result None")
 
     # 2 **************** Governor & probeConfig refresh ***************************

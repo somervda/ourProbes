@@ -1,8 +1,75 @@
 <div class="page-container">
+  <mat-accordion>
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Overview
+        </mat-panel-title>
+        <mat-panel-description>
+          Device/Probe activity over last hour : {{ selectedType | titlecase }}
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <mat-form-field class="half-width"
+        ><mat-label>Filter by Device or Probe</mat-label>
+        <select matNativeControl (change)="onFilterChange($event)">
+          <option
+            *ngFor="let filter of availableFilters; let i = index"
+            [value]="i"
+            [selected]="i == selectedFilterIndex"
+            >{{ filter.name }}</option
+          >
+        </select>
+      </mat-form-field>
+
+      <mat-form-field class="half-width"
+        ><mat-label>Measurement Type</mat-label>
+        <select matNativeControl (change)="onTypeChange($event)">
+          <option
+            *ngFor="let type of availableTypes"
+            [value]="type"
+            [selected]="type == selectedType"
+            >{{ type | titlecase }}</option
+          >
+        </select>
+      </mat-form-field>
+
+      <span class="rgLabel">Measurement</span>
+      <mat-radio-group
+        class="xxxx"
+        aria-label="Measurement"
+        (change)="onMeasurementChange($event)"
+      >
+        <mat-radio-button
+          value="value"
+          [checked]="selectedMeasurement == 'value'"
+          >Value</mat-radio-button
+        >
+        <mat-radio-button
+          value="count"
+          [checked]="selectedMeasurement == 'count'"
+          >Count</mat-radio-button
+        >
+      </mat-radio-group>
+
+      <span class="rgLabel">Color Scheme</span>
+      <mat-radio-group
+        aria-label="ColorScheme"
+        (change)="onSchemeChange($event)"
+      >
+        <mat-radio-button value="2Color" [checked]="selectedScheme == '2Color'"
+          >2 Color</mat-radio-button
+        >
+        <mat-radio-button value="5Color" [checked]="selectedScheme == '5Color'"
+          >5 Color</mat-radio-button
+        >
+      </mat-radio-group>
+    </mat-expansion-panel>
+  </mat-accordion>
+
   <div class="chart-holder">
     <ngx-charts-heat-map
       *ngIf="showChart"
-      [scheme]="colorScheme"
+      [scheme]="selectedScheme == '2Color' ? colorScheme2 : colorScheme5"
       [legend]="legend"
       [showXAxisLabel]="showXAxisLabel"
       [showYAxisLabel]="showYAxisLabel"
@@ -15,16 +82,4 @@
     >
     </ngx-charts-heat-map>
   </div>
-
-  <mat-form-field class="half-width"
-    ><mat-label>Filter by Device or Probe</mat-label>
-    <select matNativeControl (change)="onFilterChange($event)">
-      <option
-        *ngFor="let filter of availableFilters; let i = index"
-        [value]="i"
-        [selected]="i == selectedFilterIndex"
-        >{{ filter.name }}</option
-      >
-    </select>
-  </mat-form-field>
 </div>

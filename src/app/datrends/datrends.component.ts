@@ -169,6 +169,10 @@ export class DatrendsComponent implements OnInit {
     this.getChartData();
   }
 
+  getRangeName(hours: number) {
+    return this.availableRanges.find(r => r.hours == hours).name;
+  }
+
   ngOnDestroy() {
     if (this.chartData$$) this.chartData$$.unsubscribe();
     if (this.probes$$) this.probes$$.unsubscribe();

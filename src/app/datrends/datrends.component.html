@@ -1,82 +1,97 @@
 <div class="page-container">
-  <mat-form-field class="half-width"
-    ><mat-label>Select Time Range</mat-label>
-    <select matNativeControl (change)="onRangeChange($event)">
-      <option
-        *ngFor="let range of availableRanges"
-        [value]="range.hours"
-        [selected]="range.hours == selectedRangeHours"
-        >{{ range.name }}</option
-      >
-    </select>
-  </mat-form-field>
+  <mat-accordion>
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Trends
+        </mat-panel-title>
+        <mat-panel-description>
+          Device:
+          {{ selectedDeviceId }} Time Range:
+          {{ getRangeName(selectedRangeHours) }}
+        </mat-panel-description>
+      </mat-expansion-panel-header>
 
-  <mat-form-field class="half-width"
-    ><mat-label>Select Measurement Type</mat-label>
-    <select matNativeControl (change)="onTypeChange($event)">
-      <option
-        *ngFor="let type of availableTypes"
-        [value]="type"
-        [selected]="type == selectedType"
-        >{{ type }}</option
-      >
-    </select>
-  </mat-form-field>
+      <mat-form-field class="half-width"
+        ><mat-label>Select Time Range</mat-label>
+        <select matNativeControl (change)="onRangeChange($event)">
+          <option
+            *ngFor="let range of availableRanges"
+            [value]="range.hours"
+            [selected]="range.hours == selectedRangeHours"
+            >{{ range.name }}</option
+          >
+        </select>
+      </mat-form-field>
 
-  <mat-form-field class="half-width"
-    ><mat-label>Select Device</mat-label>
-    <select matNativeControl (change)="onDeviceChange($event)">
-      <option
-        *ngFor="let device of devices$ | async"
-        [value]="device.id"
-        [selected]="device.id == selectedDeviceId"
-        >{{ device.id }}</option
-      >
-    </select>
-  </mat-form-field>
+      <mat-form-field class="half-width"
+        ><mat-label>Select Measurement Type</mat-label>
+        <select matNativeControl (change)="onTypeChange($event)">
+          <option
+            *ngFor="let type of availableTypes"
+            [value]="type"
+            [selected]="type == selectedType"
+            >{{ type | titlecase }}</option
+          >
+        </select>
+      </mat-form-field>
 
-  <mat-form-field class="half-width"
-    ><mat-label>Select Probe</mat-label>
-    <select matNativeControl (change)="onProbeChange($event)">
-      <option
-        *ngFor="let probe of probes$ | async"
-        [value]="probe.id"
-        [selected]="probe.id == selectedProbeId"
-        >{{ probe.name }}</option
-      >
-    </select>
-  </mat-form-field>
+      <mat-form-field class="half-width"
+        ><mat-label>Select Device</mat-label>
+        <select matNativeControl (change)="onDeviceChange($event)">
+          <option
+            *ngFor="let device of devices$ | async"
+            [value]="device.id"
+            [selected]="device.id == selectedDeviceId"
+            >{{ device.id }}</option
+          >
+        </select>
+      </mat-form-field>
 
-  <!-- Yuck - couldn't work oy the css for doing this so used a table -->
-  <table width="100%">
-    <tr>
-      <td>
-        Available&nbsp;Series&nbsp;
-      </td>
-      <td width="100%">
-        <mat-checkbox
-          *ngFor="let seriesName of availableSeries"
-          (change)="onCbSeriesChange($event)"
-          [value]="seriesName"
-          [checked]="seriesName == 'p50'"
-        >
-          {{ seriesName }}&nbsp;
-        </mat-checkbox>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        AutoScale&nbsp;Y&nbsp;axis?&nbsp;
-      </td>
-      <td>
-        <mat-checkbox
-          (change)="onCbAutoScaleChange($event)"
-          [checked]="autoScale"
-        >
-        </mat-checkbox>
-      </td>
-    </tr>
-  </table>
+      <mat-form-field class="half-width"
+        ><mat-label>Select Probe</mat-label>
+        <select matNativeControl (change)="onProbeChange($event)">
+          <option
+            *ngFor="let probe of probes$ | async"
+            [value]="probe.id"
+            [selected]="probe.id == selectedProbeId"
+            >{{ probe.name }}</option
+          >
+        </select>
+      </mat-form-field>
+
+      <!-- Yuck - couldn't work oy the css for doing this so used a table -->
+      <table width="100%">
+        <tr>
+          <td>
+            Available&nbsp;Series&nbsp;
+          </td>
+          <td width="100%">
+            <mat-checkbox
+              *ngFor="let seriesName of availableSeries"
+              (change)="onCbSeriesChange($event)"
+              [value]="seriesName"
+              [checked]="seriesName == 'p50'"
+            >
+              {{ seriesName }}&nbsp;
+            </mat-checkbox>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            AutoScale&nbsp;Y&nbsp;axis?&nbsp;
+          </td>
+          <td>
+            <mat-checkbox
+              (change)="onCbAutoScaleChange($event)"
+              [checked]="autoScale"
+            >
+            </mat-checkbox>
+          </td>
+        </tr>
+      </table>
+    </mat-expansion-panel>
+  </mat-accordion>
 
   <div class="chart-holder">
     <ngx-charts-line-chart

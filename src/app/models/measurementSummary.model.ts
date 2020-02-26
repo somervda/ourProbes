@@ -31,4 +31,9 @@ export const measurementSummaryAvailableSeries = [
   "count"
 ];
 
-export const measurementSummaryAvailableTypes = ["bps", "rtl"];
+export const measurementSummaryAvailableTypes = [
+  "bps",
+  "rtl",
+  "fail",
+  "success"
+];

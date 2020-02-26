@@ -24,12 +24,14 @@ export class DaoverComponent implements OnInit, OnDestroy {
   allData$$: Subscription;
   overviewData: DeviceProbeState[] = [];
   availableTypes = measurementSummaryAvailableTypes;
-  selectedType: string = this.availableTypes[0];
-  minDate = new Date("1970-01-01Z00:00:00:000");
+  selectedType: string = "success";
+  minDate = new Date(2000, 1, 1);
   availableFilters: { name: string; type: string; value: string }[] = [
     { name: "No Filter", type: "", value: "" }
   ];
   selectedFilterIndex = 0;
+  selectedMeasurement = "count";
+  selectedScheme = "2Color";
 
   chartData = [];
   showChart: boolean = false;
@@ -48,12 +50,12 @@ export class DaoverComponent implements OnInit, OnDestroy {
   timeline: boolean = false;
   autoScale: boolean = false;
 
-  // colorScheme = {
-  //   domain: ["#5AA454", "#E44D25", "#CFC0BB", "#7aa3e5", "#a8385d", "#aae3f5"]
-  // };
+  colorScheme5 = {
+    domain: ["#FFFFFF", "#E44D25", "#CFC0BB", "#7aa3e5", "#5AA454", "#D4AF37"]
+  };
 
-  colorScheme = {
-    domain: ["#FFF0F0", "#BBBBBB", "#888888", "#444444", "#0000FF"]
+  colorScheme2 = {
+    domain: ["#FFFFFF", "#31639c"]
   };
 
   constructor(
@@ -110,29 +112,37 @@ export class DaoverComponent implements OnInit, OnDestroy {
 
   updateChart(devices: Device[], probes: Probe[], measurements: Measurement[]) {
     // Initialize array of devices and probes with the intersection being the latest state (initialized)
-    devices.forEach(d =>
-      probes.forEach(p => {
-        // console.log("d-p:", d, p);
-        const DeviceProbeStateItem: DeviceProbeState = {
-          deviceId: d.id,
-          probeId: p.id,
-          probeName: p.name,
-          state: {
-            latestUMT: this.minDate,
-            value: 0,
-            count: 0
+    devices.forEach(d => {
+      if (
+        this.selectedFilterIndex == 0 ||
+        this.availableFilters[this.selectedFilterIndex].type == "Probe" ||
+        (this.availableFilters[this.selectedFilterIndex].type == "Device" &&
+          this.availableFilters[this.selectedFilterIndex].value == d.id)
+      ) {
+        probes.forEach(p => {
+          // console.log("d-p:", d, p);
+          const DeviceProbeStateItem: DeviceProbeState = {
+            deviceId: d.id,
+            probeId: p.id,
+            probeName: p.name,
+            state: {
+              latestUMT: this.minDate,
+              value: 0,
+              count: 0
+            }
+          };
+          // apply filter if needed
+          if (
+            this.selectedFilterIndex == 0 ||
+            this.availableFilters[this.selectedFilterIndex].type == "Device" ||
+            (this.availableFilters[this.selectedFilterIndex].type == "Probe" &&
+              this.availableFilters[this.selectedFilterIndex].value == p.id)
+          ) {
+            this.overviewData.push(DeviceProbeStateItem);
           }
-        };
-        // apply filter if needed
-        if (
-          this.selectedFilterIndex == 0 ||
-          (this.availableFilters[this.selectedFilterIndex].type == "Probe" &&
-            this.availableFilters[this.selectedFilterIndex].value == p.id)
-        ) {
-          this.overviewData.push(DeviceProbeStateItem);
-        }
-      })
-    );
+        });
+      }
+    });
     console.log("Initial this.overviewData", this.overviewData);
 
     // Fill in state information based on the measurements
@@ -140,9 +150,7 @@ export class DaoverComponent implements OnInit, OnDestroy {
       const overviewDataItemIndex = this.overviewData.findIndex(
         od => od.deviceId === m.deviceId && od.probeId === m.probeId
       );
-      if (overviewDataItemIndex == -1) {
-        console.error("overviewDataItemIndex = -1", m.deviceId, m.probeId);
-      } else {
+      if (overviewDataItemIndex != -1) {
         // Note measurement.UMT is a firestore timestamp , the array uses Javascript Date objects
         // Compare and convert while updating from measurements
         if (
@@ -161,7 +169,7 @@ export class DaoverComponent implements OnInit, OnDestroy {
 
     // Finally convert the array to the data format used by the heat chart of ngx-charts
     // and update the chart
-    // overviewData is natually sorted by device/probe becouse of how it was created
+    // overviewData is naturally sorted by device/probe because of how it was created
 
     // couldn't think of a way to do this with a reduce :(
     let lastDeviceId = "";
@@ -172,7 +180,11 @@ export class DaoverComponent implements OnInit, OnDestroy {
         this.chartData.push({ name: lastDeviceId, series: chartSeries });
         chartSeries = [];
       }
-      chartSeries.push({ name: od.probeName, value: od.state.value });
+      if (this.selectedMeasurement == "value") {
+        chartSeries.push({ name: od.probeName, value: od.state.value });
+      } else {
+        chartSeries.push({ name: od.probeName, value: od.state.count });
+      }
       lastDeviceId = od.deviceId;
     });
     if (lastDeviceId != "") {
@@ -180,18 +192,6 @@ export class DaoverComponent implements OnInit, OnDestroy {
     }
     console.log("chartData:", JSON.stringify(this.chartData));
     this.showChart = true;
-    // this.chartData = this.overviewData.reduce((chartMultiSeries, deviceProbe) => {
-    //   const chartSeries = snaps.reduce(
-    //     (a, s) =>
-    //       a.concat({
-    //         name: s.payload.doc.data()["umt"].toDate(),
-    //         value: Math.round(s.payload.doc.data()[seriesName])
-    //       }),
-    //     []
-    //   );
-    //   chartMultiSeries.push({ name: seriesName, series: chartSeries });
-    //   return chartMultiSeries;
-    // }, []);
   }
 
   onSelect(data): void {
@@ -202,6 +202,23 @@ export class DaoverComponent implements OnInit, OnDestroy {
     console.log("onFilterChange", event, event.srcElement.value);
     this.selectedFilterIndex = event.srcElement.value;
     this.showOverviewChart();
+  }
+
+  onTypeChange(event) {
+    console.log("onTypeChange:", event, event.srcElement.value);
+    this.selectedType = event.srcElement.value;
+    this.showOverviewChart();
+  }
+
+  onMeasurementChange(event) {
+    console.log("onMeasurementChange:", event, event.value);
+    this.selectedMeasurement = event.value;
+    this.showOverviewChart();
+  }
+
+  onSchemeChange(event) {
+    console.log("onMeasurementChange:", event, event.value);
+    this.selectedScheme = event.value;
   }
 
   ngOnDestroy() {
