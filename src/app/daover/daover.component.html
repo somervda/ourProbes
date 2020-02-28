@@ -17,6 +17,7 @@
             *ngFor="let filter of availableFilters; let i = index"
             [value]="i"
             [selected]="i == selectedFilterIndex"
+            [disabled]="filter.value == -1"
             >{{ filter.name }}</option
           >
         </select>

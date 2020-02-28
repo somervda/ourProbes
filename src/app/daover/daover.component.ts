@@ -92,16 +92,27 @@ export class DaoverComponent implements OnInit, OnDestroy {
       console.log("subscription:", devices, probes, measurements);
       this.updateChart(devices, probes, measurements);
       if (this.availableFilters.length == 1) {
+        this.availableFilters.push({
+          name: "---- Devices ----",
+          type: "separator",
+          value: "-1"
+        });
         devices.forEach(d =>
           this.availableFilters.push({
-            name: d.id + " [Device]",
+            name: d.id,
             type: "Device",
             value: d.id
           })
         );
+        this.availableFilters.push({
+          name: "---- Probes ----",
+          type: "separator",
+          value: "-1"
+        });
+
         probes.forEach(p =>
           this.availableFilters.push({
-            name: p.name + " [Probe]",
+            name: p.name,
             type: "Probe",
             value: p.id
           })
