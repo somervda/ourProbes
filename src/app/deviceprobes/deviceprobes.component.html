@@ -1,3 +1,4 @@
+<mat-spinner *ngIf="showDelay" class="spinner_container"></mat-spinner>
 <table mat-table [dataSource]="probes$ | async" class="mat-elevation-z8">
   <ng-container matColumnDef="name" sticky>
     <th mat-header-cell *matHeaderCellDef>Name</th>
@@ -28,6 +29,7 @@
         (change)="onChange($event)"
         [id]="probe.id"
         [checked]="inProbeList(probe.id)"
+        [disabled]="showDelay"
       ></mat-checkbox>
     </td>
   </ng-container>

@@ -24,10 +24,8 @@ import { MatExpansionModule } from "@angular/material/expansion";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
 import { MatRadioModule } from "@angular/material/radio";
-import {
-  // MatGridListModule
-  MatInputModule
-} from "@angular/material/input";
+// import { MatGridListModule } from "@angular/material/grid-list";
+import { MatInputModule } from "@angular/material/input";
 import { MatListModule } from "@angular/material/list";
 import { MatPaginatorModule } from "@angular/material/paginator";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
@@ -123,6 +121,7 @@ import { DaextractComponent } from "./daextract/daextract.component";
     MatProgressSpinnerModule,
     MatExpansionModule,
     MatRadioModule,
+    // MatGridListModule,
     // MatMenuModule,
     // MatDividerModule,
     MatTabsModule,

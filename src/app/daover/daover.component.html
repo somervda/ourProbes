@@ -6,7 +6,8 @@
           Overview
         </mat-panel-title>
         <mat-panel-description>
-          Device/Probe activity over last hour : {{ selectedType | titlecase }}
+          Device/Probe activity over last hour :
+          {{ getTypeName(selectedType) }}
         </mat-panel-description>
       </mat-expansion-panel-header>
       <mat-form-field class="half-width"
@@ -26,43 +27,50 @@
         <select matNativeControl (change)="onTypeChange($event)">
           <option
             *ngFor="let type of availableTypes"
-            [value]="type"
-            [selected]="type == selectedType"
-            >{{ type | titlecase }}</option
+            [value]="type.value"
+            [selected]="type.value == selectedType"
+            >{{ type.name }}</option
           >
         </select>
       </mat-form-field>
 
-      <span class="rgLabel">Measurement</span>
-      <mat-radio-group
-        class="xxxx"
-        aria-label="Measurement"
-        (change)="onMeasurementChange($event)"
-      >
-        <mat-radio-button
-          value="value"
-          [checked]="selectedMeasurement == 'value'"
-          >Value</mat-radio-button
-        >
-        <mat-radio-button
-          value="count"
-          [checked]="selectedMeasurement == 'count'"
-          >Count</mat-radio-button
-        >
-      </mat-radio-group>
+      <table>
+        <tr>
+          <td>Measurement</td>
 
-      <span class="rgLabel">Color Scheme</span>
-      <mat-radio-group
-        aria-label="ColorScheme"
-        (change)="onSchemeChange($event)"
-      >
-        <mat-radio-button value="2Color" [checked]="selectedScheme == '2Color'"
-          >2 Color</mat-radio-button
-        >
-        <mat-radio-button value="5Color" [checked]="selectedScheme == '5Color'"
-          >5 Color</mat-radio-button
-        >
-      </mat-radio-group>
+          <td>
+            <mat-radio-group
+              aria-label="Measurement"
+              (change)="onMeasurementChange($event)"
+            >
+              <mat-radio-button
+                value="value"
+                [checked]="selectedMeasurement == 'value'"
+                >Value</mat-radio-button
+              >
+              <mat-radio-button
+                value="count"
+                [checked]="selectedMeasurement == 'count'"
+                >Count</mat-radio-button
+              >
+            </mat-radio-group>
+          </td>
+        </tr>
+        <tr>
+          <td>Color Scheme</td>
+          <td>
+            <mat-checkbox
+              (change)="onSchemeChange($event)"
+              [checked]="selectedScheme == '5Color'"
+              >2 Color/5 Color
+            </mat-checkbox>
+          </td>
+        </tr>
+      </table>
+
+      <!-- <span class="rgLabel">Measurement</span> -->
+
+      <!-- <span class="rgLabel">Color Scheme</span> -->
     </mat-expansion-panel>
   </mat-accordion>
 

@@ -26,6 +26,7 @@ export class DeviceprobesComponent implements OnInit, OnDestroy {
   probes: Probe[];
   displayedColumns: string[] = ["name", "type", "target", "id"];
   ProbeType = ProbeType;
+  showDelay = false;
 
   constructor(private probeservice: ProbeService) {}
 
@@ -52,7 +53,7 @@ export class DeviceprobesComponent implements OnInit, OnDestroy {
     }
   }
 
-  onChange($event) {
+  async onChange($event) {
     // console.log("changeEvent:", $event.checked, $event.source.id);
     if ($event.checked) {
       // add probe to the probeList
@@ -83,6 +84,16 @@ export class DeviceprobesComponent implements OnInit, OnDestroy {
       }
     }
     this.probeListChange.emit(this.probeList);
+    // Only one update per second is allowed on the backend for a device config so
+    // have added an artificial delay on the client on updates. Seems
+    // have to be 2 second delay to work properly
+    this.showDelay = true;
+    await this.sleep(2000);
+    this.showDelay = false;
+  }
+
+  sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   ngOnDestroy() {

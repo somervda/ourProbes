@@ -217,8 +217,16 @@ export class DaoverComponent implements OnInit, OnDestroy {
   }
 
   onSchemeChange(event) {
-    console.log("onMeasurementChange:", event, event.value);
-    this.selectedScheme = event.value;
+    console.log("onSchemeChange:", event, event.checked);
+    if (event.checked) {
+      this.selectedScheme = "5Color";
+    } else {
+      this.selectedScheme = "2Color";
+    }
+  }
+
+  getTypeName(typeValue: string) {
+    return this.availableTypes.find(t => typeValue == t.value).name;
   }
 
   ngOnDestroy() {

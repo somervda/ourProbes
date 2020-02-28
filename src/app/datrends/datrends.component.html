@@ -29,9 +29,9 @@
         <select matNativeControl (change)="onTypeChange($event)">
           <option
             *ngFor="let type of availableTypes"
-            [value]="type"
-            [selected]="type == selectedType"
-            >{{ type | titlecase }}</option
+            [value]="type.value"
+            [selected]="type.value == selectedType"
+            >{{ type.name }}</option
           >
         </select>
       </mat-form-field>
