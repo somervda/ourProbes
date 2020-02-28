@@ -29,11 +29,8 @@ import { MatInputModule } from "@angular/material/input";
 import { MatListModule } from "@angular/material/list";
 import { MatPaginatorModule } from "@angular/material/paginator";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
-import {
-  // MatDatepickerModule,
-  // MatDialogModule,
-  MatSelectModule
-} from "@angular/material/select";
+import { MatSelectModule } from "@angular/material/select";
+import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { MatSortModule } from "@angular/material/sort";
@@ -130,7 +127,7 @@ import { DaextractComponent } from "./daextract/daextract.component";
     // MatTableModule,
     // MatDialogModule,
     MatSelectModule,
-    // MatDatepickerModule,
+    MatDatepickerModule,
     // MatMomentDateModule,
     AppRoutingModule,
     AngularFireModule.initializeApp(environment.firebase),

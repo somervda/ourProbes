@@ -1,7 +1,12 @@
+import {
+  MeasurementSummary,
+  measurementSummaryPeriod
+} from "./../models/measurementSummary.model";
 import { Injectable } from "@angular/core";
 import { AngularFirestore, DocumentReference } from "@angular/fire/firestore";
 import { Observable } from "rxjs";
 import { map, first, take } from "rxjs/operators";
+import { convertSnaps } from "./db-utils";
 
 @Injectable({
   providedIn: "root"
@@ -9,10 +14,35 @@ import { map, first, take } from "rxjs/operators";
 export class MeasurementSummaryService {
   constructor(private afs: AngularFirestore) {}
 
+  getMeasurementSummaryData(
+    from: Date,
+    to: Date,
+    period: measurementSummaryPeriod,
+    pagesize: number
+  ): Observable<MeasurementSummary[]> {
+    return this.afs
+      .collection("measurementSummaries", ref =>
+        ref
+          .where("umt", ">=", from)
+          .where("umt", "<=", to)
+          .where("period", "==", period)
+          .limit(pagesize)
+      )
+      .snapshotChanges()
+      .pipe(
+        map(snaps => {
+          // console.log("findDevices", convertSnaps<Device>(snaps));
+          return convertSnaps<MeasurementSummary>(snaps);
+        }),
+        // Not sure why this is needed but 2 sets of results are emitted with this query
+        take(2)
+      );
+  }
+
   getChartSeries(
     from: Date,
     to: Date,
-    period: number,
+    period: measurementSummaryPeriod,
     deviceId: string,
     probeId: string,
     type: string,

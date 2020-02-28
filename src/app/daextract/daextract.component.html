@@ -1,1 +1,27 @@
-<p>daextract works!</p>
+<div class="page-container">
+  <mat-form-field>
+    <mat-label>Choose a sarting date</mat-label>
+    <input matInput [matDatepicker]="picker" />
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+
+  <br />
+  Time Period Extract type
+  <mat-form-field>
+    <mat-label>Favorite food</mat-label>
+    <mat-select>
+      <mat-option [value]="1">
+        Hourly Summary
+      </mat-option>
+      <mat-option [value]="2">
+        Daily Summary
+      </mat-option>
+      <mat-option [value]="0">
+        Raw Measurements
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <button mat-button>Extract Data</button>
+</div>
