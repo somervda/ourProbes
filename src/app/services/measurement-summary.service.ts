@@ -20,6 +20,7 @@ export class MeasurementSummaryService {
     period: measurementSummaryPeriod,
     pagesize: number
   ): Observable<MeasurementSummary[]> {
+    console.log("getMeasurementSummaryData", from, to, period, pagesize);
     return this.afs
       .collection("measurementSummaries", ref =>
         ref
@@ -31,7 +32,10 @@ export class MeasurementSummaryService {
       .snapshotChanges()
       .pipe(
         map(snaps => {
-          // console.log("findDevices", convertSnaps<Device>(snaps));
+          console.log(
+            "getMeasurementSummaryData",
+            convertSnaps<MeasurementSummary>(snaps)
+          );
           return convertSnaps<MeasurementSummary>(snaps);
         }),
         // Not sure why this is needed but 2 sets of results are emitted with this query

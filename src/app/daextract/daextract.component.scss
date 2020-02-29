@@ -7,3 +7,15 @@
   padding-right: 8px;
   min-width: 300px;
 }
+
+.spinner_container {
+  border-radius: 10px;
+  height: 70px;
+  left: 50%;
+  position: absolute;
+  top: 20%;
+  transform: translate(-50%, -50%);
+  width: 70px;
+  z-index: 3;
+  opacity: 0.5;
+}
