@@ -1,16 +1,31 @@
 <div class="page-container">
-  <mat-form-field>
-    <mat-label>Choose a sarting date</mat-label>
-    <input matInput [matDatepicker]="picker" />
+  <mat-form-field class="half-width">
+    <mat-label>Choose a starting date</mat-label>
+    <input
+      matInput
+      [matDatepicker]="picker"
+      (dateInput)="onDateInput($event)"
+      [value]="startDate"
+    />
     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
     <mat-datepicker #picker></mat-datepicker>
   </mat-form-field>
 
-  <br />
-  Time Period Extract type
-  <mat-form-field>
-    <mat-label>Favorite food</mat-label>
-    <mat-select>
+  <mat-form-field class="half-width"
+    ><mat-label>Select Time Range</mat-label>
+    <select matNativeControl (change)="onRangeChange($event)">
+      <option
+        *ngFor="let range of availableRanges"
+        [value]="range.hours"
+        [selected]="range.hours == selectedRangeHours"
+        >{{ range.name }}</option
+      >
+    </select>
+  </mat-form-field>
+
+  <mat-form-field class="half-width">
+    <mat-label>Extract type</mat-label>
+    <mat-select [value]="1">
       <mat-option [value]="1">
         Hourly Summary
       </mat-option>
@@ -22,6 +37,6 @@
       </mat-option>
     </mat-select>
   </mat-form-field>
-
-  <button mat-button>Extract Data</button>
+  <br />
+  <button mat-raised-button (click)="onExtract()">Extract Data</button>
 </div>

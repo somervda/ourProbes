@@ -219,11 +219,21 @@ try:
                             }
                             umeasurements.add(measurement)
                         else:
+                            # Failure Error number returned as a negative value
+                            # -10: getlowestPing failed: latency == None
+                            # -11: getlowestPing failed: loopback16 == None
+                            # -12: getlowestPing failed: loopback26 == None
+                            # -13: getlowestPing failed: loopbackMax == None
+                            # -14: getlowestPing failed: target26 == None
+                            # -15: getlowestPing failed: targetMax == None
+                            # -16: bing calculation not possable: loopback26 > loopbackMax
+                            # -17: bing calculation not possable: target26 > targetMax
+                            # -18: bing calculation not possable: deltaLatency <= 0
                             measurement = {
                                 "probeId": probe['id'],
                                 "name": probe['name'],
                                 "UMT": utime.time() + 946684800,
-                                "value": 0,
+                                "value": bingResult[1],
                                 'type': 'fail'
                             }
                             umeasurements.add(measurement)
@@ -233,11 +243,11 @@ try:
                             "probeId": probe['id'],
                             "name": probe['name'],
                             "UMT": utime.time() + 946684800,
-                            "value": bingResult[1],
+                            "value": -1,
                             'type': 'fail'
                         }
                         umeasurements.add(measurement)
-                        print("bing fail: result None")
+                        print("bing fail: result None", bingResult)
 
         # 2 **************** Governor & probeConfig refresh ***************************
 
