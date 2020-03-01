@@ -41,6 +41,24 @@
       ]
     },
     {
+      "collectionGroup": "measurementSummaries",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "period",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "umt",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "measurements",
       "queryScope": "COLLECTION",
       "fields": [

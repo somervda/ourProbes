@@ -18,17 +18,22 @@ export class MeasurementSummaryService {
     from: Date,
     to: Date,
     period: measurementSummaryPeriod,
+    type: string,
     pagesize: number
   ): Observable<MeasurementSummary[]> {
     console.log("getMeasurementSummaryData", from, to, period, pagesize);
     return this.afs
-      .collection("measurementSummaries", ref =>
-        ref
-          .where("umt", ">=", from)
-          .where("umt", "<=", to)
-          .where("period", "==", period)
-          .limit(pagesize)
-      )
+      .collection("measurementSummaries", ref => {
+        let retVal = ref as any;
+        retVal = retVal.where("umt", ">=", from);
+        retVal = retVal.where("umt", "<=", to);
+        retVal = retVal.where("period", "==", period);
+        if (type != "") {
+          retVal = retVal.where("type", "==", type);
+        }
+        retVal = retVal.limit(pagesize);
+        return retVal;
+      })
       .snapshotChanges()
       .pipe(
         map(snaps => {

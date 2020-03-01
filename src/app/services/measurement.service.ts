@@ -31,9 +31,37 @@ export class MeasurementService {
         map(snaps => {
           // console.log("findDevices", convertSnaps<Device>(snaps));
           return convertSnaps<Measurement>(snaps);
-        }),
-        // Not sure why this is needed but 2 sets of results are emitted with this query
-        take(2)
+        })
+      );
+  }
+
+  getMeasurementData(
+    from: Date,
+    to: Date,
+    type: string,
+    pagesize: number
+  ): Observable<Measurement[]> {
+    console.log("getMeasurementData", from, to, type, pagesize);
+    return this.afs
+      .collection("measurements", ref => {
+        let retVal = ref as any;
+        retVal = retVal.where("UMT", ">=", from);
+        retVal = retVal.where("UMT", "<=", to);
+        if (type != "") {
+          retVal = retVal.where("type", "==", type);
+        }
+        retVal = retVal.limit(pagesize);
+        return retVal;
+      })
+      .snapshotChanges()
+      .pipe(
+        map(snaps => {
+          console.log(
+            "getMeasurementSummaryData",
+            convertSnaps<Measurement>(snaps)
+          );
+          return convertSnaps<Measurement>(snaps);
+        })
       );
   }
 }

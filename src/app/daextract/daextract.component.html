@@ -55,6 +55,18 @@
     >
   </mat-form-field>
 
+  <mat-form-field class="half-width"
+    ><mat-label>Measurement Type</mat-label>
+    <select matNativeControl (change)="onMTypeChange($event)">
+      <option
+        *ngFor="let type of availableMTypes"
+        [value]="type.value"
+        [selected]="type.value == selectedMType"
+        >{{ type.name }}</option
+      >
+    </select>
+  </mat-form-field>
+
   <br />
   <br />
   <button mat-raised-button (click)="onExtract()">Extract Data</button>

@@ -1,8 +1,13 @@
+import {
+  MeasurementSummary,
+  measurementSummaryAvailableTypes
+} from "./../models/measurementSummary.model";
+import { MeasurementService } from "./../services/measurement.service";
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
 import { MeasurementSummaryService } from "../services/measurement-summary.service";
-import { MeasurementSummary } from "../models/measurementSummary.model";
 import { Observable, Subscription } from "rxjs";
+import { Measurement } from "../models/measurement.model";
 
 @Component({
   selector: "app-daextract",
@@ -20,6 +25,8 @@ export class DaextractComponent implements OnInit, OnDestroy {
   ];
   availableMaxRows = [10, 50, 100, 200, 1000, 5000];
   selectedMaxRows = 10;
+  availableMTypes = measurementSummaryAvailableTypes;
+  selectedMType = "";
   selectedRangeHours = this.availableRanges[0].hours;
   fileUrl;
   downLoadReady = false;
@@ -28,15 +35,20 @@ export class DaextractComponent implements OnInit, OnDestroy {
   selectedType = 1;
   measurementSummaryData$: Observable<MeasurementSummary[]>;
   measurementSummaryData$$: Subscription;
+  measurementData$: Observable<Measurement[]>;
+  measurementData$$: Subscription;
   extractRows = 0;
 
   constructor(
     private sanitizer: DomSanitizer,
-    private mss: MeasurementSummaryService
+    private mss: MeasurementSummaryService,
+    private ms: MeasurementService
   ) {}
 
   ngOnInit(): void {
     this.startDate.setHours(0, 0, 0, 0);
+    this.availableMTypes.unshift({ name: "All", value: "" });
+    this.availableMTypes.push({ name: "Device Startup", value: "startup" });
   }
 
   onExtract() {
@@ -48,16 +60,44 @@ export class DaextractComponent implements OnInit, OnDestroy {
       this.selectedType
     );
 
+    const msRange = this.selectedRangeHours * 3600 * 1000;
+    const toDate = new Date(this.startDate.getTime() + msRange);
+
     if (this.selectedType == 0) {
+      // ******* Process basic  measurement extract ******
+      this.measurementData$ = this.ms.getMeasurementData(
+        this.startDate,
+        toDate,
+        this.selectedMType,
+        this.selectedMaxRows
+      );
+
+      if (this.measurementData$$) this.measurementData$$.unsubscribe();
+      this.measurementData$$ = this.measurementData$.subscribe(d => {
+        const bigMd = d.map(md => ({
+          ...md,
+          localeDate: md.UMT.toDate()
+            .toLocaleString()
+            .replace(",", ""),
+          umtDate: md.UMT.toDate()
+            .toLocaleString("en-US", { timeZone: "Etc/UTC" })
+            .replace(",", ""),
+          umtHour: md.UMT.toDate().getUTCHours(),
+          umtMinute: md.UMT.toDate().getUTCMinutes()
+        }));
+        this.extractRows = bigMd.length;
+        this.createBlob(this.toCsv(bigMd));
+      });
     } else {
-      const msRange = this.selectedRangeHours * 3600 * 1000;
-      const toDate = new Date(this.startDate.getTime() + msRange);
+      // ******* Process measurement summary extract ******
       this.measurementSummaryData$ = this.mss.getMeasurementSummaryData(
         this.startDate,
         toDate,
         this.selectedType,
+        this.selectedMType,
         this.selectedMaxRows
       );
+
       if (this.measurementSummaryData$$)
         this.measurementSummaryData$$.unsubscribe();
       this.measurementSummaryData$$ = this.measurementSummaryData$.subscribe(
@@ -147,6 +187,12 @@ export class DaextractComponent implements OnInit, OnDestroy {
     this.downLoadReady = false;
   }
 
+  onMTypeChange(event) {
+    console.log("onMTypeChange:", event, event.srcElement.value);
+    this.selectedMType = event.srcElement.value;
+    this.downLoadReady = false;
+  }
+
   onMaxRowsChange(event) {
     console.log("onMaxRowsChange:", event);
     this.selectedMaxRows = parseInt(event.srcElement.value);
@@ -156,5 +202,6 @@ export class DaextractComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.measurementSummaryData$$)
       this.measurementSummaryData$$.unsubscribe();
+    if (this.measurementData$$) this.measurementData$$.unsubscribe();
   }
 }
