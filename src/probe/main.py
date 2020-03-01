@@ -162,6 +162,17 @@ try:
     umeasurements.reset()
     connect()
     set_time()
+
+    # Keep track of when the device started and IP adderess
+    startUpMeasurement = {
+        "probeId": "",
+        "name": net_if.ifconfig()[0],
+        "UMT": utime.time() + 946684800,
+        "value": 0,
+        'type': 'startup'
+    }
+    umeasurements.add(startUpMeasurement)
+
     loopCnt = 0
     ip = net_if.ifconfig()[0]
     jwtExpiry = utime.time() + config.jwt_config['token_ttl']

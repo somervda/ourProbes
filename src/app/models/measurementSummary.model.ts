@@ -31,6 +31,8 @@ export const measurementSummaryAvailableSeries = [
   "count"
 ];
 
+// Also have a "startup" type but not tied to a probe so
+// not in this table for now (Maybe need to make an abstract probe for it)
 export const measurementSummaryAvailableTypes = [
   { name: "bps", value: "bps" },
   { name: "rtl (ms)", value: "rtl" },
