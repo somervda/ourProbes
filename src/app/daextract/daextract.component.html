@@ -1,7 +1,7 @@
 <div class="page-container">
   <mat-spinner *ngIf="showSpinner" class="spinner_container"></mat-spinner>
   <mat-form-field class="half-width">
-    <mat-label>Choose a starting date</mat-label>
+    <mat-label>Choose a starting date (Local Time Zone)</mat-label>
     <input
       matInput
       [matDatepicker]="picker"
@@ -38,10 +38,27 @@
       </option>
     </select>
   </mat-form-field>
+
+  <mat-form-field class="half-width"
+    ><mat-label>Maximum Rows</mat-label>
+    <select matNativeControl (change)="onMaxRowsChange($event)">
+      <option
+        *ngFor="let maxRows of availableMaxRows"
+        [value]="maxRows"
+        [selected]="maxRows == selectedMaxRows"
+        >{{ maxRows }}</option
+      >
+    </select>
+    <mat-hint
+      >Use a low number of rows until you are sure you have the required
+      data.</mat-hint
+    >
+  </mat-form-field>
+
   <br />
   <button mat-raised-button (click)="onExtract()">Extract Data</button>
   <br /><br />
   <a *ngIf="downLoadReady" [href]="fileUrl" [download]="extractName"
-    >Download Extracted Data
+    >Download Extracted Data (Rows:{{ extractRows }})
   </a>
 </div>

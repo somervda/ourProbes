@@ -37,9 +37,7 @@ export class MeasurementSummaryService {
             convertSnaps<MeasurementSummary>(snaps)
           );
           return convertSnaps<MeasurementSummary>(snaps);
-        }),
-        // Not sure why this is needed but 2 sets of results are emitted with this query
-        take(2)
+        })
       );
   }
 

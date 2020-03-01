@@ -18,6 +18,8 @@ export class DaextractComponent implements OnInit, OnDestroy {
     { name: "7 Days", hours: 168 },
     { name: "14 Days", hours: 336 }
   ];
+  availableMaxRows = [10, 50, 100, 200, 1000, 5000];
+  selectedMaxRows = 10;
   selectedRangeHours = this.availableRanges[0].hours;
   fileUrl;
   downLoadReady = false;
@@ -26,13 +28,16 @@ export class DaextractComponent implements OnInit, OnDestroy {
   selectedType = 1;
   measurementSummaryData$: Observable<MeasurementSummary[]>;
   measurementSummaryData$$: Subscription;
+  extractRows = 0;
 
   constructor(
     private sanitizer: DomSanitizer,
     private mss: MeasurementSummaryService
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.startDate.setHours(0, 0, 0, 0);
+  }
 
   onExtract() {
     this.showSpinner = true;
@@ -43,8 +48,6 @@ export class DaextractComponent implements OnInit, OnDestroy {
       this.selectedType
     );
 
-    let extractData = "";
-
     if (this.selectedType == 0) {
     } else {
       const msRange = this.selectedRangeHours * 3600 * 1000;
@@ -53,15 +56,30 @@ export class DaextractComponent implements OnInit, OnDestroy {
         this.startDate,
         toDate,
         this.selectedType,
-        200
+        this.selectedMaxRows
       );
+      if (this.measurementSummaryData$$)
+        this.measurementSummaryData$$.unsubscribe();
       this.measurementSummaryData$$ = this.measurementSummaryData$.subscribe(
         d => {
-          const g = d.map(x => ({
-            ...x,
-            localeDate: x.umt.toDate().toLocaleString()
+          // Date formats were fiddly so I added some extra fields
+          // to the extract that are more excel and power BI friendly
+          // I also added a umtHour and umtMinute field because Power BI
+          // does not do hierarchy actions on date/time fields as a whole
+          const bigMsd = d.map(msd => ({
+            ...msd,
+            localeDate: msd.umt
+              .toDate()
+              .toLocaleString()
+              .replace(",", ""),
+            umtDate: msd.umt
+              .toDate()
+              .toLocaleString("en-US", { timeZone: "Etc/UTC" })
+              .replace(",", ""),
+            umtHour: msd.umt.toDate().getUTCHours()
           }));
-          this.createBlob(JSON.stringify(g));
+          this.extractRows = bigMsd.length;
+          this.createBlob(this.toCsv(bigMsd));
         }
       );
     }
@@ -71,15 +89,44 @@ export class DaextractComponent implements OnInit, OnDestroy {
     // const configData = JSON.stringify(this.availableRanges);
     console.log("createBlob:", extractData);
     const extractBlob = new Blob([extractData], {
-      type: "application/json"
+      type: "application/csv"
     });
 
     this.fileUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
       window.URL.createObjectURL(extractBlob)
     );
-    this.extractName = "ourProbes-" + new Date().toISOString() + ".json";
+    this.extractName = "ourProbes-" + new Date().toISOString() + ".csv";
     this.downLoadReady = true;
     this.showSpinner = false;
+  }
+
+  toCsv(rows: object[]) {
+    if (!rows || !rows.length) {
+      return;
+    }
+    const separator = ",";
+    const keys = Object.keys(rows[0]);
+    const csvContent =
+      keys.join(separator) +
+      "\n" +
+      rows
+        .map(row => {
+          return keys
+            .map(k => {
+              let cell = row[k] === null || row[k] === undefined ? "" : row[k];
+              cell =
+                cell instanceof Date
+                  ? cell.toLocaleString()
+                  : cell.toString().replace(/"/g, '""');
+              if (cell.search(/("|,|\n)/g) >= 0) {
+                cell = `"${cell}"`;
+              }
+              return cell;
+            })
+            .join(separator);
+        })
+        .join("\n");
+    return csvContent;
   }
 
   onDateInput(event) {
@@ -96,7 +143,13 @@ export class DaextractComponent implements OnInit, OnDestroy {
 
   onTypeChange(event) {
     console.log("onTypeChange:", event);
-    this.selectedType = event.srcElement.value;
+    this.selectedType = parseInt(event.srcElement.value);
+    this.downLoadReady = false;
+  }
+
+  onMaxRowsChange(event) {
+    console.log("onMaxRowsChange:", event);
+    this.selectedMaxRows = parseInt(event.srcElement.value);
     this.downLoadReady = false;
   }
 
