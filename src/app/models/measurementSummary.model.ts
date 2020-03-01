@@ -3,7 +3,7 @@ export interface MeasurementSummary {
   probeId: string;
   name: string;
   type: string;
-  umt: Date;
+  umt: firebase.firestore.Timestamp;
   period: measurementSummaryPeriod;
   mean: number;
   p00: number;

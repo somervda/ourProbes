@@ -56,7 +56,13 @@ export class DaextractComponent implements OnInit, OnDestroy {
         200
       );
       this.measurementSummaryData$$ = this.measurementSummaryData$.subscribe(
-        d => this.createBlob(JSON.stringify(d))
+        d => {
+          const g = d.map(x => ({
+            ...x,
+            localeDate: x.umt.toDate().toLocaleString()
+          }));
+          this.createBlob(JSON.stringify(g));
+        }
       );
     }
   }
