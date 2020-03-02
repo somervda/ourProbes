@@ -25,14 +25,14 @@ export class DaextractComponent implements OnInit, OnDestroy {
   ];
   availableMaxRows = [10, 50, 100, 200, 1000, 5000];
   selectedMaxRows = 10;
-  availableMTypes = measurementSummaryAvailableTypes;
-  selectedMType = "";
+  availableTypes = JSON.parse(JSON.stringify(measurementSummaryAvailableTypes));
+  selectedType = "";
   selectedRangeHours = this.availableRanges[0].hours;
   fileUrl;
   downLoadReady = false;
   extractName = "data.json";
   showSpinner = false;
-  selectedType = 1;
+  selectedCollection = 1;
   measurementSummaryData$: Observable<MeasurementSummary[]>;
   measurementSummaryData$$: Subscription;
   measurementData$: Observable<Measurement[]>;
@@ -47,8 +47,8 @@ export class DaextractComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.startDate.setHours(0, 0, 0, 0);
-    this.availableMTypes.unshift({ name: "All", value: "" });
-    this.availableMTypes.push({ name: "Device Startup", value: "startup" });
+    this.availableTypes.unshift({ name: "All", value: "" });
+    this.availableTypes.push({ name: "Device Startup", value: "startup" });
   }
 
   onExtract() {
@@ -57,18 +57,18 @@ export class DaextractComponent implements OnInit, OnDestroy {
       "picker:",
       this.startDate,
       this.selectedRangeHours,
-      this.selectedType
+      this.selectedCollection
     );
 
     const msRange = this.selectedRangeHours * 3600 * 1000;
     const toDate = new Date(this.startDate.getTime() + msRange);
 
-    if (this.selectedType == 0) {
-      // ******* Process basic  measurement extract ******
+    if (this.selectedCollection == 0) {
+      // ******* Process measurement collection extract ******
       this.measurementData$ = this.ms.getMeasurementData(
         this.startDate,
         toDate,
-        this.selectedMType,
+        this.selectedType,
         this.selectedMaxRows
       );
 
@@ -89,12 +89,12 @@ export class DaextractComponent implements OnInit, OnDestroy {
         this.createBlob(this.toCsv(bigMd));
       });
     } else {
-      // ******* Process measurement summary extract ******
+      // ******* Process measurement summary collections extract ******
       this.measurementSummaryData$ = this.mss.getMeasurementSummaryData(
         this.startDate,
         toDate,
+        this.selectedCollection,
         this.selectedType,
-        this.selectedMType,
         this.selectedMaxRows
       );
 
@@ -181,15 +181,15 @@ export class DaextractComponent implements OnInit, OnDestroy {
     this.downLoadReady = false;
   }
 
-  onTypeChange(event) {
-    console.log("onTypeChange:", event);
-    this.selectedType = parseInt(event.srcElement.value);
+  onCollectionChange(event) {
+    console.log("onCollectionChange:", event);
+    this.selectedCollection = parseInt(event.srcElement.value);
     this.downLoadReady = false;
   }
 
-  onMTypeChange(event) {
-    console.log("onMTypeChange:", event, event.srcElement.value);
-    this.selectedMType = event.srcElement.value;
+  onTypeChange(event) {
+    console.log("onTypeChange:", event, event.srcElement.value);
+    this.selectedType = event.srcElement.value;
     this.downLoadReady = false;
   }
 

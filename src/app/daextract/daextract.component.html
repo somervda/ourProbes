@@ -25,8 +25,8 @@
   </mat-form-field>
 
   <mat-form-field class="half-width">
-    <mat-label>Extract type</mat-label>
-    <select matNativeControl (change)="onTypeChange($event)">
+    <mat-label>Extract Type</mat-label>
+    <select matNativeControl (change)="onCollectionChange($event)">
       <option [value]="1" [selected]="true">
         Hourly Summary
       </option>
@@ -57,11 +57,11 @@
 
   <mat-form-field class="half-width"
     ><mat-label>Measurement Type</mat-label>
-    <select matNativeControl (change)="onMTypeChange($event)">
+    <select matNativeControl (change)="onTypeChange($event)">
       <option
-        *ngFor="let type of availableMTypes"
+        *ngFor="let type of availableTypes"
         [value]="type.value"
-        [selected]="type.value == selectedMType"
+        [selected]="type.value == selectedType"
         >{{ type.name }}</option
       >
     </select>
