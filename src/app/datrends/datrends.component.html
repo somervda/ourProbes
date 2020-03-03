@@ -7,7 +7,7 @@
         </mat-panel-title>
         <mat-panel-description>
           Device:
-          {{ selectedDeviceId }} Time Range:
+          {{ selectedDeviceId }} Probe: {{ selectedProbe.name }} Time Range:
           {{ getRangeName(selectedRangeHours) }}
         </mat-panel-description>
       </mat-expansion-panel-header>
@@ -52,9 +52,9 @@
         ><mat-label>Select Probe</mat-label>
         <select matNativeControl (change)="onProbeChange($event)">
           <option
-            *ngFor="let probe of probes$ | async"
+            *ngFor="let probe of probes"
             [value]="probe.id"
-            [selected]="probe.id == selectedProbeId"
+            [selected]="probe.id == selectedProbe.id"
             >{{ probe.name }}</option
           >
         </select>

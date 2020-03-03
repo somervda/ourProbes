@@ -34,8 +34,8 @@ export class DatrendsComponent implements OnInit {
   selectedDeviceId: string = "D0001";
   devices$: Observable<Device[]>;
   devices$$: Subscription;
-  probes: string[];
-  selectedProbeId: string = "";
+  probes: Probe[];
+  selectedProbe: Probe;
   probes$: Observable<Probe[]>;
   probes$$: Subscription;
   availableTypes = measurementSummaryAvailableTypes;
@@ -80,7 +80,8 @@ export class DatrendsComponent implements OnInit {
     // Set initial probe to query
     this.probes$$ = this.probes$.subscribe(p => {
       console.log("p:", p);
-      this.selectedProbeId = p[0].id;
+      this.probes = p;
+      this.selectedProbe = p[0];
       this.getChartData();
     });
     this.devices$$ = this.devices$.subscribe(d => {
@@ -112,7 +113,7 @@ export class DatrendsComponent implements OnInit {
       this.to,
       period,
       this.selectedDeviceId,
-      this.selectedProbeId,
+      this.selectedProbe.id,
       this.selectedType,
       this.series
     );
@@ -152,8 +153,14 @@ export class DatrendsComponent implements OnInit {
     this.getChartData();
   }
   onProbeChange(event) {
-    console.log("onProbeChange:", event, event.srcElement.value);
-    this.selectedProbeId = event.srcElement.value;
+    this.selectedProbe = this.probes.find(p => event.srcElement.value == p.id);
+    console.log(
+      "onProbeChange:",
+      event.srcElement.value,
+      this.selectedProbe,
+      "event:",
+      event
+    );
     this.getChartData();
   }
   onTypeChange(event) {
