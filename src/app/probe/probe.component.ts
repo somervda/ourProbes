@@ -1,13 +1,15 @@
 import { Component, OnInit, OnDestroy, NgZone } from "@angular/core";
 import { Crud, Kvp } from "../models/global.model";
 import { FormGroup, FormBuilder, Validators } from "@angular/forms";
-import { Subscription } from "rxjs";
+import { Subscription, Observable } from "rxjs";
 import { ProbeService } from "../services/probe.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { Probe, ProbeType, ProbeStatus } from "../models/probe.model";
 import { enumToMap } from "../shared/utilities";
 import { firestore } from "firebase";
+import { Device } from "../models/device.model";
+import { DeviceService } from "../services/device.service";
 
 @Component({
   selector: "app-probe",
@@ -25,13 +27,17 @@ export class ProbeComponent implements OnInit, OnDestroy {
   types: Kvp[];
   status: Kvp[];
 
+  devices$: Observable<Device[]>;
+  devices$$: Subscription;
+
   constructor(
     private probeService: ProbeService,
     private route: ActivatedRoute,
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
     private ngZone: NgZone,
-    private router: Router
+    private router: Router,
+    private deviceService: DeviceService
   ) {}
 
   ngOnInit() {
@@ -80,7 +86,6 @@ export class ProbeComponent implements OnInit, OnDestroy {
         ]
       ],
       type: [this.probe.type, [Validators.required]],
-      status: [this.probe.status, [Validators.required]],
       target: [
         this.probe.target,
         [
@@ -96,6 +101,9 @@ export class ProbeComponent implements OnInit, OnDestroy {
       for (const field in this.probeForm.controls) {
         this.probeForm.get(field).markAsTouched();
       }
+      // Disable updates to the target when not in create mode
+      this.probeForm.get("target").disable();
+      this.probeForm.get("type").disable();
     }
   }
 
@@ -129,21 +137,43 @@ export class ProbeComponent implements OnInit, OnDestroy {
       });
   }
 
-  onDelete() {
+  async onDelete() {
     // console.log("delete", this.probe.id);
     const deviceId = this.probe.id;
 
-    this.probeService
-      .delete(this.probe.id)
-      .then(() => {
-        this.snackBar.open("Probe '" + deviceId + "' deleted!", "", {
-          duration: 2000
-        });
-        this.ngZone.run(() => this.router.navigateByUrl("/probes"));
-      })
-      .catch(function(error) {
-        console.error("Error deleting probe: ", error);
+    this.probeService.delete(this.probe.id);
+    await this.removeProbeFromAllDevices(this.probe.id);
+    // wait for device update to complete before returning to probe listing
+    this.snackBar.open("Probe '" + deviceId + "' logically deleted!", "", {
+      duration: 2000
+    });
+    this.ngZone.run(() => this.router.navigateByUrl("/probes"));
+  }
+
+  async removeProbeFromAllDevices(probeId: string) {
+    // Scan through all the devices, if one contains the probe in the probeList then remove it from the
+    // collection
+    console.log("removeProbeFromAllDevices", probeId);
+    this.devices$ = this.deviceService.findDevices(100);
+    this.devices$$ = await this.devices$.subscribe(devices => {
+      console.log("removeProbeFromAllDevices devices:", devices);
+      devices.map(device => {
+        console.log("removeProbeFromAllDevices device:", device);
+        const probeItemIndex = device.probeList.findIndex(p => p.id == probeId);
+
+        if (probeItemIndex != -1) {
+          console.log("probeItemIndex", device, probeItemIndex);
+          device.probeList.splice(probeItemIndex, 1);
+          // update the device
+          this.deviceService.fieldUpdate(
+            device.id,
+            "probeList",
+            device.probeList
+          );
+        }
       });
+    });
+    console.log("removeProbeFromAllDevices end ");
   }
 
   onFieldUpdate(fieldName: string, toType?: string) {
@@ -166,5 +196,6 @@ export class ProbeComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.probeSubscription$$) this.probeSubscription$$.unsubscribe();
+    if (this.devices$$) this.devices$$.unsubscribe();
   }
 }

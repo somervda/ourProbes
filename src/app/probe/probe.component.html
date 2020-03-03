@@ -102,21 +102,6 @@
         </mat-error>
         <mat-hint>The type of probe.</mat-hint>
       </mat-form-field>
-
-      <mat-form-field class="half-width">
-        <mat-label>Status</mat-label>
-        <mat-select
-          formControlName="status"
-          (selectionChange)="onFieldUpdate('status')"
-        >
-          <mat-option *ngFor="let item of status" [value]="item.key">
-            {{ item.value | titlecase }}
-          </mat-option>
-        </mat-select>
-        <mat-error *ngIf="probeForm.controls['status'].hasError('required')">
-          A status must be selected.
-        </mat-error>
-      </mat-form-field>
     </fieldset>
 
     <button

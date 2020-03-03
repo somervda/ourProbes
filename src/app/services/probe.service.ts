@@ -3,7 +3,7 @@ import { AngularFirestore, DocumentReference } from "@angular/fire/firestore";
 import { Observable } from "rxjs";
 import { map, first, take } from "rxjs/operators";
 import { convertSnaps, dbFieldUpdate, convertSnap } from "./db-utils";
-import { Probe } from "../models/probe.model";
+import { Probe, ProbeStatus } from "../models/probe.model";
 
 @Injectable({
   providedIn: "root"
@@ -24,8 +24,9 @@ export class ProbeService {
 
   findProbes(pageSize): Observable<Probe[]> {
     // console.log( "findProbes",  sortField, sortOrder  ,pageSize  );
+    // Only get active probes
     return this.afs
-      .collection("probes", ref => ref.limit(pageSize))
+      .collection("probes", ref => ref.where("status", "==", 1).limit(pageSize))
       .snapshotChanges()
       .pipe(
         map(snaps => {
@@ -48,10 +49,8 @@ export class ProbeService {
     return this.afs.collection("probes").add(probe);
   }
 
-  delete(id: string): Promise<void> {
-    return this.afs
-      .collection("probes")
-      .doc(id)
-      .delete();
+  delete(id: string) {
+    // Probes can only be logically deleted
+    dbFieldUpdate("/probes/" + id, "status", ProbeStatus.deleted, this.afs);
   }
 }

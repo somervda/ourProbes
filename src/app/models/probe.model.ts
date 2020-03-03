@@ -17,6 +17,5 @@ export enum ProbeType {
 
 export enum ProbeStatus {
   active = 1,
-  inactive = 2,
   deleted = 9
 }
