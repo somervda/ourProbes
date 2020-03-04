@@ -51,10 +51,13 @@ export class DaoverComponent implements OnInit, OnDestroy {
   autoScale: boolean = false;
 
   colorScheme5 = {
-    domain: ["#FFFFFF", "#E44D25", "#CFC0BB", "#7aa3e5", "#5AA454", "#D4AF37"]
+    domain: ["#FFFFFF", "#FFB6C1", "#E44D25", "#DDA0DD", "#4682B4"]
   };
 
-  // domain: ["#FFFFFF", "#296c02"]
+  // colorScheme5 = {
+  //   domain: ["#FFFFFF", "#E44D25", "#CFC0BB", "#7aa3e5", "#5AA454", "#D4AF37"]
+  // };
+
   colorScheme2 = {
     domain: ["#FFFFFF", "#4682B4"]
   };
