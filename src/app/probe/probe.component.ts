@@ -10,6 +10,8 @@ import { enumToMap } from "../shared/utilities";
 import { firestore } from "firebase";
 import { Device } from "../models/device.model";
 import { DeviceService } from "../services/device.service";
+import { Measurement } from "../models/measurement.model";
+import { MeasurementService } from "../services/measurement.service";
 
 @Component({
   selector: "app-probe",
@@ -30,6 +32,9 @@ export class ProbeComponent implements OnInit, OnDestroy {
   devices$: Observable<Device[]>;
   devices$$: Subscription;
 
+  measurements$: Observable<Measurement[]>;
+  measurements$$: Subscription;
+
   constructor(
     private probeService: ProbeService,
     private route: ActivatedRoute,
@@ -37,7 +42,8 @@ export class ProbeComponent implements OnInit, OnDestroy {
     private snackBar: MatSnackBar,
     private ngZone: NgZone,
     private router: Router,
-    private deviceService: DeviceService
+    private deviceService: DeviceService,
+    private measurementService: MeasurementService
   ) {}
 
   ngOnInit() {
@@ -48,6 +54,8 @@ export class ProbeComponent implements OnInit, OnDestroy {
       this.crudAction = Crud.Delete;
     if (this.route.routeConfig.path == "probe/create")
       this.crudAction = Crud.Create;
+
+    this.devices$ = this.deviceService.findDevices(100);
 
     // console.log("team onInit", this.crudAction);
     if (this.crudAction == Crud.Create) {
@@ -101,24 +109,20 @@ export class ProbeComponent implements OnInit, OnDestroy {
       for (const field in this.probeForm.controls) {
         this.probeForm.get(field).markAsTouched();
       }
-      // Disable updates to the target when not in create mode
-      this.probeForm.get("target").disable();
-      this.probeForm.get("type").disable();
+      this.measurements$ = this.measurementService.getMeasurementProbeData(
+        this.probe.id,
+        1
+      );
+      // Disable updates to the target/type when not in create mode
+      this.disableSelectedUpdatesIfProbeIsInUse(this.probe.id);
     }
   }
 
   onCreate() {
+    // console.log("create probe", this.probe);
     for (const field in this.probeForm.controls) {
       this.probe[field] = this.probeForm.get(field).value;
-      // if (
-      //   field == "latitude" ||
-      //   field == "longitude" ||
-      //   field == "governorSeconds"
-      // ) {
-      //   this.probe[field] = Number(this.probeForm.get(field).value);
-      // }
     }
-    // console.log("create probe", this.probe);
 
     this.probeService
       .create(this.probe)
@@ -137,32 +141,26 @@ export class ProbeComponent implements OnInit, OnDestroy {
       });
   }
 
-  async onDelete() {
+  onDelete() {
     // console.log("delete", this.probe.id);
     const deviceId = this.probe.id;
 
     this.probeService.delete(this.probe.id);
-    await this.removeProbeFromAllDevices(this.probe.id);
-    // wait for device update to complete before returning to probe listing
-    this.snackBar.open("Probe '" + deviceId + "' logically deleted!", "", {
-      duration: 2000
-    });
-    this.ngZone.run(() => this.router.navigateByUrl("/probes"));
+    this.removeProbeFromAllDevices(this.probe.id);
   }
 
-  async removeProbeFromAllDevices(probeId: string) {
+  removeProbeFromAllDevices(probeId: string) {
     // Scan through all the devices, if one contains the probe in the probeList then remove it from the
     // collection
+    // BTW: Only one snackbar will ever be shown
     console.log("removeProbeFromAllDevices", probeId);
-    this.devices$ = this.deviceService.findDevices(100);
-    this.devices$$ = await this.devices$.subscribe(devices => {
-      console.log("removeProbeFromAllDevices devices:", devices);
+
+    if (this.probeSubscription$$) this.probeSubscription$$.unsubscribe();
+    this.devices$$ = this.devices$.subscribe(devices => {
       devices.map(device => {
-        console.log("removeProbeFromAllDevices device:", device);
         const probeItemIndex = device.probeList.findIndex(p => p.id == probeId);
 
         if (probeItemIndex != -1) {
-          console.log("probeItemIndex", device, probeItemIndex);
           device.probeList.splice(probeItemIndex, 1);
           // update the device
           this.deviceService.fieldUpdate(
@@ -171,9 +169,64 @@ export class ProbeComponent implements OnInit, OnDestroy {
             device.probeList
           );
         }
+        // Jump back to probe list once devices have been updated
+        this.snackBar.open("Probe '" + probeId + "' logically deleted!", "", {
+          duration: 2000
+        });
+        this.ngZone.run(() => this.router.navigateByUrl("/probes"));
       });
     });
-    console.log("removeProbeFromAllDevices end ");
+  }
+
+  disableSelectedUpdatesIfProbeIsInUse(probeId: string) {
+    // See if any measurements have been taken with the probe
+    // or if the probe has been assigned to a device
+
+    console.log("IsProbeUsed", probeId);
+    let usedOnDevice = "";
+
+    if (this.probeSubscription$$) this.probeSubscription$$.unsubscribe();
+
+    this.devices$$ = this.devices$.subscribe(devices => {
+      devices.map(device => {
+        const probeItemIndex = device.probeList.findIndex(p => p.id == probeId);
+
+        if (probeItemIndex != -1) {
+          this.probeForm.get("target").disable();
+          this.probeForm.get("type").disable();
+          usedOnDevice += device.id + " ";
+        }
+      });
+
+      if (usedOnDevice) {
+        this.snackBar.open(
+          "Probe's target and type properties can not be updated because the probe is in use on device(s): " +
+            usedOnDevice +
+            "  Recommendation: Delete and create another probe rather than change it.",
+          "",
+          {
+            duration: 7000
+          }
+        );
+      }
+    });
+
+    if (this.measurements$$) this.measurements$$.unsubscribe();
+    this.measurements$$ = this.measurements$.subscribe(p => {
+      if (p.length > 0) {
+        console.log("disableSelectedUpdatesIfProbeIsInUse p:", p);
+        this.probeForm.get("target").disable();
+        this.probeForm.get("type").disable();
+        this.snackBar.open(
+          "Probe's target and type properties can not be updated because measurements have already be created for this probe." +
+            "  Options: Delete and create another probe.",
+          "",
+          {
+            duration: 7000
+          }
+        );
+      }
+    });
   }
 
   onFieldUpdate(fieldName: string, toType?: string) {
@@ -197,5 +250,6 @@ export class ProbeComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.probeSubscription$$) this.probeSubscription$$.unsubscribe();
     if (this.devices$$) this.devices$$.unsubscribe();
+    if (this.measurements$$) this.measurements$$.unsubscribe();
   }
 }

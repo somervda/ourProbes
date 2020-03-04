@@ -54,8 +54,9 @@ export class DaoverComponent implements OnInit, OnDestroy {
     domain: ["#FFFFFF", "#E44D25", "#CFC0BB", "#7aa3e5", "#5AA454", "#D4AF37"]
   };
 
+  // domain: ["#FFFFFF", "#296c02"]
   colorScheme2 = {
-    domain: ["#FFFFFF", "#296c02"]
+    domain: ["#FFFFFF", "#4682B4"]
   };
 
   constructor(

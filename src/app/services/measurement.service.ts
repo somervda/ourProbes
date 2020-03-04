@@ -64,4 +64,24 @@ export class MeasurementService {
         })
       );
   }
+
+  getMeasurementProbeData(
+    probeId: string,
+    pagesize: number
+  ): Observable<Measurement[]> {
+    console.log("getMeasurementProbeData", probeId, pagesize);
+    return this.afs
+      .collection("measurements", ref => {
+        let retVal = ref as any;
+        retVal = retVal.where("probeId", "==", probeId);
+        retVal = retVal.limit(pagesize);
+        return retVal;
+      })
+      .snapshotChanges()
+      .pipe(
+        map(snaps => {
+          return convertSnaps<Measurement>(snaps);
+        })
+      );
+  }
 }
