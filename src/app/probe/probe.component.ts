@@ -20,6 +20,7 @@ import { MeasurementService } from "../services/measurement.service";
 })
 export class ProbeComponent implements OnInit, OnDestroy {
   probe: Probe;
+  ProbeType = ProbeType;
   crudAction: Crud;
   // Declare an instance of crud enum to use for checking crudAction value
   Crud = Crud;
@@ -101,7 +102,8 @@ export class ProbeComponent implements OnInit, OnDestroy {
           Validators.minLength(5),
           Validators.maxLength(120)
         ]
-      ]
+      ],
+      match: [this.probe.match, [Validators.maxLength(30)]]
     });
 
     // Mark all fields as touched to trigger validation on initial entry to the fields

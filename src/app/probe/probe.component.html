@@ -92,8 +92,13 @@
         <mat-select
           formControlName="type"
           (selectionChange)="onFieldUpdate('type')"
+          #probeType
         >
-          <mat-option *ngFor="let item of types" [value]="item.key">
+          <mat-option
+            *ngFor="let item of types"
+            [value]="item.key"
+            [selected]="item.key == probe.type"
+          >
             {{ item.value | titlecase }}
           </mat-option>
         </mat-select>
@@ -101,6 +106,21 @@
           A type must be selected.
         </mat-error>
         <mat-hint>The type of probe.</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field
+        class="half-width"
+        *ngIf="probeType.value == 3 || probe.type == 3"
+      >
+        <input
+          matInput
+          formControlName="match"
+          (change)="onFieldUpdate('match')"
+          placeholder="Check for Matching String on Web Page"
+        />
+        <mat-error *ngIf="probeForm.controls['match'].hasError('maxlength')">
+          Target must be no more than 30 characters long.
+        </mat-error>
       </mat-form-field>
     </fieldset>
 

@@ -6,6 +6,7 @@ export interface Probe {
   target: string;
   dateCreated?: Date;
   status: ProbeStatus;
+  match?: string;
 }
 
 export enum ProbeType {

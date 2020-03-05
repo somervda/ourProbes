@@ -37,4 +37,5 @@ export interface ProbeListItem {
   name: string;
   target: string;
   type: ProbeType;
+  match?: string;
 }

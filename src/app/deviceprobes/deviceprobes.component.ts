@@ -62,14 +62,17 @@ export class DeviceprobesComponent implements OnInit, OnDestroy {
       );
       if (probe) {
         // console.log("Probe to add to probe list:", probe);
-        const probeListItem: ProbeListItem = {
+        let probeListItem: ProbeListItem = {
           id: probe.id,
           name: probe.name,
           target: probe.target,
           type: probe.type
         };
+        if (probe.match) {
+          probeListItem.match = probe.match;
+        }
         this.probeList.push(probeListItem);
-        // console.log("probeList:", this.probeList);
+        console.log("probeList:", this.probeList);
       }
     } else {
       // unchecked - remove probeListItem

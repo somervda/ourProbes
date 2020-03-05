@@ -1,9 +1,8 @@
 import config
 import ubing
 import utime
-
-
 import network
+from microWebCli import MicroWebCli
 print('Setting up network.')
 sta_if = network.WLAN(network.STA_IF)
 if not sta_if.isconnected():
@@ -39,9 +38,40 @@ print('network config:', sta_if.ifconfig())
 #         print("time %f TTL %u size_on_wire %u" %
 #               (pingInfo[0], pingInfo[1],  pingInfo[2]))
 
+timestamp = utime.ticks_us()
+print("get")
+# contentBytes = MicroWebCli.GETRequest('https://www.ibm.com/')
+
+wCli = MicroWebCli('https://www.ibm.com/us-en/?ar=1')
+print('GET %s' % wCli.URL)
+wCli.OpenRequest()
+buf = memoryview(bytearray(1024))
+resp = wCli.GetResponse()
+match = False
+if resp.IsSuccess():
+    print("IsSussess")
+    if not resp.IsClosed():
+        x = resp.ReadContentInto(buf)
+        if x < len(buf):
+            buf = buf[:x]
+        # print(buf)
+        print(str(bytearray(buf), "utf-8"))
+        if "a century IBM" in str(bytearray(buf), "utf-8"):
+            match = True
+    print('GET success with "%s" content type' % resp.GetContentType())
+else:
+    print('GET return %d code (%s)' %
+          (resp.GetStatusCode(), resp.GetStatusMessage()))
+
+t_elapsed = (utime.ticks_us()-timestamp) / 1000
+print("elapsed:", t_elapsed)
+print("match:", match)
+# print("contains:", "IQVIA</title>" in contentBytes)
+
+
 host = "192.168.1.29"
 
-print("bing ", host, ": ", ubing.bing(host, 5, loopBackAdjustment=True))
+print("bing ", host, ": ", ubing.bing(host, 1, loopBackAdjustment=True))
 
 
 print('disconnecting from network...')
