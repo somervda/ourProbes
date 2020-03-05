@@ -45,8 +45,8 @@ export class DaoverComponent implements OnInit, OnDestroy {
   yAxis: boolean = true;
   showYAxisLabel: boolean = true;
   showXAxisLabel: boolean = true;
-  xAxisLabel: string = "Probe Name";
-  yAxisLabel: string = "Device";
+  xAxisLabel: string = "Device";
+  yAxisLabel: string = "Probe";
   timeline: boolean = false;
   autoScale: boolean = false;
 
