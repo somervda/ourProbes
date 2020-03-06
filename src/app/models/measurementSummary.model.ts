@@ -36,6 +36,7 @@ export const measurementSummaryAvailableSeries = [
 export const measurementSummaryAvailableTypes = [
   { name: "bps", value: "bps" },
   { name: "rtl (ms)", value: "rtl" },
+  { name: "Time To First Byte (ms)", value: "ttfb" },
   { name: "Failed Tests", value: "fail" },
   { name: "Successful Tests", value: "success" }
 ];

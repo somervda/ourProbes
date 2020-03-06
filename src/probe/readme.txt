@@ -46,3 +46,15 @@ For ESP32-Gateway rev e from olimex
     sd = sdcard.SDCard(spisd, Pin(13))
 import sdcard.py
 Make sure sdcard is formated as FAT32 (SDHC UHS-I 8GB type 4 has worked)
+
+failed bings
+    # Failure Error number returned as a negative value
+    # -10: getlowestPing failed: latency == None
+    # -11: getlowestPing failed: loopback16 == None
+    # -12: getlowestPing failed: loopback26 == None
+    # -13: getlowestPing failed: loopbackMax == None
+    # -14: getlowestPing failed: target26 == None
+    # -15: getlowestPing failed: targetMax == None
+    # -16: bing calculation not possable: loopback26 > loopbackMax
+    # -17: bing calculation not possable: target26 > targetMax
+    # -18: bing calculation not possable: deltaLatency <= 0

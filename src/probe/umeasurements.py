@@ -73,3 +73,15 @@ def remove(fname):
         os.remove('/measurements/' + fname)
     except:
         print("File not found")
+
+
+def writeMeasurement(probe, type, value):
+    measurement = {
+        "probeId": probe['id'],
+        "name": probe['name'],
+        "UMT": utime.time() + 946684800,
+        "value": value,
+        'type': type
+    }
+    add(measurement)
+    print("measurement: ", measurement)

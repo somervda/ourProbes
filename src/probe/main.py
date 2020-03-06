@@ -33,6 +33,7 @@ import machine
 import umemory
 import gc
 import sys
+import uwebPage
 
 
 print("Starting Main")
@@ -162,16 +163,12 @@ try:
     umeasurements.reset()
     connect()
     set_time()
+    gc.collect()
 
     # Keep track of when the device started and IP adderess
-    startUpMeasurement = {
-        "probeId": "",
-        "name": net_if.ifconfig()[0],
-        "UMT": utime.time() + 946684800,
-        "value": 0,
-        'type': 'startup'
-    }
-    umeasurements.add(startUpMeasurement)
+    freeMem = float(umemory.free().replace("%", ""))
+    umeasurements.writeMeasurement(
+        {"id": "", "name": net_if.ifconfig()[0]}, 'startup', freeMem)
 
     loopCnt = 0
     ip = net_if.ifconfig()[0]
@@ -185,9 +182,6 @@ try:
     while jwtExpiry > utime.time():
         loopCnt += 1
         # main loop
-        # 1. build up next set of measurements
-        # 2. Loop Governance : delay next loop for required time so loop isn't too fast, while this is going on
-        #    connect to Google IOT, get new probeConfig(from config topic) and send measurements of network tests (probeConfig)
 
         print('****** ', loopCnt, " memory:", umemory.free())
         loopStartTime = utime.time()
@@ -203,67 +197,38 @@ try:
                     if bingResult != None:
                         if (bingResult[0] != -1):
                             # valid bing, also include probe name on measurement to save looking it up latter
-                            measurement = {
-                                "probeId": probe['id'],
-                                "name": probe['name'],
-                                "UMT": utime.time() + 946684800,
-                                "value": bingResult[0],
-                                'type': 'bps'
-                            }
-                            umeasurements.add(measurement)
-                            print("bps successful:", measurement)
-                            measurement = {
-                                "probeId": probe['id'],
-                                "name": probe['name'],
-                                "UMT": utime.time() + 946684800,
-                                "value": bingResult[1],
-                                'type': 'rtl'
-                            }
-                            umeasurements.add(measurement)
-                            print("rtl successful:", measurement)
-                            measurement = {
-                                "probeId": probe['id'],
-                                "name": probe['name'],
-                                "UMT": utime.time() + 946684800,
-                                "value": 0,
-                                'type': 'success'
-                            }
-                            umeasurements.add(measurement)
+                            umeasurements.writeMeasurement(
+                                probe, 'bps', bingResult[0])
+                            umeasurements.writeMeasurement(
+                                probe, 'rtl', bingResult[1])
+                            umeasurements.writeMeasurement(
+                                probe, 'success', 0)
                         else:
-                            # Failure Error number returned as a negative value
-                            # -10: getlowestPing failed: latency == None
-                            # -11: getlowestPing failed: loopback16 == None
-                            # -12: getlowestPing failed: loopback26 == None
-                            # -13: getlowestPing failed: loopbackMax == None
-                            # -14: getlowestPing failed: target26 == None
-                            # -15: getlowestPing failed: targetMax == None
-                            # -16: bing calculation not possable: loopback26 > loopbackMax
-                            # -17: bing calculation not possable: target26 > targetMax
-                            # -18: bing calculation not possable: deltaLatency <= 0
-                            measurement = {
-                                "probeId": probe['id'],
-                                "name": probe['name'],
-                                "UMT": utime.time() + 946684800,
-                                "value": bingResult[1],
-                                'type': 'fail'
-                            }
-                            umeasurements.add(measurement)
-                            print("bing fail:", measurement)
+                            umeasurements.writeMeasurement(
+                                probe, 'fail', bingResult[1])
                     else:
-                        measurement = {
-                            "probeId": probe['id'],
-                            "name": probe['name'],
-                            "UMT": utime.time() + 946684800,
-                            "value": -1,
-                            'type': 'fail'
-                        }
-                        umeasurements.add(measurement)
-                        print("bing fail: result None", bingResult)
+                        umeasurements.writeMeasurement(
+                            probe, 'fail', -1)
+                if probe['type'] == 3:
+                    webPageResult = uwebPage.webPage(
+                        probe['target'], probe['match'], True)
+                    if (webPageResult[1] == True):
+                        # valid webPageResult ttfb = Time to first Byte
+                        umeasurements.writeMeasurement(
+                            probe, 'ttfb', webPageResult[0])
+                        umeasurements.writeMeasurement(
+                            probe, 'success', 0)
+                    else:
+                        # return status code as value on failure i.e. 301
+                        umeasurements.writeMeasurement(
+                            probe, 'fail', webPageResult[2])
 
         # 2 **************** Governor & probeConfig refresh ***************************
 
         led.value(0)
-        print("governorSeconds: ", str(probeConfig['governorSeconds']))
+        gc.collect()
+        print("governorSeconds: ", str(
+            probeConfig['governorSeconds']), " memory:", umemory.free())
         # print("loop time so far:", utime.time() - loopStartTime)
         probeConfig = mqttProcessConfigAndMeasurements()
         sleeper = probeConfig['governorSeconds'] - \
