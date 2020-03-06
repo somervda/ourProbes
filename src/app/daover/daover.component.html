@@ -71,7 +71,7 @@
     </mat-expansion-panel>
   </mat-accordion>
 
-  <div class="chart-holder">
+  <div class="chart-holder" [style.height]="chartHeight">
     <ngx-charts-heat-map
       *ngIf="showChart"
       [scheme]="selectedScheme == '2Color' ? colorScheme2 : colorScheme5"

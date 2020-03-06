@@ -37,7 +37,7 @@ export class DaoverComponent implements OnInit, OnDestroy {
   showChart: boolean = false;
 
   // chart options
-  //view: any[] = [700, 300];
+  chartHeight = "300px";
   legend: boolean = true;
   showLabels: boolean = true;
   animations: boolean = true;
@@ -127,6 +127,14 @@ export class DaoverComponent implements OnInit, OnDestroy {
 
   updateChart(devices: Device[], probes: Probe[], measurements: Measurement[]) {
     // Initialize array of devices and probes with the intersection being the latest state (initialized)
+    this.chartHeight = probes.length * 40 + 80 + "px";
+    if (
+      this.selectedFilterIndex != 0 &&
+      this.availableFilters[this.selectedFilterIndex].type == "Probe"
+    ) {
+      this.chartHeight = 40 + 80 + "px";
+    }
+    console.log("chartHeight", this.chartHeight);
     devices.forEach(d => {
       if (
         this.selectedFilterIndex == 0 ||

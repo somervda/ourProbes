@@ -11,9 +11,8 @@ export interface Probe {
 
 export enum ProbeType {
   bing = 1,
-  echo = 2,
-  webPage = 3,
-  tracert = 4
+  ping = 2,
+  webPage = 3
 }
 
 export enum ProbeStatus {

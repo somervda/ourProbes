@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { Probe } from "../models/probe.model";
+import { Probe, ProbeType } from "../models/probe.model";
 import { ProbeService } from "../services/probe.service";
 import { Observable } from "rxjs";
 
@@ -10,7 +10,8 @@ import { Observable } from "rxjs";
 })
 export class ProbesComponent implements OnInit {
   probes$: Observable<Probe[]>;
-  displayedColumns: string[] = ["name", "description", "id"];
+  ProbeType = ProbeType;
+  displayedColumns: string[] = ["name", "type", "description", "id"];
 
   constructor(private probeservice: ProbeService) {}
   ngOnInit() {

@@ -191,9 +191,8 @@ try:
             for probe in probeConfig['probeList']:
                 #   bing = 1, echo = 2, webPage = 3,tracert = 4
                 if probe['type'] == 1:
-                    host = probe['target']
                     bingResult = ubing.bing(
-                        host, 5, loopBackAdjustment=True, quiet=True, timeout=3000)
+                        probe['target'], 5, loopBackAdjustment=True, quiet=True, timeout=3000)
                     if bingResult != None:
                         if (bingResult[0] != -1):
                             # valid bing, also include probe name on measurement to save looking it up latter
@@ -209,6 +208,17 @@ try:
                     else:
                         umeasurements.writeMeasurement(
                             probe, 'fail', -1)
+                if probe['type'] == 2:
+                    pingResult = ubing.getLowestPing(
+                        probe['target'], 3, 16, 5000, True)
+                    if (pingResult != 9999):
+                        umeasurements.writeMeasurement(
+                            probe, 'rtl', pingResult)
+                        umeasurements.writeMeasurement(
+                            probe, 'success', 0)
+                    else:
+                        umeasurements.writeMeasurement(
+                            probe, 'fail', 0)
                 if probe['type'] == 3:
                     webPageResult = uwebPage.webPage(
                         probe['target'], probe['match'], True)
