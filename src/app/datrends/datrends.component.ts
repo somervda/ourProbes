@@ -1,4 +1,4 @@
-import { Component, OnInit, NgModule } from "@angular/core";
+import { Component, OnInit, NgModule, Input } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { NgxChartsModule } from "@swimlane/ngx-charts";
 import { Observable, Subscription } from "rxjs";
@@ -19,7 +19,10 @@ import { Probe } from "../models/probe.model";
   styleUrls: ["./datrends.component.scss"]
 })
 export class DatrendsComponent implements OnInit {
-  // view: any[] = [900, 400];
+  @Input() DeviceId: string;
+  @Input() ProbeId: string;
+  @Input() Type: string;
+
   chartData$: Observable<any>;
   chartData$$: Subscription;
   chartData: [];
@@ -28,7 +31,7 @@ export class DatrendsComponent implements OnInit {
   // Measurement selectors
   from: Date;
   to: Date;
-  series: string[] = ["p50"];
+  series: string[] = [];
   availableSeries = measurementSummaryAvailableSeries;
   devices: string[];
   selectedDeviceId: string = "D0001";
@@ -74,6 +77,7 @@ export class DatrendsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    console.log("datrends ngOnInit", this.DeviceId, this.ProbeId, this.Type);
     this.to = new Date();
     this.devices$ = this.deviceService.findDevices(100);
     this.probes$ = this.probeService.findProbes(100);
@@ -81,18 +85,39 @@ export class DatrendsComponent implements OnInit {
     this.probes$$ = this.probes$.subscribe(p => {
       console.log("p:", p);
       this.probes = p;
-      this.selectedProbe = p[0];
+      if (this.ProbeId && this.ProbeId != "") {
+        this.selectedProbe = p.find(pf => pf.id == this.ProbeId);
+      } else {
+        this.selectedProbe = p[0];
+      }
       this.getChartData();
     });
     this.devices$$ = this.devices$.subscribe(d => {
       console.log("d:", d);
-      this.selectedDeviceId = d[0].id;
+      if (this.DeviceId && this.DeviceId != "") {
+        this.selectedDeviceId = this.DeviceId;
+      } else {
+        this.selectedDeviceId = d[0].id;
+      }
+
+      if (this.Type && this.Type != "") {
+        this.selectedType = this.Type;
+      } else {
+        this.selectedType = this.availableTypes[0].value;
+      }
+      if (this.selectedType == "success" || this.selectedType == "fail") {
+        this.series.push("count");
+      } else {
+        this.series.push("p50");
+      }
+
       this.getChartData();
     });
   }
 
   getChartData() {
     // selected range is in hours - multiply by 3600 and 1000 to convert to milliseconds
+    this.yAxisLabel = this.selectedType;
     const msRange = 3600 * 1000 * this.selectedRangeHours;
     this.from = new Date(this.to.getTime() - msRange);
     // get the period associated with this selectedRange
@@ -106,7 +131,13 @@ export class DatrendsComponent implements OnInit {
       this.to,
       this.selectedRangeHours,
       "period:",
-      period
+      period,
+      "type:",
+      this.selectedType,
+      "device:",
+      this.selectedDeviceId,
+      "probe:",
+      this.selectedProbe
     );
     this.chartData$ = this.mss.getChartSeries(
       this.from,

@@ -1,14 +1,21 @@
 <app-subheading title="Data Analysis" matIcon="bar_chart"></app-subheading>
 <div class="page-container">
-  <mat-tab-group>
+  <mat-tab-group
+    [selectedIndex]="tabIndex"
+    (selectedIndexChange)="tabIndexChange($event)"
+  >
     <mat-tab label="Overview">
       <ng-template matTabContent>
-        <app-daover></app-daover>
+        <app-daover (trendEvent)="trendMessage($event)"></app-daover>
       </ng-template>
     </mat-tab>
     <mat-tab label="Trends">
       <ng-template matTabContent>
-        <app-datrends></app-datrends>
+        <app-datrends
+          [DeviceId]="DeviceId"
+          [ProbeId]="ProbeId"
+          [Type]="Type"
+        ></app-datrends>
       </ng-template>
     </mat-tab>
     <mat-tab label="Extract">

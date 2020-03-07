@@ -1,7 +1,13 @@
 import { ChartSeries } from "./../models/chart.model";
 import { Device } from "./../models/device.model";
 import { Measurement } from "./../models/measurement.model";
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  Output,
+  EventEmitter
+} from "@angular/core";
 import { AngularFirestore } from "@angular/fire/firestore";
 import { MeasurementService } from "../services/measurement.service";
 import { DeviceService } from "../services/device.service";
@@ -16,10 +22,17 @@ import { measurementSummaryAvailableTypes } from "../models/measurementSummary.m
   styleUrls: ["./daover.component.scss"]
 })
 export class DaoverComponent implements OnInit, OnDestroy {
+  @Output() trendEvent = new EventEmitter<{
+    DeviceId: string;
+    ProbeId: string;
+    Type: string;
+  }>();
+
   to = new Date();
   type = "";
   devices$: Observable<Device[]>;
   probes$: Observable<Probe[]>;
+  probes: Probe[];
   measurements$: Observable<Measurement[]>;
   allData$$: Subscription;
   overviewData: DeviceProbeState[] = [];
@@ -126,6 +139,7 @@ export class DaoverComponent implements OnInit, OnDestroy {
   }
 
   updateChart(devices: Device[], probes: Probe[], measurements: Measurement[]) {
+    this.probes = probes;
     // Initialize array of devices and probes with the intersection being the latest state (initialized)
     this.chartHeight = probes.length * 40 + 80 + "px";
     if (
@@ -219,10 +233,18 @@ export class DaoverComponent implements OnInit, OnDestroy {
 
   onSelect(data): void {
     console.log("Item clicked", JSON.parse(JSON.stringify(data)));
+
+    const trendSetting = {
+      DeviceId: data.series,
+      ProbeId: this.probes.find(p => p.name == data.name).id,
+      Type: this.selectedType
+    };
+    this.trendEvent.emit(trendSetting);
   }
 
   onFilterChange(event) {
     console.log("onFilterChange", event, event.srcElement.value);
+
     this.selectedFilterIndex = event.srcElement.value;
     this.showOverviewChart();
   }

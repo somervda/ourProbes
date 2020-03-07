@@ -220,7 +220,7 @@ export class ProbeComponent implements OnInit, OnDestroy {
         this.probeForm.get("target").disable();
         this.probeForm.get("type").disable();
         this.snackBar.open(
-          "Probe's target and type properties can not be updated because measurements have already be created for this probe." +
+          "Probe's target and type properties can not be updated because measurements have already been created for this probe." +
             "  Options: Delete and create another probe.",
           "",
           {

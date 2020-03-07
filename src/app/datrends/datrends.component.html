@@ -7,7 +7,8 @@
         </mat-panel-title>
         <mat-panel-description>
           Device:
-          {{ selectedDeviceId }} Probe: {{ selectedProbe.name }} Time Range:
+          {{ selectedDeviceId }} Probe:
+          {{ selectedProbe ? selectedProbe.name : "" }} Time Range:
           {{ getRangeName(selectedRangeHours) }}
         </mat-panel-description>
       </mat-expansion-panel-header>
@@ -67,14 +68,22 @@
             Available&nbsp;Series&nbsp;
           </td>
           <td width="100%">
-            <mat-checkbox
+            <span
               *ngFor="let seriesName of availableSeries"
-              (change)="onCbSeriesChange($event)"
-              [value]="seriesName"
-              [checked]="seriesName == 'p50'"
+              style="margin-right: 15px;"
             >
-              {{ seriesName }}&nbsp;
-            </mat-checkbox>
+              <mat-checkbox
+                (change)="onCbSeriesChange($event)"
+                [value]="seriesName"
+                [checked]="
+                  selectedType == 'success' || this.selectedType == 'fail'
+                    ? seriesName == 'count'
+                    : seriesName == 'p50'
+                "
+              >
+                {{ seriesName }}&nbsp;
+              </mat-checkbox>
+            </span>
           </td>
         </tr>
         <tr>
