@@ -75,11 +75,7 @@
               <mat-checkbox
                 (change)="onCbSeriesChange($event)"
                 [value]="seriesName"
-                [checked]="
-                  selectedType == 'success' || this.selectedType == 'fail'
-                    ? seriesName == 'count'
-                    : seriesName == 'p50'
-                "
+                [checked]="series.includes(seriesName)"
               >
                 {{ seriesName }}&nbsp;
               </mat-checkbox>

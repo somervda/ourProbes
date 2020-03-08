@@ -42,7 +42,7 @@ export class DatrendsComponent implements OnInit {
   probes$: Observable<Probe[]>;
   probes$$: Subscription;
   availableTypes = measurementSummaryAvailableTypes;
-  selectedType: string = this.availableTypes[0].value;
+  selectedType: string;
   availableRanges = [
     { name: "6 hours", period: 1, hours: 6 },
     { name: "24 hours", period: 1, hours: 24 },
@@ -102,13 +102,17 @@ export class DatrendsComponent implements OnInit {
 
       if (this.Type && this.Type != "") {
         this.selectedType = this.Type;
+        console.log("selectedType 1:", this.selectedType);
       } else {
         this.selectedType = this.availableTypes[0].value;
+        console.log("selectedType 2:", this.selectedType);
       }
       if (this.selectedType == "success" || this.selectedType == "fail") {
         this.series.push("count");
+        console.log("series 1:", this.series);
       } else {
         this.series.push("p50");
+        console.log("series 2:", this.series);
       }
 
       this.getChartData();
@@ -167,6 +171,7 @@ export class DatrendsComponent implements OnInit {
     } else {
       this.series.splice(this.series.indexOf(event.source.value), 1);
     }
+    console.log("series 3:", this.series);
     this.getChartData();
   }
 
@@ -200,6 +205,7 @@ export class DatrendsComponent implements OnInit {
     this.yAxisLabel = this.availableTypes.find(
       t => event.srcElement.value == t.value
     ).name;
+    console.log("onTypeChange seria:", this.series);
     this.getChartData();
   }
 
