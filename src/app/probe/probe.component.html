@@ -116,7 +116,7 @@
           matInput
           formControlName="match"
           (change)="onFieldUpdate('match')"
-          placeholder="Check for Matching String on Web Page"
+          placeholder="Check for Matching String in first 1000 bytes of Web Page"
         />
         <mat-error *ngIf="probeForm.controls['match'].hasError('maxlength')">
           Target must be no more than 30 characters long.
