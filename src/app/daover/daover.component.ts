@@ -13,7 +13,7 @@ import { MeasurementService } from "../services/measurement.service";
 import { DeviceService } from "../services/device.service";
 import { ProbeService } from "../services/probe.service";
 import { Observable, Subscription, forkJoin, combineLatest } from "rxjs";
-import { Probe } from "../models/probe.model";
+import { Probe, ProbeMeasurementTypes } from "../models/probe.model";
 import { measurementSummaryAvailableTypes } from "../models/measurementSummary.model";
 
 @Component({
@@ -45,6 +45,7 @@ export class DaoverComponent implements OnInit, OnDestroy {
   selectedFilterIndex = 0;
   selectedMeasurement = "count";
   selectedScheme = "2Color";
+  probeMeasurementTypes = ProbeMeasurementTypes;
 
   chartData = [];
   showChart: boolean = false;
@@ -107,34 +108,48 @@ export class DaoverComponent implements OnInit, OnDestroy {
       this.measurements$
     ).subscribe(([devices, probes, measurements]) => {
       console.log("subscription:", devices, probes, measurements);
-      this.updateChart(devices, probes, measurements);
-      if (this.availableFilters.length == 1) {
-        this.availableFilters.push({
-          name: "---- Devices ----",
-          type: "separator",
-          value: "-1"
-        });
-        devices.forEach(d =>
-          this.availableFilters.push({
-            name: d.id,
-            type: "Device",
-            value: d.id
-          })
-        );
-        this.availableFilters.push({
-          name: "---- Probes ----",
-          type: "separator",
-          value: "-1"
-        });
+      // remove probes that do no support he selectedType (Measurement.type)
+      const resolvedProbes = probes.reduce((resolvedProbes, p) => {
+        const measurementTypes = this.probeMeasurementTypes.find(
+          mt => mt.probeType === p.type
+        ).measurementTypes;
+        console.log("measurementTypes", measurementTypes);
+        if (measurementTypes.includes(this.selectedType)) {
+          resolvedProbes.push(p);
+        }
+        return resolvedProbes;
+      }, []);
+      console.log("resolvedProbes,", resolvedProbes);
 
-        probes.forEach(p =>
-          this.availableFilters.push({
-            name: p.name,
-            type: "Probe",
-            value: p.id
-          })
-        );
-      }
+      this.updateChart(devices, resolvedProbes, measurements);
+      this.availableFilters = [{ name: "No Filter", type: "", value: "" }];
+      // if (this.availableFilters.length == 1) {
+      this.availableFilters.push({
+        name: "---- Devices ----",
+        type: "separator",
+        value: "-1"
+      });
+      devices.forEach(d =>
+        this.availableFilters.push({
+          name: d.id,
+          type: "Device",
+          value: d.id
+        })
+      );
+      this.availableFilters.push({
+        name: "---- Probes ----",
+        type: "separator",
+        value: "-1"
+      });
+
+      resolvedProbes.forEach(p =>
+        this.availableFilters.push({
+          name: p.name,
+          type: "Probe",
+          value: p.id
+        })
+      );
+      // }
     });
   }
 
