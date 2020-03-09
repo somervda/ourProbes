@@ -6,7 +6,8 @@ import { AngularFirestore } from "@angular/fire/firestore";
 import { MeasurementSummaryService } from "../services/measurement-summary.service";
 import {
   measurementSummaryAvailableSeries,
-  measurementSummaryAvailableTypes
+  measurementSummaryAvailableTypes,
+  measurementSummaryPeriod
 } from "../models/measurementSummary.model";
 import { DeviceService } from "../services/device.service";
 import { ProbeService } from "../services/probe.service";
@@ -34,7 +35,7 @@ export class DatrendsComponent implements OnInit {
   series: string[] = [];
   availableSeries = measurementSummaryAvailableSeries;
   devices: string[];
-  selectedDeviceId: string = "D0001";
+  selectedDeviceId: string = "";
   devices$: Observable<Device[]>;
   devices$$: Subscription;
   probes: Probe[];
@@ -83,7 +84,6 @@ export class DatrendsComponent implements OnInit {
     this.probes$ = this.probeService.findProbes(100);
     // Set initial probe to query
     this.probes$$ = this.probes$.subscribe(p => {
-      console.log("p:", p);
       this.probes = p;
       if (this.ProbeId && this.ProbeId != "") {
         this.selectedProbe = p.find(pf => pf.id == this.ProbeId);
@@ -93,7 +93,6 @@ export class DatrendsComponent implements OnInit {
       this.getChartData();
     });
     this.devices$$ = this.devices$.subscribe(d => {
-      console.log("d:", d);
       if (this.DeviceId && this.DeviceId != "") {
         this.selectedDeviceId = this.DeviceId;
       } else {
@@ -102,17 +101,13 @@ export class DatrendsComponent implements OnInit {
 
       if (this.Type && this.Type != "") {
         this.selectedType = this.Type;
-        console.log("selectedType 1:", this.selectedType);
       } else {
-        this.selectedType = this.availableTypes[0].value;
-        console.log("selectedType 2:", this.selectedType);
+        this.selectedType = "success";
       }
       if (this.selectedType == "success" || this.selectedType == "fail") {
         this.series.push("count");
-        console.log("series 1:", this.series);
       } else {
         this.series.push("p50");
-        console.log("series 2:", this.series);
       }
 
       this.getChartData();
@@ -121,13 +116,18 @@ export class DatrendsComponent implements OnInit {
 
   getChartData() {
     // selected range is in hours - multiply by 3600 and 1000 to convert to milliseconds
-    this.yAxisLabel = this.selectedType;
+    this.yAxisLabel = this.availableTypes.find(
+      t => this.selectedType == t.value
+    ).name;
     const msRange = 3600 * 1000 * this.selectedRangeHours;
     this.from = new Date(this.to.getTime() - msRange);
     // get the period associated with this selectedRange
-    const period = this.availableRanges.find(
+    let period = this.availableRanges.find(
       element => element.hours == this.selectedRangeHours
     ).period;
+    if (!period) {
+      period = measurementSummaryPeriod.hour;
+    }
     console.log(
       "getChartData from:",
       this.from,
@@ -202,9 +202,6 @@ export class DatrendsComponent implements OnInit {
   onTypeChange(event) {
     console.log("onTypeChange:", event, event.srcElement.value);
     this.selectedType = event.srcElement.value;
-    this.yAxisLabel = this.availableTypes.find(
-      t => event.srcElement.value == t.value
-    ).name;
     console.log("onTypeChange seria:", this.series);
     this.getChartData();
   }

@@ -6,8 +6,7 @@
           Overview
         </mat-panel-title>
         <mat-panel-description>
-          Device/Probe activity over last hour :
-          {{ getTypeName(selectedType) }}
+          {{ getTypeName(selectedType) }} *
         </mat-panel-description>
       </mat-expansion-panel-header>
       <mat-form-field class="half-width"
@@ -87,4 +86,9 @@
     >
     </ngx-charts-heat-map>
   </div>
+</div>
+<div class="notes">
+  * Measurements collected from the devices in the past hour. Based on the
+  selected measurement, either latest value or total count of measurements are
+  shown for each device and probe.
 </div>
