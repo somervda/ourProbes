@@ -46,7 +46,6 @@ import { NotfoundComponent } from "./notfound/notfound.component";
 import { AboutComponent } from "./about/about.component";
 import { LoginComponent } from "./login/login.component";
 import { ServiceWorkerModule } from "@angular/service-worker";
-import { AdministrationComponent } from "./administration/administration.component";
 import { UsersComponent } from "./users/users.component";
 import { UserComponent } from "./user/user.component";
 import { NotauthorizedComponent } from "./notauthorized/notauthorized.component";
@@ -65,6 +64,8 @@ import { DatrendsComponent } from "./datrends/datrends.component";
 import { TestyComponent } from "./testy/testy.component";
 import { DaoverComponent } from "./daover/daover.component";
 import { DaextractComponent } from "./daextract/daextract.component";
+import { HelpComponent } from "./help/help.component";
+import { YoutubeComponent } from './youtube/youtube.component';
 
 @NgModule({
   declarations: [
@@ -73,7 +74,6 @@ import { DaextractComponent } from "./daextract/daextract.component";
     NotfoundComponent,
     AboutComponent,
     LoginComponent,
-    AdministrationComponent,
     UsersComponent,
     UserComponent,
     NotauthorizedComponent,
@@ -91,7 +91,9 @@ import { DaextractComponent } from "./daextract/daextract.component";
     DatrendsComponent,
     TestyComponent,
     DaoverComponent,
-    DaextractComponent
+    DaextractComponent,
+    HelpComponent,
+    YoutubeComponent
   ],
   imports: [
     BrowserModule,

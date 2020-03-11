@@ -9,7 +9,6 @@ import { LoginComponent } from "./login/login.component";
 import { UsersComponent } from "./users/users.component";
 import { UserComponent } from "./user/user.component";
 import { UserResolver } from "./services/user-resolver";
-import { AdministrationComponent } from "./administration/administration.component";
 import { IsAdminGuard } from "./guards/isAdmin.guard";
 import { IsActivatedGuard } from "./guards/isActivated.guard";
 import { IsLoggedInGuard } from "./guards/isLoggedIn.guard";
@@ -21,19 +20,16 @@ import { ProbeComponent } from "./probe/probe.component";
 import { ProbeResolver } from "./services/probe-resolver";
 import { NotactivatedComponent } from "./notactivated/notactivated.component";
 import { TestyComponent } from "./testy/testy.component";
+import { HelpComponent } from "./help/help.component";
 
 const routes: Routes = [
   { path: "testy", component: TestyComponent },
   { path: "", component: HomeComponent, canActivate: [IsLoggedInGuard] },
   { path: "about", component: AboutComponent },
   { path: "login", component: LoginComponent },
+  { path: "help", component: HelpComponent },
   { path: "notAuthorized", component: NotauthorizedComponent },
   { path: "notActivated", component: NotactivatedComponent },
-  {
-    path: "administration",
-    component: AdministrationComponent,
-    canActivate: [IsAdminGuard]
-  },
   { path: "users", component: UsersComponent, canActivate: [IsAdminGuard] },
   {
     path: "devices",
