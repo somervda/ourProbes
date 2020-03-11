@@ -26,7 +26,7 @@ context("Admin user login", () => {
   });
 
   it("Navigate to Admin", () => {
-    cy.verifyAdminComponent();
+    cy.verifyAdmin();
   });
 
   it("Logout", () => {

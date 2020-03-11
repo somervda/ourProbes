@@ -41,25 +41,20 @@ Cypress.Commands.add("verifyHomeComponent", () => {
   cy.get("#mainMenu").click();
   cy.get("#mainMenuHome").click();
   // Verify component was rendered
-  cy.get(".mat-card-title").contains("Code");
+  cy.get(".mat-icon").contains("home");
+});
+
+Cypress.Commands.add("verifyAdmin", () => {
+  cy.get("#mainMenu").click();
+  cy.get("#mainMenuUser").click();
+  cy.get("body").contains("Users");
 });
 
 Cypress.Commands.add("verifyMyProfileComponent", () => {
   cy.get("#mainMenu").click();
   cy.get("#mainMenuMyProfile").click();
   // Verify component was rendered
-  cy.get("h1").contains("User Profile");
-});
-
-Cypress.Commands.add("verifyAdminComponent", () => {
-  cy.get("#mainMenu").click();
-  cy.get("#mainMenuAdministration").click();
-  cy.get("h1").contains("Administration");
-  cy.get('[routerlink="/users"]').click();
-  cy.get("h1").contains("Users");
-  cy.contains(Cypress.env("nonAdminUser").toLowerCase()).click();
-  cy.url().should("include", "user/");
-  cy.get("h1").contains("User Profile");
+  cy.get("body").contains("User Profile");
 });
 
 Cypress.Commands.add("verifyLogout", () => {
@@ -94,4 +89,5 @@ Cypress.Commands.add("logonEmail", (usercode, password) => {
   cy.get(".firebaseui-id-submit").click();
   cy.get(":nth-child(3) > .mdl-textfield__input").type(password);
   cy.get(".firebaseui-id-submit").click();
+  cy.wait(2000);
 });
