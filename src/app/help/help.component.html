@@ -1,12 +1,48 @@
 <app-subheading title="Help"></app-subheading>
 <div class="page-container">
-  Manual
+  <div class="help-subheading">Manual</div>
   <div class="help-content">
     The ourProbes manual walks though the ourProbes workflow, technical
     details.<br />
-    <a href="" target="_blank">ourProbes Manual</a>
+    <a href="../../assets/ourProbes-manual.pdf">ourProbes Manual</a>
   </div>
-  Github
+
+  <div class="help-subheading">Device Setup</div>
+  <div class="help-content">
+    This zip file contains the files needed to provision a new esp32 device.
+    <a href="../../assets/deviceSetUp.zip">deviceSetUp.zip</a> <br />See the
+    ourProbes Videos below for a video walk through of this process.<br /><br />
+    <ol>
+      <li>
+        Download and open this zip file .
+      </li>
+      <li>
+        Copy the ourProbesDeviceMaker folder to a temporary location on your
+        machine.
+      </li>
+      <li>
+        In a command window cd to the ourProbesDeviceMaker folder.
+      </li>
+      <li>
+        In the probe subfolder update the config.py file (Usually by using the
+        config.py creator in the device page, update any ssid/password info if
+        needed.).
+      </li>
+      <li>
+        Update the deviceDeploy.bat file to use the correct serial port.
+      </li>
+      <li>
+        Connect the new esp32 to your pc device via a serial connection (usb
+        cable). <br />
+        Note: you can check what serial port the device is on using the "mode"
+        command in windows.
+      </li>
+      <li>
+        Start the deviceDeploy.bat job.
+      </li>
+    </ol>
+  </div>
+  <div class="help-subheading">Github</div>
   <div class="help-content">
     Source code is free to use and is available at
     <a href="https://github.com/somervda/ourProbes" target="_blank"
@@ -14,12 +50,12 @@
     >
   </div>
 
-  Video Tutorials
+  <div class="help-subheading">Video Tutorials</div>
   <div class="help-content">
     <youtube collection="ourProbes" [isAsc]="true"></youtube>
   </div>
 
-  Development Blog
+  <div class="help-subheading">Development Blog</div>
   <div class="help-content">
     A series of video blogs showing the development process for the micropython
     and angular code is available at
