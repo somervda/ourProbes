@@ -11,7 +11,7 @@ import { Observable } from "rxjs";
 export class ProbesComponent implements OnInit {
   probes$: Observable<Probe[]>;
   ProbeType = ProbeType;
-  displayedColumns: string[] = ["name", "type", "description", "id"];
+  displayedColumns: string[] = ["name", "type", "target", "id"];
 
   constructor(private probeservice: ProbeService) {}
   ngOnInit() {
