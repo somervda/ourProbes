@@ -131,18 +131,17 @@ def get_mqtt_client(project_id, cloud_region, registry_id, device_id, jwt):
 
 
 def mqttProcessConfigAndMeasurements():
+    blink(3, .2)
     gc.collect()
     # print('Connecting MQTT client...')
     client = get_mqtt_client(config.google_cloud_config['project_id'], config.google_cloud_config['cloud_region'],
                              config.google_cloud_config['registry_id'], config.google_cloud_config['device_id'], jwt)
-    led.value(1)
     client.check_msg()  # Check for new messages on subscription
     probeConfig = uprobeConfig.get()
     # print("probeConfig : ", str(probeConfig))
 
     # Turn of led while sending probe measurements to IOT core
     for fName in umeasurements.list():
-        led.value(0)
         measurement = umeasurements.get(fName)
         # print("Publishing result ", fName, " : ",
         #       str(ujson.dumps(measurement)))
@@ -152,14 +151,24 @@ def mqttProcessConfigAndMeasurements():
                        ujson.dumps(measurement).encode('utf-8'))
         umeasurements.remove(fName)
         utime.sleep_ms(500)
-        led.value(1)
 
     # print('disconnecting MQTT client...')
     client.disconnect()
     return probeConfig
 
 
+def blink(number=1, sleep=.5):
+    for x in range(number):
+        led.value(1)  # light on led
+        utime.sleep(sleep)
+        led.value(0)  # light off led
+        utime.sleep(sleep)
+    utime.sleep(1)
+
+
 try:
+    print("Device: ", config.google_cloud_config['device_id'])
+    blink(6, .25)
     umeasurements.reset()
     connect()
     set_time()
@@ -191,6 +200,7 @@ try:
             for probe in probeConfig['probeList']:
                 #   bing = 1, echo = 2, webPage = 3,tracert = 4
                 if probe['type'] == 1:
+                    blink(1)
                     bingResult = ubing.bing(
                         probe['target'], 5, loopBackAdjustment=True, quiet=True, timeout=3000)
                     if bingResult != None:
@@ -209,6 +219,7 @@ try:
                         umeasurements.writeMeasurement(
                             probe, 'fail', -1)
                 if probe['type'] == 2:
+                    blink(1)
                     pingResult = ubing.getLowestPing(
                         probe['target'], 3, 16, 5000, True)
                     if (pingResult != 9999):
@@ -220,6 +231,7 @@ try:
                         umeasurements.writeMeasurement(
                             probe, 'fail', 0)
                 if probe['type'] == 3:
+                    blink(1)
                     webPageResult = uwebPage.webPage(
                         probe['target'], probe['match'], True)
                     if (webPageResult[1] == True):
@@ -235,7 +247,6 @@ try:
 
         # 2 **************** Governor & probeConfig refresh ***************************
 
-        led.value(0)
         gc.collect()
         print("governorSeconds: ", str(
             probeConfig['governorSeconds']), " memory:", umemory.free())
