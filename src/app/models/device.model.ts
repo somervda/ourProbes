@@ -29,7 +29,7 @@ export interface Device {
 export enum DeviceType {
   esp32HiLetGo = 1,
   esp32GatewayOlimex = 2,
-  raspberryPi4 = 3
+  python = 3
 }
 
 export interface ProbeListItem {

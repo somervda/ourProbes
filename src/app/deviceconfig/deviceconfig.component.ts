@@ -39,6 +39,7 @@ export class DeviceconfigComponent implements OnInit, OnDestroy {
     token_ttl: 43200,
     private_key: "ReplaceMePKT"
   };
+
   deviceSubscription$$: Subscription;
   DeviceType = DeviceType;
 
@@ -75,20 +76,30 @@ export class DeviceconfigComponent implements OnInit, OnDestroy {
         // console.log("deviceSubscription: ", device);
         // Javascript does not support tuples like python so need to manually format the private key tuple
         // Also need to change case for true and false values
-        const ReplaceMePKT = "(" + device.privateKeyTuple + ")";
-        const configData =
-          "device_config = " +
-          JSON.stringify(this.device_config)
-            .replace("false", "False")
-            .replace("true", "True")
-            .replace(/,/g, ",\r\n")
-            .replace("}", "\r\n}") +
-          "\r\n\r\n" +
-          "wifi_config = " +
-          JSON.stringify(this.wifi_config)
-            .replace(/,/g, ",\r\n")
-            .replace("}", "\r\n}") +
-          "\r\n\r\n" +
+        let ReplaceMePKT = "";
+        // micropython based devices need the private key as a tuple, python can deal with a normal one
+        if (device.type === DeviceType.python) {
+          ReplaceMePKT = device.privateKey;
+        } else {
+          ReplaceMePKT = "(" + device.privateKeyTuple + ")";
+        }
+        let configData = "";
+        if (device.type !== DeviceType.python) {
+          configData +=
+            "device_config = " +
+            JSON.stringify(this.device_config)
+              .replace("false", "False")
+              .replace("true", "True")
+              .replace(/,/g, ",\r\n")
+              .replace("}", "\r\n}") +
+            "\r\n\r\n" +
+            "wifi_config = " +
+            JSON.stringify(this.wifi_config)
+              .replace(/,/g, ",\r\n")
+              .replace("}", "\r\n}") +
+            "\r\n\r\n";
+        }
+        configData +=
           "google_cloud_config = " +
           JSON.stringify(this.google_cloud_config)
             .replace(/,/g, ",\r\n")
@@ -98,7 +109,12 @@ export class DeviceconfigComponent implements OnInit, OnDestroy {
           JSON.stringify(this.jwt_config)
             .replace(/,/g, ",\r\n")
             .replace("}", "\r\n}")
-            .replace('"ReplaceMePKT"', ReplaceMePKT);
+            .replace(
+              '"ReplaceMePKT"',
+              device.type === DeviceType.python
+                ? '"' + ReplaceMePKT + '"'
+                : ReplaceMePKT
+            );
 
         // console.log("configData:", configData);
 
