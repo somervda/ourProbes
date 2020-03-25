@@ -15,7 +15,8 @@ def webPage(target, match,  quiet=True):
         not quiet and print('webPage GET return %d code (%s)' %
                             (resp.status_code, resp.reason))
 
-    t_elapsed = time.perf_counter() - timestamp
+    # Get ttfb in ms
+    t_elapsed = (time.perf_counter() - timestamp) * 1000
     not quiet and print("elapsed:", t_elapsed)
     not quiet and print("matched:", matched)
     return t_elapsed, matched, resp.status_code

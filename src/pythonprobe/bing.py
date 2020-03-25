@@ -23,7 +23,7 @@ def getLowestPing(host, samples, maxSize, timeout=5000, quiet=False):
     for pingItem in pings:
         if (minPing > pingItem):
             minPing = pingItem
-    return minPing
+    return minPing * 1000
 
 
 def bing(host, samples=3, maxSize=1460, timeout=5000, quiet=False, loopBackAdjustment=True):
@@ -100,7 +100,7 @@ def bing(host, samples=3, maxSize=1460, timeout=5000, quiet=False, loopBackAdjus
     not quiet and print("deltaLatency:", deltaLatency)
     deltaPayloadBits = (maxSize-26) * 8
     not quiet and print("deltaPayloadBits:", deltaPayloadBits)
-    bps = int(deltaPayloadBits * 2 / deltaLatency)
+    bps = int(deltaPayloadBits * 2 * 1000 / deltaLatency)
     not quiet and print("bps:", bps)
 
     return (bps, latency)

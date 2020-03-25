@@ -79,7 +79,9 @@ export class DeviceconfigComponent implements OnInit, OnDestroy {
         let ReplaceMePKT = "";
         // micropython based devices need the private key as a tuple, python can deal with a normal one
         if (device.type === DeviceType.python) {
-          ReplaceMePKT = device.privateKey;
+          ReplaceMePKT = device.privateKey
+            .replace(/\r\n/g, "\\n")
+            .replace(/\n/g, "\\n");
         } else {
           ReplaceMePKT = "(" + device.privateKeyTuple + ")";
         }
