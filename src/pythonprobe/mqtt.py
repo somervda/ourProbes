@@ -1,4 +1,4 @@
-import paho.mqtt.client as mqtt
+import paho.mqtt.client as pahomqtt
 import jwt
 import datetime
 import ssl
@@ -52,12 +52,12 @@ def create_jwt(project_id, private_key, algorithm, token_ttl):
 
 def error_str(rc):
     """Convert a Paho error to a human readable string."""
-    return '{}: {}'.format(rc, mqtt.error_string(rc))
+    return '{}: {}'.format(rc, pahomqtt.error_string(rc))
 
 
 def on_connect(unused_client, unused_userdata, unused_flags, rc):
     """Callback for when a device connects."""
-    # print('on_connect', mqtt.connack_string(rc))
+    # print('on_connect', pahomqtt.connack_string(rc))
 
     # After a successful connect, reset backoff time and stop backing off.
     global should_backoff
@@ -101,7 +101,7 @@ def get_client(
         project_id, cloud_region, registry_id, device_id)
     # print('Device client_id is \'{}\''.format(client_id))
 
-    client = mqtt.Client(client_id=client_id)
+    client = pahomqtt.Client(client_id=client_id)
 
     # With Google Cloud IoT Core, the username field is ignored, and the
     # password field is used to transmit a JWT to authorize the device.

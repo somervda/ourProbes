@@ -1,4 +1,5 @@
 import mqtt
+import jwt
 import probeConfig as probeConfigLib
 import os
 import json
@@ -7,6 +8,10 @@ import time
 import bing
 import webPage
 import sys
+import traceback
+import socket
+
+device_id = ""
 
 
 def on_message(unused_client, unused_userdata, message):
@@ -14,9 +19,8 @@ def on_message(unused_client, unused_userdata, message):
     payload = str(message.payload.decode('utf-8'))
     # print('Received message \'{}\' on topic \'{}\' with Qos {} with mid {}'.format(
     #     payload, message.topic, str(message.qos), str(message.mid)))
-    deviceConfigTopic = '/devices/{}/config'.format(
-        config.google_cloud_config['device_id'])
-    # print("{} - {}".format(message.topic, deviceConfigTopic))
+    deviceConfigTopic = '/devices/{}/config'.format(device_id)
+    # print("on_message {} - {}".format(message.topic, deviceConfigTopic))
     if message.topic == deviceConfigTopic:
         probeConfigLib.save(payload)
 
@@ -25,7 +29,13 @@ def mqttProcessConfigAndMeasurements(args):
     print('mqttProcessConfigAndMeasurements...')
     client = mqtt.get_client(args.project_id, args.cloud_region, args.registry_id, args.device_id, args.private_key,
                              args.algorithm, args.ca_certs, args.mqtt_bridge_hostname, args.mqtt_bridge_port, args.token_ttl, on_message)
+    probeConfigRetrys = 0
+    while probeConfigLib.get() == {} or probeConfigRetrys > 30:
+        probeConfigRetrys += 1
+        time.sleep(1)
     probeConfig = probeConfigLib.get()
+    if probeConfig == {}:
+        raise NameError('Could not get probeConfig')
     # print("probeConfig : ", str(probeConfig))
 
     for fName in measurements.list():
@@ -72,81 +82,89 @@ def getArgs():
         return None
 
 
-args = getArgs()
-if args == None:
-    sys.exit("Error: config.json not found, exiting")
-print("Device: ", args.device_id)
-measurements.reset()
-measurements.writeMeasurement(
-    {"id": "", "name": "startup"}, 'startup', 0)
+try:
+    args = getArgs()
+    # keep a global copy of the device_id for use by the on_message code
+    device_id = args.device_id
+    if args == None:
+        sys.exit("Error: config.json not found, exiting")
+    print("Device: ", device_id)
+    measurements.reset()
+    ip = socket.gethostname()
+    measurements.writeMeasurement(
+        {"id": "", "name": ip}, 'startup', 0)
 
-loopCnt = 0
-probeConfig = mqttProcessConfigAndMeasurements(args)
-while True:
-    loopCnt += 1
-    # main loop
+    loopCnt = 0
+    probeConfig = mqttProcessConfigAndMeasurements(args)
+    # Loop forever
+    while True:
+        loopCnt += 1
+        # main loop
 
-    print('****** ', loopCnt)
-    loopStartTime = time.time()
+        print('****** ', loopCnt)
+        loopStartTime = time.time()
 
-    # 1 *******************  Probes - network capability tests *****************************
-    if probeConfig['runProbes'] == True:
-        for probe in probeConfig['probeList']:
-            #   bing = 1, echo = 2, webPage = 3,tracert = 4
-            if probe['type'] == 1:
-                bingResult = bing.bing(
-                    probe['target'], 5, loopBackAdjustment=False, quiet=True, timeout=3000)
-                if bingResult != None:
-                    if (bingResult[0] != -1):
-                        # valid bing, also include probe name on measurement to save looking it up latter
+        # 1 *******************  Probes - network capability tests *****************************
+        if probeConfig['runProbes'] == True:
+            for probe in probeConfig['probeList']:
+                #   bing = 1, echo = 2, webPage = 3,tracert = 4
+                if probe['type'] == 1:
+                    bingResult = bing.bing(
+                        probe['target'], 5, loopBackAdjustment=False, quiet=True, timeout=3000)
+                    if bingResult != None:
+                        if (bingResult[0] != -1):
+                            # valid bing, also include probe name on measurement to save looking it up latter
+                            measurements.writeMeasurement(
+                                probe, 'bps', bingResult[0])
+                            measurements.writeMeasurement(
+                                probe, 'rtl', bingResult[1])
+                            measurements.writeMeasurement(
+                                probe, 'success', 0)
+                        else:
+                            measurements.writeMeasurement(
+                                probe, 'fail', bingResult[1])
+                    else:
                         measurements.writeMeasurement(
-                            probe, 'bps', bingResult[0])
+                            probe, 'fail', -1)
+                if probe['type'] == 2:
+                    pingResult = bing.getLowestPing(
+                        probe['target'], 3, 16, 5000, True)
+                    if (pingResult != 9999):
                         measurements.writeMeasurement(
-                            probe, 'rtl', bingResult[1])
+                            probe, 'rtl', pingResult)
                         measurements.writeMeasurement(
                             probe, 'success', 0)
                     else:
                         measurements.writeMeasurement(
-                            probe, 'fail', bingResult[1])
-                else:
-                    measurements.writeMeasurement(
-                        probe, 'fail', -1)
-            if probe['type'] == 2:
-                pingResult = bing.getLowestPing(
-                    probe['target'], 3, 16, 5000, True)
-                if (pingResult != 9999):
-                    measurements.writeMeasurement(
-                        probe, 'rtl', pingResult)
-                    measurements.writeMeasurement(
-                        probe, 'success', 0)
-                else:
-                    measurements.writeMeasurement(
-                        probe, 'fail', 0)
-            if probe['type'] == 3:
-                webPageResult = webPage.webPage(
-                    probe['target'], probe['match'], True)
-                if (webPageResult[1] == True):
-                    # valid webPageResult ttfb = Time to first Byte
-                    measurements.writeMeasurement(
-                        probe, 'ttfb', webPageResult[0])
-                    measurements.writeMeasurement(
-                        probe, 'success', 0)
-                else:
-                    # return status code as value on failure i.e. 301
-                    measurements.writeMeasurement(
-                        probe, 'fail', webPageResult[2])
+                            probe, 'fail', 0)
+                if probe['type'] == 3:
+                    webPageResult = webPage.webPage(
+                        probe['target'], probe['match'], True)
+                    if (webPageResult[1] == True):
+                        # valid webPageResult ttfb = Time to first Byte
+                        measurements.writeMeasurement(
+                            probe, 'ttfb', webPageResult[0])
+                        measurements.writeMeasurement(
+                            probe, 'success', 0)
+                    else:
+                        # return status code as value on failure i.e. 301
+                        measurements.writeMeasurement(
+                            probe, 'fail', webPageResult[2])
 
-    # 2 **************** Governor & probeConfig refresh ***************************
+        # 2 **************** Governor & probeConfig refresh ***************************
 
-    print("governorSeconds: ", str(
-        probeConfig['governorSeconds']))
-    # print("loop time so far:", utime.time() - loopStartTime)
-    probeConfig = mqttProcessConfigAndMeasurements(args)
-    sleeper = probeConfig['governorSeconds'] - \
-        (time.time() - loopStartTime)
-    print("Sleeping time remaining: ", sleeper)
-    time.sleep(sleeper)
-    probeConfig = mqttProcessConfigAndMeasurements(args)
-
-
-print('Finished.')
+        print("governorSeconds: ", str(
+            probeConfig['governorSeconds']))
+        # print("loop time so far:", utime.time() - loopStartTime)
+        probeConfig = mqttProcessConfigAndMeasurements(args)
+        sleeper = probeConfig['governorSeconds'] - \
+            (time.time() - loopStartTime)
+        print("Sleeping time remaining: ", sleeper)
+        time.sleep(sleeper)
+        probeConfig = mqttProcessConfigAndMeasurements(args)
+except Exception:
+    print("Exception in code:")
+    print("-"*60)
+    traceback.print_exc(file=sys.stdout)
+    print("-"*60)
+    sys.exit("Exiting...")

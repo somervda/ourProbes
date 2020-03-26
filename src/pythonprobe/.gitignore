@@ -1,3 +1,5 @@
 config.json
 pingtest.py
 probeConfig.json
+__pycache__/
+measurements/

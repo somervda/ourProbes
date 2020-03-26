@@ -7,7 +7,7 @@ import json
 
 
 def save(probeConfigJson):
-    # print("save:", probeConfigJson)
+    # print("*probeConfig save:", os.path.abspath(os.path.dirname(__file__)))
     os.chdir(os.path.abspath(os.path.dirname(__file__)))
     f = open('probeConfig.json', 'wt')
     l = f.write(probeConfigJson)

@@ -1,3 +1,9 @@
-<a [href]="fileUrl" [download]="id + '_config.py'"
-  >Generate & Download config.py for this device</a
+<a
+  [href]="fileUrl"
+  [download]="
+    id + (device.type === DeviceType.python ? '_config.json' : '_config.py')
+  "
+  >Generate & Download
+  {{ device.type === DeviceType.python ? "config.json" : "config.py" }} for this
+  device</a
 >

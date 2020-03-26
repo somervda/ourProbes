@@ -89,9 +89,9 @@ export class DeviceprobesComponent implements OnInit, OnDestroy {
     this.probeListChange.emit(this.probeList);
     // Only one update per second is allowed on the backend for a device config so
     // have added an artificial delay on the client on updates. Seems
-    // have to be 2 second delay to work properly
+    // have to be 3 second delay to work properly
     this.showDelay = true;
-    await this.sleep(2000);
+    await this.sleep(3000);
     this.showDelay = false;
   }
 

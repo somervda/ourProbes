@@ -7,7 +7,7 @@
     <a href="../../assets/ourProbes-manual.pdf">ourProbes Manual</a>
   </div>
 
-  <div class="help-subheading">Device Setup</div>
+  <div class="help-subheading">Device Setup (esp32)</div>
   <div class="help-content">
     This zip file contains the files needed to provision a new esp32 device.
     <a href="../../assets/deviceSetUp.zip">deviceSetUp.zip</a> <br />See the
@@ -39,6 +39,33 @@
       </li>
       <li>
         Start the deviceDeploy.bat job.
+      </li>
+    </ol>
+  </div>
+  <div class="help-subheading">Device Setup (Windows)</div>
+  <div class="help-content">
+    Download this zip file and expand into a new directory
+    <a href="../../assets/winOurProbe.zip" target="_blank">winOurProbe.zip</a>
+    <ol>
+      <li>
+        Set up a device entry in ourProbes - make sure it is type "python"
+      </li>
+      <li>From the device form download its config.json file</li>
+      <li>
+        Copy the contents of the winOurProbe.zip file to a new directory on your
+        windows machine
+      </li>
+      <li>Copy the config.json file to the same directory</li>
+      <li>
+        The device code can be run by running winOurProbe.exe - it will continue
+        to run continuously until stopped with a ctrl-C
+      </li>
+      <li>
+        If you plan on running this all the time, then I recommend using nssl -
+        <a href="http://nssm.cc/" target="_blank"
+          >Non-sucking Service Manager</a
+        >
+        to run winOurProbe.exe as a windows service
       </li>
     </ol>
   </div>
