@@ -1,21 +1,9 @@
-import paho.mqtt.client as pahomqtt
+import paho.mqtt.client as mqtt
 import jwt
 import datetime
 import ssl
 import time
 import random
-
-
-# [START iot_mqtt_jwt]
-
-# The initial backoff time after a disconnection occurs, in seconds.
-minimum_backoff_time = 1
-
-# The maximum backoff time before giving up, in seconds.
-MAXIMUM_BACKOFF_TIME = 10
-
-# Whether to wait with exponential backoff before publishing.
-should_backoff = False
 
 
 def create_jwt(project_id, private_key, algorithm, token_ttl):
@@ -43,37 +31,22 @@ def create_jwt(project_id, private_key, algorithm, token_ttl):
         'aud': project_id
     }
 
-    # print('Creating JWT using {} with ttl  {}'.format(
-    #     algorithm, token_ttl))
-
     return jwt.encode(token, private_key, algorithm=algorithm)
-# [END iot_mqtt_jwt]
 
 
 def error_str(rc):
     """Convert a Paho error to a human readable string."""
-    return '{}: {}'.format(rc, pahomqtt.error_string(rc))
+    return '{}: {}'.format(rc, mqtt.error_string(rc))
 
 
 def on_connect(unused_client, unused_userdata, unused_flags, rc):
     """Callback for when a device connects."""
-    # print('on_connect', pahomqtt.connack_string(rc))
-
-    # After a successful connect, reset backoff time and stop backing off.
-    global should_backoff
-    global minimum_backoff_time
-    should_backoff = False
-    minimum_backoff_time = 1
+    # print('on_connect', mqtt.connack_string(rc))
 
 
 def on_disconnect(unused_client, unused_userdata, rc):
     """Paho callback for when a device disconnects."""
     # print('on_disconnect', error_str(rc))
-
-    # Since a disconnect occurred, the next loop iteration will wait with
-    # exponential backoff.
-    global should_backoff
-    should_backoff = True
 
 
 def on_publish(unused_client, unused_userdata, unused_mid):
@@ -85,11 +58,9 @@ def detach_device(client, device_id):
     """Detach the device from the gateway."""
     # print("*detach_device")
     client.loop_stop()  # start the loop
-    # [START iot_detach_device]
+
     detach_topic = '/devices/{}/detach'.format(device_id)
-    # print('Detaching: {}'.format(detach_topic))
     client.publish(detach_topic, '{}', qos=1)
-    # [END iot_detach_device]
 
 
 def get_client(
@@ -99,9 +70,8 @@ def get_client(
     this device. For Google Cloud IoT Core, it must be in the format below."""
     client_id = 'projects/{}/locations/{}/registries/{}/devices/{}'.format(
         project_id, cloud_region, registry_id, device_id)
-    # print('Device client_id is \'{}\''.format(client_id))
 
-    client = pahomqtt.Client(client_id=client_id)
+    client = mqtt.Client(client_id=client_id)
 
     # With Google Cloud IoT Core, the username field is ignored, and the
     # password field is used to transmit a JWT to authorize the device.
@@ -128,15 +98,7 @@ def get_client(
     mqtt_config_topic = '/devices/{}/config'.format(device_id)
 
     # Subscribe to the config topic.
-    # print('Subscribing to {}'.format(mqtt_config_topic))
     client.subscribe(mqtt_config_topic, qos=1)
     client.loop_start()  # start the loop
-
-    # # The topic that the device will receive commands on.
-    # mqtt_command_topic = '/devices/{}/commands/#'.format(device_id)
-
-    # # Subscribe to the commands topic, QoS 1 enables message acknowledgement.
-    # print('Subscribing to {}'.format(mqtt_command_topic))
-    # client.subscribe(mqtt_command_topic, qos=0)
 
     return client

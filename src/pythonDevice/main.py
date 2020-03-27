@@ -13,6 +13,10 @@ import socket
 
 device_id = ""
 
+# With pythonping library from https://github.com/alessandromaggio/pythonping
+#  and paho mqtt library from https://github.com/eclipse/paho.mqtt.python
+#  as well I used the standard jwt, requests, socket libraries
+
 
 def on_message(unused_client, unused_userdata, message):
     """Callback when the device receives a message on a subscription."""
@@ -30,13 +34,13 @@ def mqttProcessConfigAndMeasurements(args):
     client = mqtt.get_client(args.project_id, args.cloud_region, args.registry_id, args.device_id, args.private_key,
                              args.algorithm, args.ca_certs, args.mqtt_bridge_hostname, args.mqtt_bridge_port, args.token_ttl, on_message)
     probeConfigRetrys = 0
+    # Wait for the probeConfig file to be present
     while probeConfigLib.get() == {} or probeConfigRetrys > 30:
         probeConfigRetrys += 1
         time.sleep(1)
     probeConfig = probeConfigLib.get()
     if probeConfig == {}:
         raise NameError('Could not get probeConfig')
-    # print("probeConfig : ", str(probeConfig))
 
     for fName in measurements.list():
         measurement = measurements.get(fName)
