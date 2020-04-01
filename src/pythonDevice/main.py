@@ -51,7 +51,7 @@ def mqttProcessConfigAndMeasurements(args):
         client.publish(mqtt_topic,
                        json.dumps(measurement))
         measurements.remove(fName)
-        time.sleep(.5)
+        time.sleep(2)
 
     # print('disconnecting MQTT client...')
     mqtt.detach_device(client, args.device_id)
@@ -142,8 +142,9 @@ try:
                         measurements.writeMeasurement(
                             probe, 'fail', 0)
                 if probe['type'] == 3:
+                    match = probe.get("match", "")
                     webPageResult = webPage.webPage(
-                        probe['target'], probe['match'], True)
+                        probe['target'], match, True)
                     if (webPageResult[1] == True):
                         # valid webPageResult ttfb = Time to first Byte
                         measurements.writeMeasurement(

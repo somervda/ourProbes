@@ -68,7 +68,7 @@ export class DeviceprobesComponent implements OnInit, OnDestroy {
           target: probe.target,
           type: probe.type
         };
-        if (probe.match) {
+        if (probe.type === ProbeType.webPage) {
           probeListItem.match = probe.match;
         }
         this.probeList.push(probeListItem);
