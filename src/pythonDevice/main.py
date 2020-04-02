@@ -114,7 +114,7 @@ try:
                 #   bing = 1, echo = 2, webPage = 3,tracert = 4
                 if probe['type'] == 1:
                     bingResult = bing.bing(
-                        probe['target'], 5, loopBackAdjustment=False, quiet=True, timeout=3000)
+                        probe['target'], 5, quiet=True, timeout=5000)
                     if bingResult != None:
                         if (bingResult[0] != -1):
                             # valid bing, also include probe name on measurement to save looking it up latter
@@ -133,7 +133,7 @@ try:
                 if probe['type'] == 2:
                     pingResult = bing.getLowestPing(
                         probe['target'], 3, 16, 5000, True)
-                    if (pingResult != 9999):
+                    if (pingResult != None):
                         measurements.writeMeasurement(
                             probe, 'rtl', pingResult)
                         measurements.writeMeasurement(

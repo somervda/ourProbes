@@ -4,7 +4,7 @@ from .utils import random_text
 
 
 def ping(target,
-         timeout=2,
+         timeout=5,
          count=4,
          size=1,
          payload=None,
@@ -49,6 +49,7 @@ def ping(target,
     options = ()
     if df:
         options = network.Socket.DONT_FRAGMENT
-    comm = executor.Communicator(target, provider, timeout, socket_options=options, verbose=verbose, output=out)
+    comm = executor.Communicator(
+        target, provider, timeout, socket_options=options, verbose=verbose, output=out)
     comm.run()
     return comm.responses
