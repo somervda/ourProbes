@@ -8,8 +8,9 @@ def webPage(target, match,  quiet=True):
     try:
         resp = requests.get(url=target, timeout=10)
     except:
-        # Catch Timeout error - force a 404 not found code
-        return 5000, False, 404
+        # Catch Timeout error - force a 0 as the http status code - no real code exists for a
+        #  a timeout waiting for a response because no response and code is received.
+        return 0, False, 0
     matched = False
     if resp.ok:
         not quiet and print("webPage IsSuccess")
