@@ -5,7 +5,11 @@ import time
 def webPage(target, match,  quiet=True):
     not quiet and print("webPage start")
     timestamp = time.perf_counter()
-    resp = requests.get(url=target)
+    try:
+        resp = requests.get(url=target, timeout=10)
+    except:
+        # Catch Timeout error
+        return 5000, False, 500
     matched = False
     if resp.ok:
         not quiet and print("webPage IsSuccess")
@@ -22,4 +26,4 @@ def webPage(target, match,  quiet=True):
     return t_elapsed, matched, resp.status_code
 
 
-# print(webPage("	https://kiwicornerdairy.com/", "our", False))
+# print(webPage("https://covid19.clinicalresearch.com/#!/", "our", False))
