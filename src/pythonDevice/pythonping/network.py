@@ -4,7 +4,7 @@ import time
 
 
 class Socket:
-    BUFFER_SIZE = 2048
+    BUFFER_SIZE = 8192
     # Option value for raw socket
     DONT_FRAGMENT = (socket.SOL_IP, 10, 1)
 

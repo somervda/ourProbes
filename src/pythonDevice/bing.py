@@ -4,10 +4,16 @@ import time
 
 def getLowestPing(host, samples, maxSize, timeout=5000, quiet=False):
     # Make a list containing the ping results for each of the ping samples
+    if maxSize > 8164:
+        return None
     pings = []
     failCnt = 0
     for x in range(samples):
-        pingItem = ping(host, count=1, size=maxSize, timeout=5).rtt_avg
+        useDf = False
+        if maxSize > 1460:
+            useDf = True
+        pingItem = ping(host, count=1, size=maxSize,
+                        timeout=5, df=useDf).rtt_avg
         if (pingItem == None or pingItem == 5):
             failCnt += 1
             if (failCnt >= 2):
@@ -34,6 +40,16 @@ def bing(host, samples=3, maxSize=1460, timeout=5000, quiet=False):
     # Saves buffer allocations
 
     # return the bps value of -1 if failed bing, second value represents error
+
+    # Check if maxsize works, if not than scale back to 1460
+    if maxSize > 8164:
+        maxSize = 8164
+    testMaxSizeLatency = getLowestPing(host, samples, maxSize, timeout, quiet)
+    if (testMaxSizeLatency == None or testMaxSizeLatency == timeout):
+        #  scale back maxsize
+        not quiet and print(
+            "testMaxSizeLatency failed: scaling back maxSize to 1460")
+        maxSize = 1460
 
     # Get latency
     latency = getLowestPing(host, samples, 16, timeout, quiet)
@@ -76,5 +92,5 @@ def bing(host, samples=3, maxSize=1460, timeout=5000, quiet=False):
 # print("lowestPing:", getLowestPing(host="ftp.nz.debian.org", samples=5,
 #                                    maxSize=1460, timeout=5000, quiet=False))
 
-# print("bing:", bing(host="ftp.nz.debian.org", samples=5,
-#                     maxSize=1460, timeout=5000, quiet=False))
+# print("bing:", bing(host="connect.quintiles.com", samples=5,
+#                     maxSize=1400, timeout=5000, quiet=False))

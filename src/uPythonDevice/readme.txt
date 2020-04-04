@@ -55,6 +55,6 @@ failed bings
     # -13: getlowestPing failed: loopbackMax == None
     # -14: getlowestPing failed: target26 == None
     # -15: getlowestPing failed: targetMax == None
-    # -16: bing calculation not possable: loopback26 > loopbackMax
-    # -17: bing calculation not possable: target26 > targetMax
-    # -18: bing calculation not possable: deltaLatency <= 0
+    # -16: bing calculation not possible: loopback26 > loopbackMax
+    # -17: bing calculation not possible: target26 > targetMax
+    # -18: bing calculation not possible: deltaLatency <= 0
