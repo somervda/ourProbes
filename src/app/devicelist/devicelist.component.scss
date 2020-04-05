@@ -1,5 +1,6 @@
 table {
   width: 100%;
+  min-width: 400px;
 }
 
 .table-container {
@@ -22,6 +23,11 @@ td.mat-cell {
   vertical-align: text-top;
 }
 
-.deleteIcon {
-  vertical-align: middle;
+.mat-column-name {
+  white-space: nowrap;
+  padding-right: 5px;
+}
+
+.mat-column-description {
+  width: 90%;
 }

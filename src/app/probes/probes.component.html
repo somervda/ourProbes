@@ -3,7 +3,7 @@
   <button
     mat-raised-button
     routerLink="/probe/create"
-    style="float:right;margin-bottom: 10px;"
+    style="float: right; margin-bottom: 10px;"
   >
     <i class="material-icons-outlined">network_check</i>&nbsp;
     <span>Create New Probe</span>
@@ -45,9 +45,9 @@
 
     <ng-container matColumnDef="id">
       <th mat-header-cell *matHeaderCellDef></th>
-      <td mat-cell class="deleteRow" *matCellDef="let probe">
+      <td mat-cell *matCellDef="let probe">
         <button
-          mat-raised-button
+          mat-button
           [routerLink]="['/probe/delete/', probe.id]"
           matTooltip="Delete Probe"
         >
