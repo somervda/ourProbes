@@ -6,7 +6,7 @@ import {
   OnInit,
   OnDestroy,
   Output,
-  EventEmitter
+  EventEmitter,
 } from "@angular/core";
 import { AngularFirestore } from "@angular/fire/firestore";
 import { MeasurementService } from "../services/measurement.service";
@@ -19,7 +19,7 @@ import { measurementSummaryAvailableTypes } from "../models/measurementSummary.m
 @Component({
   selector: "app-daover",
   templateUrl: "./daover.component.html",
-  styleUrls: ["./daover.component.scss"]
+  styleUrls: ["./daover.component.scss"],
 })
 export class DaoverComponent implements OnInit, OnDestroy {
   @Output() trendEvent = new EventEmitter<{
@@ -40,7 +40,7 @@ export class DaoverComponent implements OnInit, OnDestroy {
   selectedType: string = "success";
   minDate = new Date(2000, 1, 1);
   availableFilters: { name: string; type: string; value: string }[] = [
-    { name: "No Filter", type: "", value: "" }
+    { name: "No Filter", type: "", value: "" },
   ];
   selectedFilterIndex = 0;
   selectedMeasurement = "count";
@@ -65,7 +65,7 @@ export class DaoverComponent implements OnInit, OnDestroy {
   autoScale: boolean = false;
 
   colorScheme5 = {
-    domain: ["#FFFFFF", "#FFB6C1", "#E44D25", "#DDA0DD", "#4682B4"]
+    domain: ["#FFFFFF", "#FFB6C1", "#E44D25", "#DDA0DD", "#4682B4"],
   };
 
   // colorScheme5 = {
@@ -73,7 +73,7 @@ export class DaoverComponent implements OnInit, OnDestroy {
   // };
 
   colorScheme2 = {
-    domain: ["#FFFFFF", "#4682B4"]
+    domain: ["#FFFFFF", "#4682B4"],
   };
 
   constructor(
@@ -111,7 +111,7 @@ export class DaoverComponent implements OnInit, OnDestroy {
       // remove probes that do no support he selectedType (Measurement.type)
       const resolvedProbes = probes.reduce((resolvedProbes, p) => {
         const measurementTypes = this.probeMeasurementTypes.find(
-          mt => mt.probeType === p.type
+          (mt) => mt.probeType === p.type
         ).measurementTypes;
         console.log("measurementTypes", measurementTypes);
         if (measurementTypes.includes(this.selectedType)) {
@@ -127,26 +127,26 @@ export class DaoverComponent implements OnInit, OnDestroy {
       this.availableFilters.push({
         name: "---- Devices ----",
         type: "separator",
-        value: "-1"
+        value: "-1",
       });
-      devices.forEach(d =>
+      devices.forEach((d) =>
         this.availableFilters.push({
           name: d.id,
           type: "Device",
-          value: d.id
+          value: d.id,
         })
       );
       this.availableFilters.push({
         name: "---- Probes ----",
         type: "separator",
-        value: "-1"
+        value: "-1",
       });
 
-      resolvedProbes.forEach(p =>
+      resolvedProbes.forEach((p) =>
         this.availableFilters.push({
           name: p.name,
           type: "Probe",
-          value: p.id
+          value: p.id,
         })
       );
       // }
@@ -164,14 +164,14 @@ export class DaoverComponent implements OnInit, OnDestroy {
       this.chartHeight = 40 + 80 + "px";
     }
     console.log("chartHeight", this.chartHeight);
-    devices.forEach(d => {
+    devices.forEach((d) => {
       if (
         this.selectedFilterIndex == 0 ||
         this.availableFilters[this.selectedFilterIndex].type == "Probe" ||
         (this.availableFilters[this.selectedFilterIndex].type == "Device" &&
           this.availableFilters[this.selectedFilterIndex].value == d.id)
       ) {
-        probes.forEach(p => {
+        probes.forEach((p) => {
           // console.log("d-p:", d, p);
           const DeviceProbeStateItem: DeviceProbeState = {
             deviceId: d.id,
@@ -180,8 +180,8 @@ export class DaoverComponent implements OnInit, OnDestroy {
             state: {
               latestUMT: this.minDate,
               value: 0,
-              count: 0
-            }
+              count: 0,
+            },
           };
           // apply filter if needed
           if (
@@ -198,9 +198,9 @@ export class DaoverComponent implements OnInit, OnDestroy {
     console.log("Initial this.overviewData", this.overviewData);
 
     // Fill in state information based on the measurements
-    measurements.forEach(m => {
+    measurements.forEach((m) => {
       const overviewDataItemIndex = this.overviewData.findIndex(
-        od => od.deviceId === m.deviceId && od.probeId === m.probeId
+        (od) => od.deviceId === m.deviceId && od.probeId === m.probeId
       );
       if (overviewDataItemIndex != -1) {
         // Note measurement.UMT is a firestore timestamp , the array uses Javascript Date objects
@@ -226,14 +226,17 @@ export class DaoverComponent implements OnInit, OnDestroy {
     // couldn't think of a way to do this with a reduce :(
     let lastDeviceId = "";
     let chartSeries = [];
-    this.overviewData.forEach(od => {
+    this.overviewData.forEach((od) => {
       if (lastDeviceId != "" && od.deviceId != lastDeviceId) {
         // push out the last deviceSeries
         this.chartData.push({ name: lastDeviceId, series: chartSeries });
         chartSeries = [];
       }
       if (this.selectedMeasurement == "value") {
-        chartSeries.push({ name: od.probeName, value: od.state.value });
+        chartSeries.push({
+          name: od.probeName,
+          value: Math.round(od.state.value),
+        });
       } else {
         chartSeries.push({ name: od.probeName, value: od.state.count });
       }
@@ -251,8 +254,8 @@ export class DaoverComponent implements OnInit, OnDestroy {
 
     const trendSetting = {
       DeviceId: data.series,
-      ProbeId: this.probes.find(p => p.name == data.name).id,
-      Type: this.selectedType
+      ProbeId: this.probes.find((p) => p.name == data.name).id,
+      Type: this.selectedType,
     };
     this.trendEvent.emit(trendSetting);
   }
@@ -267,6 +270,14 @@ export class DaoverComponent implements OnInit, OnDestroy {
   onTypeChange(event) {
     console.log("onTypeChange:", event, event.srcElement.value);
     this.selectedType = event.srcElement.value;
+    if (
+      event.srcElement.value == "success" ||
+      event.srcElement.value == "fail"
+    ) {
+      this.selectedMeasurement = "count";
+    } else {
+      this.selectedMeasurement = "value";
+    }
     this.showOverviewChart();
   }
 
@@ -286,7 +297,7 @@ export class DaoverComponent implements OnInit, OnDestroy {
   }
 
   getTypeName(typeValue: string) {
-    return this.availableTypes.find(t => typeValue == t.value).name;
+    return this.availableTypes.find((t) => typeValue == t.value).name;
   }
 
   ngOnDestroy() {
