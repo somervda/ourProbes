@@ -7,7 +7,7 @@ import { MeasurementSummaryService } from "../services/measurement-summary.servi
 import {
   measurementSummaryAvailableSeries,
   measurementSummaryAvailableTypes,
-  measurementSummaryPeriod
+  measurementSummaryPeriod,
 } from "../models/measurementSummary.model";
 import { DeviceService } from "../services/device.service";
 import { ProbeService } from "../services/probe.service";
@@ -17,7 +17,7 @@ import { Probe } from "../models/probe.model";
 @Component({
   selector: "app-datrends",
   templateUrl: "./datrends.component.html",
-  styleUrls: ["./datrends.component.scss"]
+  styleUrls: ["./datrends.component.scss"],
 })
 export class DatrendsComponent implements OnInit {
   @Input() DeviceId: string;
@@ -49,7 +49,7 @@ export class DatrendsComponent implements OnInit {
     { name: "24 hours", period: 1, hours: 24 },
     { name: "7 Days", period: 1, hours: 168 },
     { name: "30 Days", period: 2, hours: 720 },
-    { name: "90 Days", period: 2, hours: 2160 }
+    { name: "90 Days", period: 2, hours: 2160 },
   ];
   selectedRangeHours = this.availableRanges[0].hours;
 
@@ -61,13 +61,14 @@ export class DatrendsComponent implements OnInit {
   yAxis: boolean = true;
   showYAxisLabel: boolean = true;
   showXAxisLabel: boolean = true;
-  xAxisLabel: string = "Local Time";
+  xAxisLabel: string =
+    "Local Time : (Last " + this.getRangeName(this.selectedRangeHours) + ")";
   yAxisLabel: string = this.selectedType;
   timeline: boolean = false;
   autoScale: boolean = false;
 
   colorScheme = {
-    domain: ["#5AA454", "#E44D25", "#CFC0BB", "#7aa3e5", "#a8385d", "#aae3f5"]
+    domain: ["#5AA454", "#E44D25", "#CFC0BB", "#7aa3e5", "#a8385d", "#aae3f5"],
   };
 
   constructor(
@@ -83,16 +84,16 @@ export class DatrendsComponent implements OnInit {
     this.devices$ = this.deviceService.findDevices(100);
     this.probes$ = this.probeService.findProbes(100);
     // Set initial probe to query
-    this.probes$$ = this.probes$.subscribe(p => {
+    this.probes$$ = this.probes$.subscribe((p) => {
       this.probes = p;
       if (this.ProbeId && this.ProbeId != "") {
-        this.selectedProbe = p.find(pf => pf.id == this.ProbeId);
+        this.selectedProbe = p.find((pf) => pf.id == this.ProbeId);
       } else {
         this.selectedProbe = p[0];
       }
       this.getChartData();
     });
-    this.devices$$ = this.devices$.subscribe(d => {
+    this.devices$$ = this.devices$.subscribe((d) => {
       if (this.DeviceId && this.DeviceId != "") {
         this.selectedDeviceId = this.DeviceId;
       } else {
@@ -117,13 +118,13 @@ export class DatrendsComponent implements OnInit {
   getChartData() {
     // selected range is in hours - multiply by 3600 and 1000 to convert to milliseconds
     this.yAxisLabel = this.availableTypes.find(
-      t => this.selectedType == t.value
+      (t) => this.selectedType == t.value
     ).name;
     const msRange = 3600 * 1000 * this.selectedRangeHours;
     this.from = new Date(this.to.getTime() - msRange);
     // get the period associated with this selectedRange
     let period = this.availableRanges.find(
-      element => element.hours == this.selectedRangeHours
+      (element) => element.hours == this.selectedRangeHours
     ).period;
     if (!period) {
       period = measurementSummaryPeriod.hour;
@@ -153,7 +154,7 @@ export class DatrendsComponent implements OnInit {
       this.series
     );
     if (this.chartData$$) this.chartData$$.unsubscribe();
-    this.chartData$$ = this.chartData$.subscribe(s => {
+    this.chartData$$ = this.chartData$.subscribe((s) => {
       console.log("chartData$:", s);
       this.chartData = s;
       this.showChart = true;
@@ -189,7 +190,9 @@ export class DatrendsComponent implements OnInit {
     this.getChartData();
   }
   onProbeChange(event) {
-    this.selectedProbe = this.probes.find(p => event.srcElement.value == p.id);
+    this.selectedProbe = this.probes.find(
+      (p) => event.srcElement.value == p.id
+    );
     console.log(
       "onProbeChange:",
       event.srcElement.value,
@@ -202,18 +205,20 @@ export class DatrendsComponent implements OnInit {
   onTypeChange(event) {
     console.log("onTypeChange:", event, event.srcElement.value);
     this.selectedType = event.srcElement.value;
-    console.log("onTypeChange seria:", this.series);
+    console.log("onTypeChange series:", this.series);
     this.getChartData();
   }
 
   onRangeChange(event) {
     console.log("onRangeChange:", event, event.srcElement.value);
     this.selectedRangeHours = event.srcElement.value;
+    this.xAxisLabel =
+      "Local Time : (Last " + this.getRangeName(this.selectedRangeHours) + ")";
     this.getChartData();
   }
 
   getRangeName(hours: number) {
-    return this.availableRanges.find(r => r.hours == hours).name;
+    return this.availableRanges.find((r) => r.hours == hours).name;
   }
 
   ngOnDestroy() {

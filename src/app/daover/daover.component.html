@@ -1,15 +1,24 @@
 <div class="page-container">
+  <mat-form-field class="full-width"
+    ><mat-label>Measurement Type *</mat-label>
+    <select matNativeControl (change)="onTypeChange($event)">
+      <option
+        *ngFor="let type of availableTypes"
+        [value]="type.value"
+        [selected]="type.value == selectedType"
+        >{{ type.name }}</option
+      >
+    </select>
+  </mat-form-field>
+
   <mat-accordion>
     <mat-expansion-panel>
       <mat-expansion-panel-header>
         <mat-panel-title>
-          Overview
+          Options
         </mat-panel-title>
-        <mat-panel-description>
-          {{ getTypeName(selectedType) }} *
-        </mat-panel-description>
       </mat-expansion-panel-header>
-      <mat-form-field class="half-width"
+      <mat-form-field class="full-width"
         ><mat-label>Filter by Device or Probe</mat-label>
         <select matNativeControl (change)="onFilterChange($event)">
           <option
@@ -18,18 +27,6 @@
             [selected]="i == selectedFilterIndex"
             [disabled]="filter.value == '-1'"
             >{{ filter.name }}</option
-          >
-        </select>
-      </mat-form-field>
-
-      <mat-form-field class="half-width"
-        ><mat-label>Measurement Type</mat-label>
-        <select matNativeControl (change)="onTypeChange($event)">
-          <option
-            *ngFor="let type of availableTypes"
-            [value]="type.value"
-            [selected]="type.value == selectedType"
-            >{{ type.name }}</option
           >
         </select>
       </mat-form-field>
@@ -89,6 +86,6 @@
 </div>
 <div class="notes">
   * Measurements collected from the devices in the past hour. Based on the
-  selected measurement, either latest value or total count of measurements are
-  shown for each device and probe.
+  options, either latest value or total count of measurements are shown for each
+  device and probe.
 </div>
