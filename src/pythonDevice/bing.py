@@ -1,5 +1,6 @@
 from pythonping import ping
 import time
+import traceback
 
 
 def getLowestPing(host, samples, maxSize, timeout=5000, quiet=False):
@@ -12,8 +13,15 @@ def getLowestPing(host, samples, maxSize, timeout=5000, quiet=False):
         useDf = False
         if maxSize > 1460:
             useDf = True
-        pingItem = ping(host, count=1, size=maxSize,
-                        timeout=5, df=useDf).rtt_avg
+        try:
+            pingItem = ping(host, count=1, size=maxSize,
+                            timeout=5, df=useDf).rtt_avg
+        except:
+            print("Exception in  Ping code:")
+            print("-"*60)
+            traceback.print_exc(file=sys.stdout)
+            print("-"*60)
+            pingItem = None
         if (pingItem == None or pingItem == 5):
             failCnt += 1
             if (failCnt >= 2):
