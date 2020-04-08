@@ -114,7 +114,7 @@ try:
                 #   bing = 1, echo = 2, webPage = 3,tracert = 4
                 if probe['type'] == 1:
                     bingResult = bing.bing(
-                        probe['target'], 5, quiet=True, timeout=5000, maxSize=8164)
+                        probe['target'], 7, quiet=True, timeout=5000, maxSize=8164)
                     if bingResult != None:
                         if (bingResult[0] != -1):
                             # valid bing, also include probe name on measurement to save looking it up latter

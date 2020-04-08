@@ -30,7 +30,7 @@ def getLowestPing(host, samples, maxSize, timeout=5000, quiet=False):
             pings.append(pingItem)
         not quiet and print(
             "getLowestPing host %s size %u sample# %u result: " % (host, maxSize, x), pingItem)
-        time.sleep(.025)
+        time.sleep(.5)
     # Review results for number of successful pings and get the lowest latency
     minPing = 5000
 
@@ -40,7 +40,7 @@ def getLowestPing(host, samples, maxSize, timeout=5000, quiet=False):
     return minPing * 1000
 
 
-def bing(host, samples=3, maxSize=1460, timeout=5000, quiet=False):
+def bing(host, samples=5, maxSize=1460, timeout=5000, quiet=False):
     # perform required number of ping samples to the host using 16byte and maxsize packets
     # calculate and return bandwidth (bps) and latency (ms) based on the ping samples
 
@@ -100,5 +100,5 @@ def bing(host, samples=3, maxSize=1460, timeout=5000, quiet=False):
 # print("lowestPing:", getLowestPing(host="ftp.nz.debian.org", samples=5,
 #                                    maxSize=1460, timeout=5000, quiet=False))
 
-# print("bing:", bing(host="connect.quintiles.com", samples=5,
+# print("bing:", bing(host="iqvia.com", samples=5,
 #                     maxSize=1400, timeout=5000, quiet=False))
