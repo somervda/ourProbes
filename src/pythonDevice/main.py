@@ -10,6 +10,7 @@ import webPage
 import sys
 import traceback
 import socket
+import datetime
 
 device_id = ""
 
@@ -44,14 +45,14 @@ def mqttProcessConfigAndMeasurements(args):
 
     for fName in measurements.list():
         measurement = measurements.get(fName)
-        # print("Publishing result ", fName, " : ",
-        #       str(ujson.dumps(measurement)))
+        print("Publishing result ", fName, " - ", datetime.datetime.now(), " : ",
+              str(json.dumps(measurement)))
         mqtt_topic = '/devices/{}/{}'.format(
             args.device_id, 'events')
         client.publish(mqtt_topic,
                        json.dumps(measurement))
         measurements.remove(fName)
-        time.sleep(2)
+        time.sleep(1)
 
     # print('disconnecting MQTT client...')
     mqtt.detach_device(client, args.device_id)
@@ -92,7 +93,7 @@ try:
     device_id = args.device_id
     if args == None:
         sys.exit("Error: config.json not found, exiting")
-    print("Device: ", device_id)
+    print("Device: ", device_id, " - ", datetime.datetime.now())
     measurements.reset()
     ip = socket.gethostname()
     measurements.writeMeasurement(
