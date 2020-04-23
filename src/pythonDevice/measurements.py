@@ -37,7 +37,9 @@ def add(objMeasurements):
     # must perform a flush() to make sure string in buffer is written to file
     f.flush()
     f.close
-    # print("end of add, characters in file: ", l)
+    print("end of add, characters in file: ", l, fname)
+    # Add a delay so filenames are not duplicated
+    time.sleep(0.1)
 
 
 def list():
