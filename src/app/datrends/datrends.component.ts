@@ -14,6 +14,7 @@ import { ProbeService } from "../services/probe.service";
 import { Device } from "../models/device.model";
 import { Probe } from "../models/probe.model";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { CookieService } from "ngx-cookie-service";
 
 @Component({
   selector: "app-datrends",
@@ -62,8 +63,7 @@ export class DatrendsComponent implements OnInit {
   yAxis: boolean = true;
   showYAxisLabel: boolean = true;
   showXAxisLabel: boolean = true;
-  xAxisLabel: string =
-    "Local Time : (Last " + this.getRangeName(this.selectedRangeHours) + ")";
+  xAxisLabel: string = "";
   yAxisLabel: string = this.selectedType;
   timeline: boolean = false;
   autoScale: boolean = false;
@@ -77,7 +77,8 @@ export class DatrendsComponent implements OnInit {
     private mss: MeasurementSummaryService,
     private deviceService: DeviceService,
     private snackBar: MatSnackBar,
-    private probeService: ProbeService
+    private probeService: ProbeService,
+    private cookieService: CookieService
   ) {}
 
   ngOnInit(): void {
@@ -85,6 +86,14 @@ export class DatrendsComponent implements OnInit {
     this.to = new Date();
     this.devices$ = this.deviceService.findDevices(100);
     this.probes$ = this.probeService.findProbes(100);
+    if (this.cookieService.get("trends-rangeHours") != "") {
+      const rangeHours = this.cookieService.get("trends-rangeHours");
+      this.selectedRangeHours = parseInt(rangeHours);
+    } else {
+      this.selectedRangeHours = 6;
+    }
+    this.xAxisLabel =
+      "Local Time : (Last " + this.getRangeName(this.selectedRangeHours) + ")";
     // Set initial probe to query
     this.probes$$ = this.probes$.subscribe((p) => {
       this.probes = p;
@@ -93,24 +102,46 @@ export class DatrendsComponent implements OnInit {
       } else {
         this.selectedProbe = p[0];
       }
+      if (this.ProbeId && this.ProbeId != "") {
+        this.selectedProbe = p.find((pf) => pf.id == this.ProbeId);
+      } else {
+        if (this.cookieService.get("trends-probeId") != "") {
+          this.selectedProbe = p.find(
+            (pf) => pf.id == this.cookieService.get("trends-probeId")
+          );
+        } else {
+          this.selectedProbe = p[0];
+        }
+      }
       this.getChartData();
     });
     this.devices$$ = this.devices$.subscribe((d) => {
       if (this.DeviceId && this.DeviceId != "") {
         this.selectedDeviceId = this.DeviceId;
       } else {
-        this.selectedDeviceId = d[0].id;
+        if (this.cookieService.get("trends-deviceId") != "") {
+          this.selectedDeviceId = this.cookieService.get("trends-deviceId");
+        } else {
+          this.selectedDeviceId = d[0].id;
+        }
       }
 
       if (this.Type && this.Type != "") {
         this.selectedType = this.Type;
       } else {
-        this.selectedType = "success";
+        if (this.cookieService.get("trends-type") != "") {
+          this.selectedType = this.cookieService.get("trends-type");
+        } else {
+          this.selectedType = "success";
+        }
       }
+
       if (this.selectedType == "success" || this.selectedType == "fail") {
         this.series.push("count");
       } else {
+        this.series.push("p25");
         this.series.push("p50");
+        this.series.push("p75");
       }
 
       this.getChartData();
@@ -191,6 +222,17 @@ export class DatrendsComponent implements OnInit {
     } else {
       this.autoScale = false;
     }
+  }
+
+  saveDefault() {
+    console.log("saveDefault");
+    this.cookieService.set("trends-deviceId", this.selectedDeviceId);
+    this.cookieService.set("trends-probeId", this.selectedProbe.id);
+    this.cookieService.set("trends-type", this.selectedType);
+    this.cookieService.set(
+      "trends-rangeHours",
+      this.selectedRangeHours.toString()
+    );
   }
 
   onDeviceChange(event) {

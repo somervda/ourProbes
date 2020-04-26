@@ -38,6 +38,7 @@
     "firebase": "^6.6.2",
     "firebaseui": "^4.4.0",
     "moment": "^2.24.0",
+    "ngx-cookie-service": "^3.0.4",
     "rxjs": "^6.5.4",
     "tslib": "^1.10.0",
     "zone.js": "~0.10.2"
@@ -51,7 +52,7 @@
     "@types/jasminewd2": "^2.0.8",
     "@types/node": "^12.11.1",
     "codelyzer": "^5.1.2",
-    "cypress": "^4.1.0",
+    "cypress": "^4.4.1",
     "jasmine-core": "~2.99.1",
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "^4.4.1",
