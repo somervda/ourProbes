@@ -226,12 +226,13 @@ export class DatrendsComponent implements OnInit {
 
   saveDefault() {
     console.log("saveDefault");
-    this.cookieService.set("trends-deviceId", this.selectedDeviceId);
-    this.cookieService.set("trends-probeId", this.selectedProbe.id);
-    this.cookieService.set("trends-type", this.selectedType);
+    this.cookieService.set("trends-deviceId", this.selectedDeviceId, 365);
+    this.cookieService.set("trends-probeId", this.selectedProbe.id, 365);
+    this.cookieService.set("trends-type", this.selectedType, 365);
     this.cookieService.set(
       "trends-rangeHours",
-      this.selectedRangeHours.toString()
+      this.selectedRangeHours.toString(),
+      365
     );
   }
 
