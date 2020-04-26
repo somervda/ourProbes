@@ -13,6 +13,7 @@ import { DeviceService } from "../services/device.service";
 import { ProbeService } from "../services/probe.service";
 import { Device } from "../models/device.model";
 import { Probe } from "../models/probe.model";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
   selector: "app-datrends",
@@ -75,6 +76,7 @@ export class DatrendsComponent implements OnInit {
     private afs: AngularFirestore,
     private mss: MeasurementSummaryService,
     private deviceService: DeviceService,
+    private snackBar: MatSnackBar,
     private probeService: ProbeService
   ) {}
 
@@ -163,6 +165,13 @@ export class DatrendsComponent implements OnInit {
 
   onSelect(event) {
     console.log(event);
+    this.snackBar.open(
+      `Time: ${event.name} Series: ${event.series} Value: ${event.value}`,
+      "",
+      {
+        duration: 4000,
+      }
+    );
   }
 
   onCbSeriesChange(event) {

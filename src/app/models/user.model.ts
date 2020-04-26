@@ -15,4 +15,5 @@ export interface User {
   // a user is inactive until an administrator activates them
   longitude?: number;
   latitude?: number;
+  isManager?: Boolean;
 }

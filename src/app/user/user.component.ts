@@ -10,7 +10,7 @@ import { Subscription } from "rxjs";
 @Component({
   selector: "app-user",
   templateUrl: "./user.component.html",
-  styleUrls: ["./user.component.scss"]
+  styleUrls: ["./user.component.scss"],
 })
 export class UserComponent implements OnInit, OnDestroy {
   user: User;
@@ -49,8 +49,9 @@ export class UserComponent implements OnInit, OnDestroy {
     //console.log("this.user", this.user);
     const isAdmin = this.user.isAdmin ? "Yes" : "No";
     const isActivated = this.user.isActivated ? "Yes" : "No";
+    const isManager = this.user.isManager ? "Yes" : "No";
 
-    this.userInitSub = this.auth.user$.subscribe(currentUser => {
+    this.userInitSub = this.auth.user$.subscribe((currentUser) => {
       // The user page is read only for non-administrators
       // or where the uid = the logged on user UID)
       // if the user is and administrator and looking at other peoples profiles then updates
@@ -69,13 +70,14 @@ export class UserComponent implements OnInit, OnDestroy {
         { key: "eMail", value: this.user.email },
         {
           key: "Photo URL",
-          value: this.user.photoURL
-        }
+          value: this.user.photoURL,
+        },
       ];
 
       if (!this.updatableProfile) {
         this.kvps.push({ key: "Is Administrator?", value: isAdmin });
         this.kvps.push({ key: "Is Activated?", value: isActivated });
+        this.kvps.push({ key: "Is Manager?", value: isManager });
       }
       // for admins updating other users profile isAdmin and isActivated displayed
       // as updatable controls in the HTML template
@@ -98,6 +100,14 @@ export class UserComponent implements OnInit, OnDestroy {
       this.user.uid,
       "isActivated",
       !this.user.isActivated
+    );
+  }
+
+  updateIsManager() {
+    this.userservice.dbFieldUpdate(
+      this.user.uid,
+      "isManager",
+      !this.user.isManager
     );
   }
 

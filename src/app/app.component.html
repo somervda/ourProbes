@@ -9,11 +9,23 @@
 
       <!-- Logged in options -->
       <span *ngIf="auth.loggedIn$ | async">
-        <a mat-list-item routerLink="devices">
+        <a
+          mat-list-item
+          routerLink="devices"
+          *ngIf="
+            (auth.user$ | async)?.isAdmin || (auth.user$ | async)?.isManager
+          "
+        >
           <mat-icon>developer_board</mat-icon>
           <span id="mainMenuDevices">Devices</span>
         </a>
-        <a mat-list-item routerLink="probes">
+        <a
+          mat-list-item
+          routerLink="probes"
+          *ngIf="
+            (auth.user$ | async)?.isAdmin || (auth.user$ | async)?.isManager
+          "
+        >
           <mat-icon>network_check</mat-icon>
           <span id="mainMenuProbes">Probes</span>
         </a>
@@ -85,7 +97,7 @@
     </button>
 
     <div class="filler"></div>
-    <div *ngIf="!isConnected" style="margin-right: 20px">
+    <div *ngIf="!isConnected" style="margin-right: 20px;">
       <mat-chip-list>
         <mat-chip
           class="offline-indicator"

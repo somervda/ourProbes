@@ -9,8 +9,6 @@ import { LoginComponent } from "./login/login.component";
 import { UsersComponent } from "./users/users.component";
 import { UserComponent } from "./user/user.component";
 import { UserResolver } from "./services/user-resolver";
-import { IsAdminGuard } from "./guards/isAdmin.guard";
-import { IsActivatedGuard } from "./guards/isActivated.guard";
 import { IsLoggedInGuard } from "./guards/isLoggedIn.guard";
 import { NotauthorizedComponent } from "./notauthorized/notauthorized.component";
 import { DeviceComponent } from "./device/device.component";
@@ -21,6 +19,7 @@ import { ProbeResolver } from "./services/probe-resolver";
 import { NotactivatedComponent } from "./notactivated/notactivated.component";
 import { TestyComponent } from "./testy/testy.component";
 import { HelpComponent } from "./help/help.component";
+import { permissionGuard } from "./guards/permission.guard";
 
 const routes: Routes = [
   { path: "testy", component: TestyComponent },
@@ -30,69 +29,84 @@ const routes: Routes = [
   { path: "help", component: HelpComponent },
   { path: "notAuthorized", component: NotauthorizedComponent },
   { path: "notActivated", component: NotactivatedComponent },
-  { path: "users", component: UsersComponent, canActivate: [IsAdminGuard] },
+  {
+    path: "users",
+    component: UsersComponent,
+    canActivate: [permissionGuard],
+    data: { permissions: ["isAdmin"] },
+  },
   {
     path: "devices",
     component: DevicesComponent,
-    canActivate: [IsActivatedGuard]
+    canActivate: [permissionGuard],
+    data: { permissions: ["isAdmin", "isManager"] },
   },
   {
     path: "dataanalysis",
     component: DataanalysisComponent,
-    canActivate: [IsActivatedGuard]
+    canActivate: [permissionGuard],
+    data: { permissions: ["isActivated"] },
   },
   {
     path: "device/create",
     component: DeviceComponent,
-    canActivate: [IsActivatedGuard]
+    canActivate: [permissionGuard],
+    data: { permissions: ["isAdmin", "isManager"] },
   },
   {
     path: "device/delete/:id",
     component: DeviceComponent,
     resolve: { device: DeviceResolver },
-    canActivate: [IsActivatedGuard]
+    canActivate: [permissionGuard],
+    data: { permissions: ["isAdmin", "isManager"] },
   },
   {
     path: "device/:id",
     component: DeviceComponent,
     resolve: { device: DeviceResolver },
-    canActivate: [IsActivatedGuard]
+    canActivate: [permissionGuard],
+    data: { permissions: ["isAdmin", "isManager"] },
   },
   {
     path: "probes",
     component: ProbesComponent,
-    canActivate: [IsActivatedGuard]
+    canActivate: [permissionGuard],
+    data: { permissions: ["isAdmin", "isManager"] },
   },
   {
     path: "probe/create",
     component: ProbeComponent,
-    canActivate: [IsActivatedGuard]
+    canActivate: [permissionGuard],
+    data: { permissions: ["isAdmin", "isManager"] },
   },
   {
     path: "probe/delete/:id",
     component: ProbeComponent,
     resolve: { probe: ProbeResolver },
-    canActivate: [IsActivatedGuard]
+    canActivate: [permissionGuard],
+    data: { permissions: ["isAdmin", "isManager"] },
   },
   {
     path: "probe/:id",
     component: ProbeComponent,
     resolve: { probe: ProbeResolver },
-    canActivate: [IsActivatedGuard]
+    canActivate: [permissionGuard],
+    data: { permissions: ["isAdmin", "isManager"] },
   },
   {
     path: "user/:uid",
     component: UserComponent,
     resolve: { user: UserResolver },
-    canActivate: [IsActivatedGuard],
-    runGuardsAndResolvers: "always"
+    canActivate: [permissionGuard],
+    data: { permissions: ["isActivated"] },
+    runGuardsAndResolvers: "always",
   },
   { path: "notfound", component: NotfoundComponent },
-  { path: "**", component: NotfoundComponent }
+  { path: "**", component: NotfoundComponent },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes, { onSameUrlNavigation: "reload" })],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class AppRoutingModule {}

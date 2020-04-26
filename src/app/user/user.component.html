@@ -37,6 +37,17 @@
           ></mat-checkbox>
         </td>
       </tr>
+      <tr>
+        <td>
+          <b>Is&nbsp;Manager?</b>
+        </td>
+        <td>
+          <mat-checkbox
+            [(ngModel)]="user.isManager"
+            (click)="updateIsManager()"
+          ></mat-checkbox>
+        </td>
+      </tr>
     </ng-container>
 
     <tr>
