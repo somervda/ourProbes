@@ -4,7 +4,7 @@
     <mat-nav-list>
       <a mat-list-item routerLink="/">
         <mat-icon>home</mat-icon>
-        <span id="mainMenuHome">Home</span>
+        <span id="mainMenuHome">&nbsp;Home</span>
       </a>
 
       <!-- Logged in options -->
@@ -17,7 +17,7 @@
           "
         >
           <mat-icon>developer_board</mat-icon>
-          <span id="mainMenuDevices">Devices</span>
+          <span id="mainMenuDevices">&nbsp;Devices</span>
         </a>
         <a
           mat-list-item
@@ -27,11 +27,23 @@
           "
         >
           <mat-icon>network_check</mat-icon>
-          <span id="mainMenuProbes">Probes</span>
+          <span id="mainMenuProbes">&nbsp;Probes</span>
         </a>
-        <a mat-list-item routerLink="dataanalysis">
+        <!-- <a mat-list-item routerLink="dataanalysis">
           <mat-icon>bar_chart</mat-icon>
           <span id="mainMenuDataVis">Data Analysis</span>
+        </a> -->
+        <a mat-list-item routerLink="daover">
+          <mat-icon>bar_chart</mat-icon>
+          <span id="mainMenuDAOverview">&nbsp;Overview</span>
+        </a>
+        <a mat-list-item routerLink="datrends">
+          <mat-icon>show_chart</mat-icon>
+          <span id="mainMenuDATrend">&nbsp;Trends</span>
+        </a>
+        <a mat-list-item routerLink="daextract">
+          <mat-icon>cloud_download</mat-icon>
+          <span id="mainMenuDAExtract">&nbsp;Extract</span>
         </a>
         <mat-divider></mat-divider>
       </span>
@@ -46,7 +58,7 @@
           [routerLink]="['user/', (auth.user$ | async)?.uid || '']"
         >
           <mat-icon>person</mat-icon>
-          <span id="mainMenuMyProfile">My Profile</span>
+          <span id="mainMenuMyProfile">&nbsp;My Profile</span>
         </a>
 
         <!-- Administrator Functions -->
@@ -57,16 +69,16 @@
           routerLink="/users"
         >
           <mat-icon>how_to_reg</mat-icon>
-          <span id="mainMenuUser">User Management</span>
+          <span id="mainMenuUser">&nbsp;User Management</span>
         </a>
       </span>
       <a mat-list-item routerLink="help">
         <i class="material-icons-outlined"> help_outline </i>&nbsp;
-        <span id="mainMenuHelp">Help</span>
+        <span id="mainMenuHelp">&nbsp;Help</span>
       </a>
       <a mat-list-item routerLink="about">
         <mat-icon>question_answer</mat-icon>
-        <span id="mainMenuAbout">About</span>
+        <span id="mainMenuAbout">&nbsp;About</span>
       </a>
 
       <!-- Not logged in -->
@@ -74,13 +86,13 @@
         <mat-divider></mat-divider>
         <a mat-list-item routerLink="login">
           <mat-icon>account_circle</mat-icon>
-          <span id="mainMenuLogin">Login</span>
+          <span id="mainMenuLogin">&nbsp;Login</span>
         </a>
       </span>
       <span *ngIf="auth.loggedIn$ | async">
         <a mat-list-item routerLink="logout" (click)="logout()">
           <mat-icon>exit_to_app</mat-icon>
-          <span id="mainMenuLogout">Logout</span>
+          <span id="mainMenuLogout">&nbsp;Logout</span>
         </a>
       </span>
     </mat-nav-list>

@@ -16,7 +16,7 @@ import { MeasurementService } from "../services/measurement.service";
 @Component({
   selector: "app-probe",
   templateUrl: "./probe.component.html",
-  styleUrls: ["./probe.component.scss"]
+  styleUrls: ["./probe.component.scss"],
 })
 export class ProbeComponent implements OnInit, OnDestroy {
   probe: Probe;
@@ -65,7 +65,7 @@ export class ProbeComponent implements OnInit, OnDestroy {
         description: "",
         type: ProbeType.bing,
         target: "",
-        status: ProbeStatus.active
+        status: ProbeStatus.active,
       };
     } else {
       this.probe = this.route.snapshot.data["probe"];
@@ -73,7 +73,7 @@ export class ProbeComponent implements OnInit, OnDestroy {
       // Subscribe to team to keep getting live updates
       this.probeSubscription$$ = this.probeService
         .findById(this.probe.id)
-        .subscribe(probe => {
+        .subscribe((probe) => {
           this.probe = probe;
           // console.log("subscribed probe", this.probe);
           this.probeForm.patchValue(this.probe);
@@ -84,15 +84,19 @@ export class ProbeComponent implements OnInit, OnDestroy {
     this.probeForm = this.fb.group({
       name: [
         this.probe.name,
-        [Validators.required, Validators.minLength(3), Validators.maxLength(25)]
+        [
+          Validators.required,
+          Validators.minLength(3),
+          Validators.maxLength(25),
+        ],
       ],
       description: [
         this.probe.description,
         [
           Validators.required,
           Validators.minLength(10),
-          Validators.maxLength(500)
-        ]
+          Validators.maxLength(500),
+        ],
       ],
       type: [this.probe.type, [Validators.required]],
       target: [
@@ -100,10 +104,10 @@ export class ProbeComponent implements OnInit, OnDestroy {
         [
           Validators.required,
           Validators.minLength(5),
-          Validators.maxLength(120)
-        ]
+          Validators.maxLength(120),
+        ],
       ],
-      match: [this.probe.match, [Validators.maxLength(30)]]
+      match: [this.probe.match, [Validators.maxLength(30)]],
     });
 
     // Mark all fields as touched to trigger validation on initial entry to the fields
@@ -128,17 +132,17 @@ export class ProbeComponent implements OnInit, OnDestroy {
 
     this.probeService
       .create(this.probe)
-      .then(docRef => {
+      .then((docRef) => {
         this.crudAction = Crud.Update;
         this.snackBar.open("Probe '" + this.probe.name + "' created.", "", {
-          duration: 2000
+          duration: 2000,
         });
         this.probe.id = docRef.id;
         this.ngZone.run(() =>
           this.router.navigateByUrl("/probe/" + this.probe.id)
         );
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.error("Error adding document: ", this.probe.name, error);
       });
   }
@@ -158,9 +162,11 @@ export class ProbeComponent implements OnInit, OnDestroy {
     console.log("removeProbeFromAllDevices", probeId);
 
     if (this.probeSubscription$$) this.probeSubscription$$.unsubscribe();
-    this.devices$$ = this.devices$.subscribe(devices => {
-      devices.map(device => {
-        const probeItemIndex = device.probeList.findIndex(p => p.id == probeId);
+    this.devices$$ = this.devices$.subscribe((devices) => {
+      devices.map((device) => {
+        const probeItemIndex = device.probeList.findIndex(
+          (p) => p.id == probeId
+        );
 
         if (probeItemIndex != -1) {
           device.probeList.splice(probeItemIndex, 1);
@@ -173,9 +179,8 @@ export class ProbeComponent implements OnInit, OnDestroy {
         }
         // Jump back to probe list once devices have been updated
         this.snackBar.open("Probe '" + probeId + "' logically deleted!", "", {
-          duration: 2000
+          duration: 2000,
         });
-        this.ngZone.run(() => this.router.navigateByUrl("/probes"));
       });
     });
   }
@@ -189,9 +194,11 @@ export class ProbeComponent implements OnInit, OnDestroy {
 
     if (this.probeSubscription$$) this.probeSubscription$$.unsubscribe();
 
-    this.devices$$ = this.devices$.subscribe(devices => {
-      devices.map(device => {
-        const probeItemIndex = device.probeList.findIndex(p => p.id == probeId);
+    this.devices$$ = this.devices$.subscribe((devices) => {
+      devices.map((device) => {
+        const probeItemIndex = device.probeList.findIndex(
+          (p) => p.id == probeId
+        );
 
         if (probeItemIndex != -1) {
           this.probeForm.get("target").disable();
@@ -207,14 +214,14 @@ export class ProbeComponent implements OnInit, OnDestroy {
             "  Recommendation: Delete and create another probe rather than change it.",
           "",
           {
-            duration: 7000
+            duration: 7000,
           }
         );
       }
     });
 
     if (this.measurements$$) this.measurements$$.unsubscribe();
-    this.measurements$$ = this.measurements$.subscribe(p => {
+    this.measurements$$ = this.measurements$.subscribe((p) => {
       if (p.length > 0) {
         console.log("disableSelectedUpdatesIfProbeIsInUse p:", p);
         this.probeForm.get("target").disable();
@@ -224,7 +231,7 @@ export class ProbeComponent implements OnInit, OnDestroy {
             "  Options: Delete and create another probe.",
           "",
           {
-            duration: 7000
+            duration: 7000,
           }
         );
       }

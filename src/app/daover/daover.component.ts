@@ -1,13 +1,7 @@
 import { ChartSeries } from "./../models/chart.model";
 import { Device } from "./../models/device.model";
 import { Measurement } from "./../models/measurement.model";
-import {
-  Component,
-  OnInit,
-  OnDestroy,
-  Output,
-  EventEmitter,
-} from "@angular/core";
+import { Component, OnInit, OnDestroy, NgZone } from "@angular/core";
 import { AngularFirestore } from "@angular/fire/firestore";
 import { MeasurementService } from "../services/measurement.service";
 import { DeviceService } from "../services/device.service";
@@ -15,6 +9,7 @@ import { ProbeService } from "../services/probe.service";
 import { Observable, Subscription, forkJoin, combineLatest } from "rxjs";
 import { Probe, ProbeMeasurementTypes } from "../models/probe.model";
 import { measurementSummaryAvailableTypes } from "../models/measurementSummary.model";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-daover",
@@ -22,11 +17,11 @@ import { measurementSummaryAvailableTypes } from "../models/measurementSummary.m
   styleUrls: ["./daover.component.scss"],
 })
 export class DaoverComponent implements OnInit, OnDestroy {
-  @Output() trendEvent = new EventEmitter<{
-    DeviceId: string;
-    ProbeId: string;
-    Type: string;
-  }>();
+  // @Output() trendEvent = new EventEmitter<{
+  //   DeviceId: string;
+  //   ProbeId: string;
+  //   Type: string;
+  // }>();
 
   to = new Date();
   type = "";
@@ -80,7 +75,9 @@ export class DaoverComponent implements OnInit, OnDestroy {
     private afs: AngularFirestore,
     private measurementService: MeasurementService,
     private deviceService: DeviceService,
-    private probeService: ProbeService
+    private probeService: ProbeService,
+    private ngZone: NgZone,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -245,19 +242,29 @@ export class DaoverComponent implements OnInit, OnDestroy {
     if (lastDeviceId != "") {
       this.chartData.push({ name: lastDeviceId, series: chartSeries });
     }
-    console.log("chartData:", JSON.stringify(this.chartData));
+    // console.log("chartData:", JSON.stringify(this.chartData));
     this.showChart = true;
   }
 
   onSelect(data): void {
     console.log("Item clicked", JSON.parse(JSON.stringify(data)));
 
-    const trendSetting = {
-      DeviceId: data.series,
-      ProbeId: this.probes.find((p) => p.name == data.name).id,
-      Type: this.selectedType,
-    };
-    this.trendEvent.emit(trendSetting);
+    // const trendSetting = {
+    //   DeviceId: data.series,
+    //   ProbeId: this.probes.find((p) => p.name == data.name).id,
+    //   Type: this.selectedType,
+    // };
+    // this.trendEvent.emit(trendSetting);
+    // this.ngZone.run(() => this.router.navigateByUrl("/datrends?"));
+    this.ngZone.run(() =>
+      this.router.navigate(["/datrends"], {
+        queryParams: {
+          deviceId: data.series,
+          probeId: this.probes.find((p) => p.name == data.name).id,
+          type: this.selectedType,
+        },
+      })
+    );
   }
 
   onFilterChange(event) {

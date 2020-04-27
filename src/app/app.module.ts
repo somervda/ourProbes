@@ -37,7 +37,6 @@ import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { MatSortModule } from "@angular/material/sort";
 import { MatTableModule } from "@angular/material/table";
-import { MatTabsModule } from "@angular/material/tabs";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { MatTooltipModule } from "@angular/material/tooltip";
 
@@ -59,13 +58,12 @@ import { SimplemapComponent } from "./simplemap/simplemap.component";
 import { NotactivatedComponent } from "./notactivated/notactivated.component";
 import { DeviceprobesComponent } from "./deviceprobes/deviceprobes.component";
 import { DeviceconfigComponent } from "./deviceconfig/deviceconfig.component";
-import { DataanalysisComponent } from "./dataanalysis/dataanalysis.component";
 import { DatrendsComponent } from "./datrends/datrends.component";
 import { TestyComponent } from "./testy/testy.component";
 import { DaoverComponent } from "./daover/daover.component";
 import { DaextractComponent } from "./daextract/daextract.component";
 import { HelpComponent } from "./help/help.component";
-import { YoutubeComponent } from './youtube/youtube.component';
+import { YoutubeComponent } from "./youtube/youtube.component";
 
 @NgModule({
   declarations: [
@@ -87,18 +85,17 @@ import { YoutubeComponent } from './youtube/youtube.component';
     NotactivatedComponent,
     DeviceprobesComponent,
     DeviceconfigComponent,
-    DataanalysisComponent,
     DatrendsComponent,
     TestyComponent,
     DaoverComponent,
     DaextractComponent,
     HelpComponent,
-    YoutubeComponent
+    YoutubeComponent,
   ],
   imports: [
     BrowserModule,
     AgmCoreModule.forRoot({
-      apiKey: "AIzaSyBTXGNP8fuSxj8aZTz7VbQ4LduAZ20Jd3o"
+      apiKey: "AIzaSyBTXGNP8fuSxj8aZTz7VbQ4LduAZ20Jd3o",
     }),
     BrowserAnimationsModule,
     NgxChartsModule,
@@ -125,7 +122,6 @@ import { YoutubeComponent } from './youtube/youtube.component';
     // MatGridListModule,
     // MatMenuModule,
     // MatDividerModule,
-    MatTabsModule,
     MatInputModule,
     MatFormFieldModule,
     // MatTableModule,
@@ -141,10 +137,10 @@ import { YoutubeComponent } from './youtube/youtube.component';
     AngularFirestoreModule,
     // AngularFirestoreModule.enablePersistence(),
     ServiceWorkerModule.register("ngsw-worker.js", {
-      enabled: environment.production
-    })
+      enabled: environment.production,
+    }),
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule {}

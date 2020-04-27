@@ -1,4 +1,4 @@
-import { Component, OnInit, NgModule, Input } from "@angular/core";
+import { Component, OnInit, NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { NgxChartsModule } from "@swimlane/ngx-charts";
 import { Observable, Subscription } from "rxjs";
@@ -15,6 +15,7 @@ import { Device } from "../models/device.model";
 import { Probe } from "../models/probe.model";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { CookieService } from "ngx-cookie-service";
+import { ActivatedRoute } from "@angular/router";
 
 @Component({
   selector: "app-datrends",
@@ -22,10 +23,6 @@ import { CookieService } from "ngx-cookie-service";
   styleUrls: ["./datrends.component.scss"],
 })
 export class DatrendsComponent implements OnInit {
-  @Input() DeviceId: string;
-  @Input() ProbeId: string;
-  @Input() Type: string;
-
   chartData$: Observable<any>;
   chartData$$: Subscription;
   chartData: [];
@@ -78,11 +75,26 @@ export class DatrendsComponent implements OnInit {
     private deviceService: DeviceService,
     private snackBar: MatSnackBar,
     private probeService: ProbeService,
-    private cookieService: CookieService
+    private cookieService: CookieService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
-    console.log("datrends ngOnInit", this.DeviceId, this.ProbeId, this.Type);
+    let deviceId: string;
+    if (this.route.snapshot.queryParamMap.get("deviceId") != null) {
+      deviceId = this.route.snapshot.queryParamMap.get("deviceId");
+    }
+    let probeId: string;
+    if (this.route.snapshot.queryParamMap.get("probeId") != null) {
+      probeId = this.route.snapshot.queryParamMap.get("probeId");
+    }
+    let type: string;
+    if (this.route.snapshot.queryParamMap.get("type") != null) {
+      type = this.route.snapshot.queryParamMap.get("type");
+    }
+
+    console.log("datrends ngOnInit", deviceId, probeId, type);
+
     this.to = new Date();
     this.devices$ = this.deviceService.findDevices(100);
     this.probes$ = this.probeService.findProbes(100);
@@ -97,13 +109,13 @@ export class DatrendsComponent implements OnInit {
     // Set initial probe to query
     this.probes$$ = this.probes$.subscribe((p) => {
       this.probes = p;
-      if (this.ProbeId && this.ProbeId != "") {
-        this.selectedProbe = p.find((pf) => pf.id == this.ProbeId);
-      } else {
-        this.selectedProbe = p[0];
-      }
-      if (this.ProbeId && this.ProbeId != "") {
-        this.selectedProbe = p.find((pf) => pf.id == this.ProbeId);
+      // if (probeId && probeId != "") {
+      //   this.selectedProbe = p.find((pf) => pf.id == probeId);
+      // } else {
+      //   this.selectedProbe = p[0];
+      // }
+      if (probeId && probeId != "") {
+        this.selectedProbe = p.find((pf) => pf.id == probeId);
       } else {
         if (this.cookieService.get("trends-probeId") != "") {
           this.selectedProbe = p.find(
@@ -116,8 +128,8 @@ export class DatrendsComponent implements OnInit {
       this.getChartData();
     });
     this.devices$$ = this.devices$.subscribe((d) => {
-      if (this.DeviceId && this.DeviceId != "") {
-        this.selectedDeviceId = this.DeviceId;
+      if (deviceId && deviceId != "") {
+        this.selectedDeviceId = deviceId;
       } else {
         if (this.cookieService.get("trends-deviceId") != "") {
           this.selectedDeviceId = this.cookieService.get("trends-deviceId");
@@ -126,8 +138,8 @@ export class DatrendsComponent implements OnInit {
         }
       }
 
-      if (this.Type && this.Type != "") {
-        this.selectedType = this.Type;
+      if (type && type != "") {
+        this.selectedType = type;
       } else {
         if (this.cookieService.get("trends-type") != "") {
           this.selectedType = this.cookieService.get("trends-type");

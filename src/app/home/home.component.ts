@@ -10,7 +10,7 @@ import { Router } from "@angular/router";
 @Component({
   selector: "app-home",
   templateUrl: "./home.component.html",
-  styleUrls: ["./home.component.scss"]
+  styleUrls: ["./home.component.scss"],
 })
 export class HomeComponent implements OnInit, OnDestroy {
   latitude: number = 0;
@@ -32,14 +32,19 @@ export class HomeComponent implements OnInit, OnDestroy {
     // };
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    let userWaitLoop = 0;
+    while (!this.auth.currentUser || userWaitLoop > 25) {
+      await this.sleep(200);
+      userWaitLoop += 1;
+    }
     this.devices$ = this.deviceservice.findDevices(100);
     if (this.auth.currentUser) {
       const uid = this.auth.currentUser.uid;
       this.user$ = this.afs
         .doc<User>(`users/${this.auth.currentUser.uid}`)
         .valueChanges();
-      this.user$$ = this.user$.subscribe(user => {
+      this.user$$ = this.user$.subscribe((user) => {
         if ((user.latitude || user.latitude == 0) && !user.isActivated) {
           this.ngZone.run(() => this.router.navigateByUrl("notActivated"));
         }
@@ -53,6 +58,9 @@ export class HomeComponent implements OnInit, OnDestroy {
       // Happens on refresh and user info not ready - show world map
       this.zoom = 2;
     }
+  }
+  sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   ngOnDestroy() {

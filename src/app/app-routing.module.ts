@@ -1,4 +1,3 @@
-import { DataanalysisComponent } from "./dataanalysis/dataanalysis.component";
 import { DevicesComponent } from "./devices/devices.component";
 import { NgModule } from "@angular/core";
 import { Routes, RouterModule } from "@angular/router";
@@ -20,6 +19,9 @@ import { NotactivatedComponent } from "./notactivated/notactivated.component";
 import { TestyComponent } from "./testy/testy.component";
 import { HelpComponent } from "./help/help.component";
 import { permissionGuard } from "./guards/permission.guard";
+import { DaoverComponent } from "./daover/daover.component";
+import { DatrendsComponent } from "./datrends/datrends.component";
+import { DaextractComponent } from "./daextract/daextract.component";
 
 const routes: Routes = [
   { path: "testy", component: TestyComponent },
@@ -42,8 +44,20 @@ const routes: Routes = [
     data: { permissions: ["isAdmin", "isManager"] },
   },
   {
-    path: "dataanalysis",
-    component: DataanalysisComponent,
+    path: "daover",
+    component: DaoverComponent,
+    canActivate: [permissionGuard],
+    data: { permissions: ["isActivated"] },
+  },
+  {
+    path: "datrends",
+    component: DatrendsComponent,
+    canActivate: [permissionGuard],
+    data: { permissions: ["isActivated"] },
+  },
+  {
+    path: "daextract",
+    component: DaextractComponent,
     canActivate: [permissionGuard],
     data: { permissions: ["isActivated"] },
   },
