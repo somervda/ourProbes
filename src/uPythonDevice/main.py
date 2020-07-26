@@ -80,6 +80,7 @@ def connect():
 
 
 def set_time():
+    print('set_time()')
     ntptime.settime()
     tm = utime.localtime()
     tm = tm[0:3] + (0,) + tm[3:6] + (0,)
@@ -199,6 +200,7 @@ try:
         if probeConfig['runProbes'] == True:
             for probe in probeConfig['probeList']:
                 #   bing = 1, echo = 2, webPage = 3,tracert = 4
+                print("Probe:", probe['name'], " ", probe['type'])
                 if probe['type'] == 1:
                     blink(1)
                     bingResult = ubing.bing(
