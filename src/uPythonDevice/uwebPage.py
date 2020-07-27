@@ -1,8 +1,10 @@
 from microWebCli import MicroWebCli
 import utime
+import gc
 
 
 def webPage(target, match,  quiet=True):
+    gc.collect()
     timestamp = utime.ticks_us()
     not quiet and print("webPage start")
     wCli = MicroWebCli(target)

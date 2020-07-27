@@ -200,7 +200,9 @@ try:
         if probeConfig['runProbes'] == True:
             for probe in probeConfig['probeList']:
                 #   bing = 1, echo = 2, webPage = 3,tracert = 4
-                print("Probe:", probe['name'], " - ", probe['type'])
+                gc.collect()
+                print("Probe:", probe['name'], " - ", probe['type'],
+                      " mem:", umemory.free())
                 if probe['type'] == 1:
                     blink(1)
                     bingResult = ubing.bing(
@@ -234,18 +236,23 @@ try:
                             probe, 'fail', 0)
                 if probe['type'] == 3:
                     blink(1)
-                    webPageResult = uwebPage.webPage(
-                        probe['target'], probe['match'], True)
-                    if (webPageResult[1] == True):
-                        # valid webPageResult ttfb = Time to first Byte
-                        umeasurements.writeMeasurement(
-                            probe, 'ttfb', webPageResult[0])
-                        umeasurements.writeMeasurement(
-                            probe, 'success', 0)
-                    else:
-                        # return status code as value on failure i.e. 301
-                        umeasurements.writeMeasurement(
-                            probe, 'fail', webPageResult[2])
+                    try:
+                        webPageResult = uwebPage.webPage(
+                            probe['target'], probe['match'], True)
+                        if (webPageResult[1] == True):
+                            # valid webPageResult ttfb = Time to first Byte
+                            umeasurements.writeMeasurement(
+                                probe, 'ttfb', webPageResult[0])
+                            umeasurements.writeMeasurement(
+                                probe, 'success', 0)
+                        else:
+                            # return status code as value on failure i.e. 301
+                            print("web tests error: ", probe,
+                                  " webPageResult:", webPageResult)
+                            umeasurements.writeMeasurement(
+                                probe, 'fail', webPageResult[2])
+                    except Exception as e:
+                        sys.print_exception(e)
 
         # 2 **************** Governor & probeConfig refresh ***************************
 
@@ -257,7 +264,8 @@ try:
         sleeper = probeConfig['governorSeconds'] - \
             (utime.time() - loopStartTime)
         print("Sleeping time remaining: ", sleeper)
-        utime.sleep(sleeper)
+        if (sleeper > 0):
+            utime.sleep(sleeper)
         probeConfig = mqttProcessConfigAndMeasurements()
 
     # Clean up network connection (Not needed when used in a real main.py that never ends)
