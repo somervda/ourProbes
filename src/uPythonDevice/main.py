@@ -178,7 +178,7 @@ try:
     # Keep track of when the device started and IP adderess
     freeMem = float(umemory.free().replace("%", ""))
     umeasurements.writeMeasurement(
-        {"id": "", "name": net_if.ifconfig()[0]}, 'startup', freeMem)
+        {"id": config.google_cloud_config['device_id'], "name": net_if.ifconfig()[0]}, 'startup', freeMem)
 
     loopCnt = 0
     ip = net_if.ifconfig()[0]
@@ -200,7 +200,7 @@ try:
         if probeConfig['runProbes'] == True:
             for probe in probeConfig['probeList']:
                 #   bing = 1, echo = 2, webPage = 3,tracert = 4
-                print("Probe:", probe['name'], " ", probe['type'])
+                print("Probe:", probe['name'], " - ", probe['type'])
                 if probe['type'] == 1:
                     blink(1)
                     bingResult = ubing.bing(
