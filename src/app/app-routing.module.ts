@@ -25,7 +25,8 @@ import { DaextractComponent } from "./daextract/daextract.component";
 
 const routes: Routes = [
   { path: "testy", component: TestyComponent },
-  { path: "", component: HomeComponent, canActivate: [IsLoggedInGuard] },
+  { path: "", component: DaoverComponent, canActivate: [IsLoggedInGuard] },
+  { path: "home", component: HomeComponent, canActivate: [IsLoggedInGuard] },
   { path: "about", component: AboutComponent },
   { path: "login", component: LoginComponent },
   { path: "help", component: HelpComponent },
