@@ -42,7 +42,7 @@ export class DatrendsComponent implements OnInit {
   probes$: Observable<Probe[]>;
   probes$$: Subscription;
   availableTypes = measurementSummaryAvailableTypes;
-  selectedType: string;
+  selectedType: string ="";
   availableRanges = [
     { name: "6 hours", period: 1, hours: 6 },
     { name: "24 hours", period: 1, hours: 24 },
